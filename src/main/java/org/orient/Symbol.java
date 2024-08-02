@@ -24,6 +24,10 @@ public class Symbol {
         return scope;
     }
 
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
+
     public String toString() {
         if (ty != Type.SYMBOL_TYPE_UNKNOWN) return "Symbol<" + getName() + ":" + ty + ">";
         return getName();
