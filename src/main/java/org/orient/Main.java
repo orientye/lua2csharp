@@ -18,5 +18,7 @@ public class Main {
         LuaParser parser = new LuaParser(tokens);
         ParseTree tree = parser.start_(); // begin parsing at init rule
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+
+        AnnotatedTree at = new AnnotatedTree(tree);
     }
 }
