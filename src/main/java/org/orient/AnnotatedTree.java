@@ -9,4 +9,9 @@ public class AnnotatedTree {
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;
     }
+
+    public void dump() {
+        System.out.println(ast.toStringTree());
+        System.out.println(ast.getText());
+    }
 }

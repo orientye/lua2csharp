@@ -20,5 +20,6 @@ public class Main {
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 
         AnnotatedTree at = new AnnotatedTree(tree);
+        at.dump();
     }
 }
