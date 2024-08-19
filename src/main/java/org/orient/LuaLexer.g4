@@ -8,6 +8,8 @@ options {
     superClass = LuaLexerBase;
 }
 
+channels { WHITESPACE, COMMENTS }
+
 // Insert here @header for C++ lexer.
 
 SEMI : ';';
@@ -114,10 +116,10 @@ fragment HexDigit: [0-9a-fA-F];
 
 fragment SingleLineInputCharacter: ~[\r\n\u0085\u2028\u2029];
 
-COMMENT: '--' { this.HandleComment(); } -> channel(HIDDEN);
+COMMENT: '--' { this.HandleComment(); } -> channel(COMMENTS);
 
-WS: [ \t\u000C\r]+ -> channel(HIDDEN);
+WS: [ \t\u000C\r]+ -> channel(WHITESPACE);
 
-NL: [\n] -> channel(2);
+NL: [\n] -> channel(WHITESPACE);
 
 SHEBANG: '#' { this.IsLine1Col0() }? '!'? SingleLineInputCharacter* -> channel(HIDDEN);

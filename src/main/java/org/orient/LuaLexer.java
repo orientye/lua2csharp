@@ -25,8 +25,10 @@ public class LuaLexer extends LuaLexerBase {
 		STAR=45, OCU=46, CCU=47, OB=48, CB=49, EE=50, DD=51, PIPE=52, CARET=53, 
 		SLASH=54, DDD=55, SQEQ=56, NAME=57, NORMALSTRING=58, CHARSTRING=59, LONGSTRING=60, 
 		INT=61, HEX=62, FLOAT=63, HEX_FLOAT=64, COMMENT=65, WS=66, NL=67, SHEBANG=68;
+	public static final int
+		WHITESPACE=2, COMMENTS=3;
 	public static String[] channelNames = {
-		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
+		"DEFAULT_TOKEN_CHANNEL", "HIDDEN", "WHITESPACE", "COMMENTS"
 	};
 
 	public static String[] modeNames = {
@@ -513,7 +515,7 @@ public class LuaLexer extends LuaLexerBase {
 		"\u022c\u022e\u0007\r\u0000\u0000\u022d\u022c\u0001\u0000\u0000\u0000\u022e"+
 		"\u022f\u0001\u0000\u0000\u0000\u022f\u022d\u0001\u0000\u0000\u0000\u022f"+
 		"\u0230\u0001\u0000\u0000\u0000\u0230\u0231\u0001\u0000\u0000\u0000\u0231"+
-		"\u0232\u0006K\u0001\u0000\u0232\u0098\u0001\u0000\u0000\u0000\u0233\u0234"+
+		"\u0232\u0006K\u0002\u0000\u0232\u0098\u0001\u0000\u0000\u0000\u0233\u0234"+
 		"\u0007\u000e\u0000\u0000\u0234\u0235\u0001\u0000\u0000\u0000\u0235\u0236"+
 		"\u0006L\u0002\u0000\u0236\u009a\u0001\u0000\u0000\u0000\u0237\u0238\u0005"+
 		"#\u0000\u0000\u0238\u023a\u0004M\u0000\u0000\u0239\u023b\u0005!\u0000"+
@@ -522,11 +524,11 @@ public class LuaLexer extends LuaLexerBase {
 		"\u023d\u023c\u0001\u0000\u0000\u0000\u023e\u0241\u0001\u0000\u0000\u0000"+
 		"\u023f\u023d\u0001\u0000\u0000\u0000\u023f\u0240\u0001\u0000\u0000\u0000"+
 		"\u0240\u0242\u0001\u0000\u0000\u0000\u0241\u023f\u0001\u0000\u0000\u0000"+
-		"\u0242\u0243\u0006M\u0001\u0000\u0243\u009c\u0001\u0000\u0000\u0000#\u0000"+
+		"\u0242\u0243\u0006M\u0003\u0000\u0243\u009c\u0001\u0000\u0000\u0000#\u0000"+
 		"\u0167\u016d\u016f\u0177\u0179\u018a\u018e\u0193\u019a\u019f\u01a5\u01a9"+
 		"\u01af\u01b2\u01b7\u01bb\u01c2\u01c8\u01cc\u01d4\u01d7\u01de\u01e2\u01e6"+
-		"\u01eb\u01ef\u01f4\u01fa\u0200\u020d\u021b\u022f\u023a\u023f\u0003\u0001"+
-		"J\u0000\u0000\u0001\u0000\u0000\u0002\u0000";
+		"\u01eb\u01ef\u01f4\u01fa\u0200\u020d\u021b\u022f\u023a\u023f\u0004\u0001"+
+		"J\u0000\u0000\u0003\u0000\u0000\u0002\u0000\u0000\u0001\u0000";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
