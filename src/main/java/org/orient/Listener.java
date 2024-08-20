@@ -101,6 +101,11 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
+        LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
+        if (attnamelistContext != null) {
+            Token t = ctx.start;
+            rewriter.replace(t, "var");
+        }
         System.out.println("Stat:" + ctx.getText());
     }
 
