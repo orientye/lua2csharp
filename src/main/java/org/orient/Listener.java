@@ -101,6 +101,7 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
+        System.out.println("Stat:" + ctx.getText());
     }
 
     /**
@@ -110,6 +111,8 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void enterAttnamelist(LuaParser.AttnamelistContext ctx) {
+        List<TerminalNode> list = ctx.NAME();
+        System.out.println("Attnamelist:" + ctx.getText());
     }
 
     /**
@@ -119,6 +122,8 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitAttnamelist(LuaParser.AttnamelistContext ctx) {
+        List<TerminalNode> list = ctx.NAME();
+        System.out.println("Attnamelist:" + ctx.getText());
     }
 
     /**
