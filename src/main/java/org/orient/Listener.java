@@ -327,6 +327,11 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitFunctioncall(LuaParser.FunctioncallContext ctx) {
+        Token token = ctx.start;
+        String funcName = token.getText();
+        if (funcName.equals("print")) {
+            rewriter.replace(token, "Console.WriteLine");
+        }
     }
 
     /**
