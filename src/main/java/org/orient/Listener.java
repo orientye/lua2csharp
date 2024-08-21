@@ -101,6 +101,7 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
+        // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
             LuaParser.ExplistContext explistContext = (LuaParser.ExplistContext) ctx.getChild(3);
@@ -125,6 +126,18 @@ public class Listener extends LuaParserBaseListener {
             if (bf != null) {
                 Token t = ctx.start;
                 rewriter.replace(t, "bool");
+            }
+        }
+
+        //'function' funcname funcbody
+        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        if (funcnameContext != null) {
+            List<TerminalNode> names = funcnameContext.NAME();
+            int sz = names.size();
+            if (1 == sz) {
+                System.out.println(names.get(0));
+            } else {
+                //TODO: class:func
             }
         }
     }
