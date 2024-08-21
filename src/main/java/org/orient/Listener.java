@@ -107,25 +107,15 @@ public class Listener extends LuaParserBaseListener {
             LuaParser.ExpContext expContext = explistContext.exp(0);
             LuaParser.NumberContext n = expContext.number();
             if (n != null) {
-                TerminalNode tn = n.INT();
-                System.out.println("tn:" + tn.getText());
-
-                Token r = explistContext.start;
                 Token t = ctx.start;
                 rewriter.replace(t, "int");
             }
             LuaParser.StringContext s = expContext.string();
             if (s != null) {
-                TerminalNode ts = s.NORMALSTRING();
-                System.out.println("ts:" + ts.getText());
-
-                Token r = explistContext.start;
                 Token t = ctx.start;
                 rewriter.replace(t, "string");
             }
-
         }
-        System.out.println("Stat:" + ctx.getText());
     }
 
     /**
@@ -135,8 +125,6 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void enterAttnamelist(LuaParser.AttnamelistContext ctx) {
-        List<TerminalNode> list = ctx.NAME();
-        System.out.println("Attnamelist:" + ctx.getText());
     }
 
     /**
@@ -146,8 +134,6 @@ public class Listener extends LuaParserBaseListener {
      */
     @Override
     public void exitAttnamelist(LuaParser.AttnamelistContext ctx) {
-        List<TerminalNode> list = ctx.NAME();
-        System.out.println("Attnamelist:" + ctx.getText());
     }
 
     /**
