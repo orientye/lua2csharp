@@ -104,9 +104,26 @@ public class Listener extends LuaParserBaseListener {
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
             LuaParser.ExplistContext explistContext = (LuaParser.ExplistContext) ctx.getChild(3);
-            Token r = explistContext.start;
-            Token t = ctx.start;
-            rewriter.replace(t, "var");
+            LuaParser.ExpContext expContext = explistContext.exp(0);
+            LuaParser.NumberContext n = expContext.number();
+            if (n != null) {
+                TerminalNode tn = n.INT();
+                System.out.println("tn:" + tn.getText());
+
+                Token r = explistContext.start;
+                Token t = ctx.start;
+                rewriter.replace(t, "int");
+            }
+            LuaParser.StringContext s = expContext.string();
+            if (s != null) {
+                TerminalNode ts = s.NORMALSTRING();
+                System.out.println("ts:" + ts.getText());
+
+                Token r = explistContext.start;
+                Token t = ctx.start;
+                rewriter.replace(t, "string");
+            }
+
         }
         System.out.println("Stat:" + ctx.getText());
     }
