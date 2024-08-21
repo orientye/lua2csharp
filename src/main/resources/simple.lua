@@ -8,7 +8,6 @@ local n = nil;
 local bt = true;
 local bf = false;
 
-
 function func_sum(a, b)
     return a + b;
 end
