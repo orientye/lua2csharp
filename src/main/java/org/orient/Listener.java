@@ -105,8 +105,9 @@ public class Listener extends LuaParserBaseListener {
         if (attnamelistContext != null) {
             LuaParser.ExplistContext explistContext = (LuaParser.ExplistContext) ctx.getChild(3);
             LuaParser.ExpContext expContext = explistContext.exp(0);
-            LuaParser.NumberContext n = expContext.number();
-            if (n != null) {
+
+            LuaParser.NumberContext i = expContext.number();
+            if (i != null) {
                 Token t = ctx.start;
                 rewriter.replace(t, "int");
             }
@@ -114,6 +115,16 @@ public class Listener extends LuaParserBaseListener {
             if (s != null) {
                 Token t = ctx.start;
                 rewriter.replace(t, "string");
+            }
+            TerminalNode bt = expContext.TRUE();
+            if (bt != null) {
+                Token t = ctx.start;
+                rewriter.replace(t, "bool");
+            }
+            TerminalNode bf = expContext.FALSE();
+            if (bf != null) {
+                Token t = ctx.start;
+                rewriter.replace(t, "bool");
             }
         }
     }
