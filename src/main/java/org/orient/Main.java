@@ -20,6 +20,12 @@ public class Main {
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 
         ParseTreeWalker walker = new ParseTreeWalker();
+
+        //Pass
+        ProcessScope processScope = new ProcessScope();
+        walker.walk(processScope, tree);
+
+        //Pass
         Listener shifter = new Listener(tokens);
         walker.walk(shifter, tree);
         System.out.print(shifter.rewriter.getText());
