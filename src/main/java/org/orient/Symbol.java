@@ -33,7 +33,11 @@ public class Symbol {
         return getName();
     }
 
-    public enum Type {
+    public enum LuaType {
         SYMBOL_TYPE_UNKNOWN, SYMBOL_TYPE_LUA_NIL, SYMBOL_TYPE_LUA_BOOLEAN, SYMBOL_TYPE_LUA_LIGHTUSERDATA, SYMBOL_TYPE_LUA_NUMBER, SYMBOL_TYPE_LUA_STRING, SYMBOL_TYPE_LUA_TABLE, SYMBOL_TYPE_LUA_FUNCTION, SYMBOL_TYPE_LUA_USERDATA, SYMBOL_TYPE_LUA_THREAD
+    }
+
+    public enum Type {
+        SYMBOL_TYPE_UNKNOWN,
     }
 }
