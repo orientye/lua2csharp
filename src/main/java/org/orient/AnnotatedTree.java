@@ -1,10 +1,18 @@
 package org.orient;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AnnotatedTree {
 
     private ParseTree ast = null;
+
+    Map<ParserRuleContext, Scope> scopesOfNodes = new HashMap<ParserRuleContext, Scope>();
+
+    Map<ParserRuleContext, Symbol> symbolsOfNodes = new HashMap<ParserRuleContext, Symbol>();
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;
