@@ -26,7 +26,7 @@ public class Main {
         walker.walk(processScope, tree);
 
         //Pass
-        Listener shifter = new Listener(tokens);
+        ProcessTransformation shifter = new ProcessTransformation(tokens);
         walker.walk(shifter, tree);
         System.out.print(shifter.rewriter.getText());
 

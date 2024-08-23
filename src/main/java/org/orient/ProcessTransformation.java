@@ -9,12 +9,12 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
 
-public class Listener extends LuaParserBaseListener {
+public class ProcessTransformation extends LuaParserBaseListener {
 
     BufferedTokenStream tokens;
     TokenStreamRewriter rewriter;
 
-    public Listener(BufferedTokenStream tokens) {
+    public ProcessTransformation(BufferedTokenStream tokens) {
         this.tokens = tokens;
         rewriter = new TokenStreamRewriter(tokens);
     }
