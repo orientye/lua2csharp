@@ -135,7 +135,7 @@ public class ProcessTransformation extends LuaParserBaseListener {
             List<TerminalNode> names = funcnameContext.NAME();
             int sz = names.size();
             if (1 == sz) {
-                System.out.println(names.get(0));
+                
             } else {
                 //TODO: class:func
             }

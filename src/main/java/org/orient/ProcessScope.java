@@ -7,6 +7,13 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.List;
 
 public class ProcessScope extends LuaParserBaseListener {
+
+    AnnotatedTree annotatedTree;
+
+    public ProcessScope(AnnotatedTree annotatedTree) {
+        this.annotatedTree = annotatedTree;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -56,9 +63,8 @@ public class ProcessScope extends LuaParserBaseListener {
             int sz = names.size();
             if (1 == sz) {
                 String name = names.get(0).getText();
-                System.out.println(name);
                 Scope scope = new Scope(name, null);
-
+                annotatedTree.scopesOfNodes.put(funcnameContext, scope);
             } else {
                 //TODO: class:func
             }

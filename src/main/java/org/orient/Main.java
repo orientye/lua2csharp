@@ -19,10 +19,12 @@ public class Main {
         ParseTree tree = parser.start_(); // begin parsing at init rule
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 
+        AnnotatedTree annotatedTree = new AnnotatedTree(tree);
+
         ParseTreeWalker walker = new ParseTreeWalker();
 
         //Pass
-        ProcessScope processScope = new ProcessScope();
+        ProcessScope processScope = new ProcessScope(annotatedTree);
         walker.walk(processScope, tree);
 
         //Pass
