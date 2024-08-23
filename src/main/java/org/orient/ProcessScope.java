@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.List;
+
 public class ProcessScope extends LuaParserBaseListener {
     /**
      * {@inheritDoc}
@@ -46,7 +48,22 @@ public class ProcessScope extends LuaParserBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterStat(LuaParser.StatContext ctx) { }
+    @Override public void enterStat(LuaParser.StatContext ctx) {
+        //'function' funcname funcbody
+        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        if (funcnameContext != null) {
+            List<TerminalNode> names = funcnameContext.NAME();
+            int sz = names.size();
+            if (1 == sz) {
+                String name = names.get(0).getText();
+                System.out.println(name);
+                Scope scope = new Scope(name, null);
+
+            } else {
+                //TODO: class:func
+            }
+        }
+    }
     /**
      * {@inheritDoc}
      *
