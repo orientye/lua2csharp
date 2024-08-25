@@ -79,7 +79,19 @@ public class ProcessScope extends LuaParserBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitStat(LuaParser.StatContext ctx) { }
+    @Override public void exitStat(LuaParser.StatContext ctx) {
+        //'function' funcname funcbody
+        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        if (funcnameContext != null) {
+            List<TerminalNode> names = funcnameContext.NAME();
+            int sz = names.size();
+            if (1 == sz) {
+                scopeStack.pop();
+            } else {
+                //TODO: class:func
+            }
+        }
+    }
     /**
      * {@inheritDoc}
      *
