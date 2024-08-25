@@ -33,11 +33,12 @@ public class Symbol {
         return getName();
     }
 
-    public enum LuaType {
+    public enum Type {
         SYMBOL_TYPE_UNKNOWN, SYMBOL_TYPE_LUA_NIL, SYMBOL_TYPE_LUA_BOOLEAN, SYMBOL_TYPE_LUA_LIGHTUSERDATA, SYMBOL_TYPE_LUA_NUMBER, SYMBOL_TYPE_LUA_STRING, SYMBOL_TYPE_LUA_TABLE, SYMBOL_TYPE_LUA_FUNCTION, SYMBOL_TYPE_LUA_USERDATA, SYMBOL_TYPE_LUA_THREAD
     }
 
-    public enum Type {
+    //https://github.com/antlr/grammars-v4/blob/master/csharp/CSharpParser.g4
+    public enum CSharpType {
         SYMBOL_TYPE_UNKNOWN,
     }
 }
