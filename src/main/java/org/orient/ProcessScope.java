@@ -5,10 +5,13 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
+import java.util.Stack;
 
 public class ProcessScope extends LuaParserBaseListener {
 
-    AnnotatedTree annotatedTree;
+    private AnnotatedTree annotatedTree;
+
+    private Stack<Scope> scopeStack = new Stack<Scope>();
 
     public ProcessScope(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
@@ -65,6 +68,7 @@ public class ProcessScope extends LuaParserBaseListener {
                 String name = names.get(0).getText();
                 Scope scope = new Scope(name, null);
                 annotatedTree.scopesOfNodes.put(funcnameContext, scope);
+                scopeStack.push(scope);
             } else {
                 //TODO: class:func
             }
