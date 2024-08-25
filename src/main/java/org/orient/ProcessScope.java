@@ -205,7 +205,14 @@ public class ProcessScope extends LuaParserBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterVar(LuaParser.VarContext ctx) { }
+    @Override public void enterVar(LuaParser.VarContext ctx) {
+        TerminalNode node = ctx.NAME();
+        Symbol symbol = new Symbol(node.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+        Scope curScope = this.scopeStack.peek();
+        if (curScope != null) {
+            curScope.add(symbol);
+        }
+    }
     /**
      * {@inheritDoc}
      *
