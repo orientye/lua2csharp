@@ -87,7 +87,8 @@ public class ProcessScope extends LuaParserBaseListener {
             int sz = names.size();
             if (1 == sz) {
                 String name = names.get(0).getText();
-                Scope scope = new Scope(name, null);
+                Scope curScope = this.scopeStack.peek();
+                Scope scope = new Scope(name, curScope);
                 annotatedTree.scopesOfNodes.put(funcnameContext, scope);
                 scopeStack.push(scope);
             } else {
