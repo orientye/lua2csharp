@@ -106,13 +106,18 @@ public class ProcessScope extends LuaParserBaseListener {
             if (explistContext != null) {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
+                assert(expContextList.size() == terminalNodeList.size());
                 LuaParser.ExpContext expContext = null;
+                TerminalNode terminalNode = null;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     expContext = expContextList.get(idx);
-                    //Basic Type
+                    terminalNode = terminalNodeList.get(idx);
                     LuaParser.NumberContext i = expContext.number();
                     if (i != null) {
-
+                        Symbol symbol = new Symbol(terminalNode.getText(), Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
+                        Scope curScope = this.scopeStack.peek();
+                        assert (curScope != null);
+                        curScope.add(symbol);
                     }
                     LuaParser.StringContext s = expContext.string();
                     if (s != null) {
@@ -161,15 +166,6 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void enterAttnamelist(LuaParser.AttnamelistContext ctx) {
-        List<TerminalNode> names = ctx.NAME();
-        for (int i = 0; i < names.size(); i++) {
-            TerminalNode name = names.get(i);
-            //TODO: symbol type
-            Symbol symbol = new Symbol(name.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN);
-            Scope curScope = this.scopeStack.peek();
-            assert (curScope != null);
-            curScope.add(symbol);
-        }
     }
 
     /**
