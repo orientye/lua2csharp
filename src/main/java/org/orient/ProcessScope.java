@@ -105,7 +105,7 @@ public class ProcessScope extends LuaParserBaseListener {
             if (explistContext != null) {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
-                assert(expContextList.size() == terminalNodeList.size());
+                assert (expContextList.size() == terminalNodeList.size());
                 LuaParser.ExpContext expContext = null;
                 TerminalNode terminalNode = null;
                 String terminalNodeText = null;
@@ -132,6 +132,7 @@ public class ProcessScope extends LuaParserBaseListener {
                         st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
                     }
 
+                    assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
                     Symbol symbol = new Symbol(terminalNodeText, st);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
