@@ -105,6 +105,28 @@ public class ProcessScope extends LuaParserBaseListener {
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
+                List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
+                LuaParser.ExpContext expContext = null;
+                for (int idx = 0; idx < expContextList.size(); idx++) {
+                    expContext = expContextList.get(idx);
+                    //Basic Type
+                    LuaParser.NumberContext i = expContext.number();
+                    if (i != null) {
+
+                    }
+                    LuaParser.StringContext s = expContext.string();
+                    if (s != null) {
+
+                    }
+                    TerminalNode bt = expContext.TRUE();
+                    if (bt != null) {
+
+                    }
+                    TerminalNode bf = expContext.FALSE();
+                    if (bf != null) {
+
+                    }
+                }
 
             } else {
 
