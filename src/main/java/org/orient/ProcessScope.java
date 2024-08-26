@@ -1,6 +1,7 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -93,6 +94,17 @@ public class ProcessScope extends LuaParserBaseListener {
                 scopeStack.push(scope);
             } else {
                 //TODO: class:func
+            }
+        }
+
+        // 'local' attnamelist ('=' explist)?
+        LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
+        if (attnamelistContext != null) {
+            LuaParser.ExplistContext explistContext = ctx.explist();
+            if (explistContext != null) {
+
+            } else {
+
             }
         }
     }
