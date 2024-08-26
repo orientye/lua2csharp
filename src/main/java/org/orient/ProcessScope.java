@@ -132,11 +132,15 @@ public class ProcessScope extends LuaParserBaseListener {
                         st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
                     }
 
-                    assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
-                    Symbol symbol = new Symbol(terminalNodeText, st);
-                    Scope curScope = this.scopeStack.peek();
-                    assert (curScope != null);
-                    curScope.add(symbol);
+                    // local b = m + a;
+                    List<LuaParser.ExpContext> ecList = expContext.exp();
+
+                    if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+                        Symbol symbol = new Symbol(terminalNodeText, st);
+                        Scope curScope = this.scopeStack.peek();
+                        assert (curScope != null);
+                        curScope.add(symbol);
+                    }
                 }
 
             } else {
