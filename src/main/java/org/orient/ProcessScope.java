@@ -1,7 +1,6 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -109,28 +108,34 @@ public class ProcessScope extends LuaParserBaseListener {
                 assert(expContextList.size() == terminalNodeList.size());
                 LuaParser.ExpContext expContext = null;
                 TerminalNode terminalNode = null;
+                String terminalNodeText = null;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     expContext = expContextList.get(idx);
                     terminalNode = terminalNodeList.get(idx);
+                    terminalNodeText = terminalNode.getSymbol().getText();
+
                     LuaParser.NumberContext i = expContext.number();
+                    Symbol.Type st = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
                     if (i != null) {
-                        Symbol symbol = new Symbol(terminalNode.getText(), Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
-                        Scope curScope = this.scopeStack.peek();
-                        assert (curScope != null);
-                        curScope.add(symbol);
+                        st = Symbol.Type.SYMBOL_TYPE_LUA_NUMBER;
                     }
                     LuaParser.StringContext s = expContext.string();
                     if (s != null) {
-
+                        st = Symbol.Type.SYMBOL_TYPE_LUA_STRING;
                     }
                     TerminalNode bt = expContext.TRUE();
                     if (bt != null) {
-
+                        st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
                     }
                     TerminalNode bf = expContext.FALSE();
                     if (bf != null) {
-
+                        st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
                     }
+
+                    Symbol symbol = new Symbol(terminalNodeText, st);
+                    Scope curScope = this.scopeStack.peek();
+                    assert (curScope != null);
+                    curScope.add(symbol);
                 }
 
             } else {
@@ -328,11 +333,6 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
-        TerminalNode node = ctx.NAME();
-        Symbol symbol = new Symbol(node.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN);
-        Scope curScope = this.scopeStack.peek();
-        assert (curScope != null);
-        curScope.add(symbol);
     }
 
     /**
