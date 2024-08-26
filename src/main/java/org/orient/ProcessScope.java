@@ -81,6 +81,8 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void enterStat(LuaParser.StatContext ctx) {
+        // varlist '=' explist
+
         //'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         if (funcnameContext != null) {
