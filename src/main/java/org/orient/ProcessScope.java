@@ -314,8 +314,6 @@ public class ProcessScope extends LuaParserBaseListener {
             String name = ctx.getText();
             Symbol symbol = new Symbol(name, st);
             this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
-        } else {
-
         }
     }
 
@@ -326,6 +324,19 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void exitExp(LuaParser.ExpContext ctx) {
+        List<LuaParser.ExpContext> expContextList = ctx.exp();
+        if (ctx.PLUS() != null) {
+            assert (expContextList.size() == 2);
+            LuaParser.ExpContext l = expContextList.get(0);
+            Symbol symbolL = this.annotatedTree.symbolsOfNodes.get(l);
+            LuaParser.ExpContext r = expContextList.get(1);
+            Symbol symbolR = this.annotatedTree.symbolsOfNodes.get(r);
+            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
+                String name = ctx.getText();
+                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
+                this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+            }
+        }
     }
 
     /**
