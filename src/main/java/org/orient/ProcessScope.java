@@ -115,13 +115,16 @@ public class ProcessScope extends LuaParserBaseListener {
                     terminalNode = terminalNodeList.get(idx);
                     terminalNodeText = terminalNode.getSymbol().getText();
 
+                    Symbol.Type symbolType = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
                     Symbol symbolExp = this.annotatedTree.symbolsOfNodes.get(expContext);
-                    Symbol.Type symbolType = symbolExp.getType();
+                    if (symbolExp != null) {
+                        symbolType = symbolExp.getType();
+                    }
 
-                    Symbol symbolTer = new Symbol(terminalNodeText, symbolType);
+                    Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
-                    curScope.add(symbolTer);
+                    curScope.add(symbolTerminal);
                 }
 
             } else {
@@ -323,6 +326,8 @@ public class ProcessScope extends LuaParserBaseListener {
             String name = ctx.getText();
             Symbol symbol = new Symbol(name, st);
             this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+        } else {
+            String name = ctx.getText();
         }
     }
 
