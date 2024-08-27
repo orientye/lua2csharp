@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("scope.lua");
+        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("exp.lua");
 
         ANTLRInputStream input = new ANTLRInputStream(inStream);
         LuaLexer lexer = new LuaLexer(input);

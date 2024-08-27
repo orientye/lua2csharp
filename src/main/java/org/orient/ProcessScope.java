@@ -2,6 +2,7 @@ package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -132,14 +133,18 @@ public class ProcessScope extends LuaParserBaseListener {
                         st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
                     }
 
-                    // local b = m + a;
-                    List<LuaParser.ExpContext> ecList = expContext.exp();
-
                     if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
                         Symbol symbol = new Symbol(terminalNodeText, st);
                         Scope curScope = this.scopeStack.peek();
                         assert (curScope != null);
                         curScope.add(symbol);
+                    } else {
+                        /**
+                         * local a = 2 + 3;
+                         * local b = a - 1;
+                         */
+                        List<ParseTree> ptList = expContext.children;
+                        List<LuaParser.ExpContext> ecList = expContext.exp();
                     }
                 }
 
