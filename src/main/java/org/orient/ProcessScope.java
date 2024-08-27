@@ -115,37 +115,13 @@ public class ProcessScope extends LuaParserBaseListener {
                     terminalNode = terminalNodeList.get(idx);
                     terminalNodeText = terminalNode.getSymbol().getText();
 
-                    LuaParser.NumberContext i = expContext.number();
-                    Symbol.Type st = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-                    if (i != null) {
-                        st = Symbol.Type.SYMBOL_TYPE_LUA_NUMBER;
-                    }
-                    LuaParser.StringContext s = expContext.string();
-                    if (s != null) {
-                        st = Symbol.Type.SYMBOL_TYPE_LUA_STRING;
-                    }
-                    TerminalNode bt = expContext.TRUE();
-                    if (bt != null) {
-                        st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-                    }
-                    TerminalNode bf = expContext.FALSE();
-                    if (bf != null) {
-                        st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-                    }
+                    Symbol symbolExp = this.annotatedTree.symbolsOfNodes.get(expContext);
+                    Symbol.Type symbolType = symbolExp.getType();
 
-                    if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
-                        Symbol symbol = new Symbol(terminalNodeText, st);
-                        Scope curScope = this.scopeStack.peek();
-                        assert (curScope != null);
-                        curScope.add(symbol);
-                    } else {
-                        /**
-                         * local a = 2 + 3;
-                         * local b = a - 1;
-                         */
-                        List<ParseTree> ptList = expContext.children;
-                        List<LuaParser.ExpContext> ecList = expContext.exp();
-                    }
+                    Symbol symbolTer = new Symbol(terminalNodeText, symbolType);
+                    Scope curScope = this.scopeStack.peek();
+                    assert (curScope != null);
+                    curScope.add(symbolTer);
                 }
 
             } else {
