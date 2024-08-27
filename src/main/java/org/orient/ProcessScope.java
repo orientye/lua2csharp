@@ -325,6 +325,29 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void enterExp(LuaParser.ExpContext ctx) {
+        LuaParser.NumberContext i = ctx.number();
+        Symbol.Type st = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
+        if (i != null) {
+            st = Symbol.Type.SYMBOL_TYPE_LUA_NUMBER;
+        }
+        LuaParser.StringContext s = ctx.string();
+        if (s != null) {
+            st = Symbol.Type.SYMBOL_TYPE_LUA_STRING;
+        }
+        TerminalNode bt = ctx.TRUE();
+        if (bt != null) {
+            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
+        }
+        TerminalNode bf = ctx.FALSE();
+        if (bf != null) {
+            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
+        }
+
+        if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+            String name = ctx.getText();
+            Symbol symbol = new Symbol(name, st);
+            this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+        }
     }
 
     /**
