@@ -12,7 +12,7 @@ public class AnnotatedTree {
 
     Map<ParserRuleContext, Scope> scopesOfNodes = new HashMap<ParserRuleContext, Scope>();
 
-    Map<ParserRuleContext, Symbol> symbolsOfNodes = new HashMap<ParserRuleContext, Symbol>();
+    Map<ParseTree, Symbol> symbolsOfNodes = new HashMap<ParseTree, Symbol>();
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;

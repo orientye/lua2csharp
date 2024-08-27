@@ -11,10 +11,13 @@ import java.util.List;
 
 public class ProcessTransformation extends LuaParserBaseListener {
 
+    private final AnnotatedTree annotatedTree;
+
     BufferedTokenStream tokens;
     TokenStreamRewriter rewriter;
 
-    public ProcessTransformation(BufferedTokenStream tokens) {
+    public ProcessTransformation(AnnotatedTree annotatedTree, BufferedTokenStream tokens) {
+        this.annotatedTree = annotatedTree;
         this.tokens = tokens;
         rewriter = new TokenStreamRewriter(tokens);
     }
@@ -104,28 +107,39 @@ public class ProcessTransformation extends LuaParserBaseListener {
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
-            LuaParser.ExplistContext explistContext = (LuaParser.ExplistContext) ctx.getChild(3);
-            LuaParser.ExpContext expContext = explistContext.exp(0);
+            LuaParser.ExplistContext explistContext = ctx.explist();
+            if (explistContext != null) {
+                List<LuaParser.ExpContext> expContextList = explistContext.exp();
+                List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
+                assert (expContextList.size() == terminalNodeList.size());
+                LuaParser.ExpContext expContext = null;
+                TerminalNode terminalNode = null;
+                String terminalNodeText = null;
+                for (int idx = 0; idx < expContextList.size(); idx++) {
+                    expContext = expContextList.get(idx);
+                    terminalNode = terminalNodeList.get(idx);
+                    terminalNodeText = terminalNode.getSymbol().getText();
 
-            LuaParser.NumberContext i = expContext.number();
-            if (i != null) {
-                Token t = ctx.start;
-                rewriter.replace(t, "int");
-            }
-            LuaParser.StringContext s = expContext.string();
-            if (s != null) {
-                Token t = ctx.start;
-                rewriter.replace(t, "string");
-            }
-            TerminalNode bt = expContext.TRUE();
-            if (bt != null) {
-                Token t = ctx.start;
-                rewriter.replace(t, "bool");
-            }
-            TerminalNode bf = expContext.FALSE();
-            if (bf != null) {
-                Token t = ctx.start;
-                rewriter.replace(t, "bool");
+                    Symbol symbol = this.annotatedTree.symbolsOfNodes.get(terminalNode);
+                    Token t = ctx.start;
+                    switch (symbol.getType()) {
+                        case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN ->  {
+                            rewriter.replace(t, "bool");
+                            break;
+                        }
+                        case Symbol.Type.SYMBOL_TYPE_LUA_NUMBER -> {
+                            rewriter.replace(t, "int");
+                            break;
+                        }
+                        case Symbol.Type.SYMBOL_TYPE_LUA_STRING -> {
+                            rewriter.replace(t, "string");
+                            break;
+                        }
+                    }
+                }
+
+            } else {
+
             }
         }
 

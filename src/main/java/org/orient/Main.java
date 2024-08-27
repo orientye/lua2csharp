@@ -28,7 +28,7 @@ public class Main {
         walker.walk(processScope, tree);
 
         //Pass
-        ProcessTransformation shifter = new ProcessTransformation(tokens);
+        ProcessTransformation shifter = new ProcessTransformation(annotatedTree, tokens);
         walker.walk(shifter, tree);
         System.out.print(shifter.rewriter.getText());
 

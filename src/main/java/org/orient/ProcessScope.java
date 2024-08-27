@@ -130,6 +130,7 @@ public class ProcessScope extends LuaParserBaseListener {
                     }
 
                     Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType);
+                    this.annotatedTree.symbolsOfNodes.put(terminalNode, symbolTerminal);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
                     curScope.add(symbolTerminal);
