@@ -2,7 +2,6 @@ package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -81,8 +80,6 @@ public class ProcessScope extends LuaParserBaseListener {
      */
     @Override
     public void enterStat(LuaParser.StatContext ctx) {
-        // varlist '=' explist
-
         //'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         if (funcnameContext != null) {
@@ -98,6 +95,17 @@ public class ProcessScope extends LuaParserBaseListener {
                 //TODO: class:func
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitStat(LuaParser.StatContext ctx) {
+        // varlist '=' explist
+        // TODO:
 
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
@@ -129,26 +137,6 @@ public class ProcessScope extends LuaParserBaseListener {
 
             } else {
 
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitStat(LuaParser.StatContext ctx) {
-        //'function' funcname funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-                scopeStack.pop();
-            } else {
-                //TODO: class:func
             }
         }
     }
@@ -327,7 +315,7 @@ public class ProcessScope extends LuaParserBaseListener {
             Symbol symbol = new Symbol(name, st);
             this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
         } else {
-            String name = ctx.getText();
+
         }
     }
 
