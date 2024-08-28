@@ -98,9 +98,8 @@ public class ProcessScope extends LuaParserBaseListener {
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
                 LuaParser.NamelistContext namelistContext = parlistContext.namelist();
                 List<TerminalNode> terminalNodeList = namelistContext.NAME();
-                for (int i = 0; i < terminalNodeList.size(); i++) {
-                    String paramName = terminalNodeList.get(i).getText();
-                    annotatedTree.scopesOfNodes.put(terminalNodeList.get(i), scope);
+                for (TerminalNode v : terminalNodeList) {
+                    annotatedTree.scopesOfNodes.put(v, scope);
                 }
             } else {
                 //TODO: class:func
