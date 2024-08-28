@@ -326,12 +326,22 @@ public class ProcessScope extends LuaParserBaseListener {
     @Override
     public void exitExp(LuaParser.ExpContext ctx) {
         List<LuaParser.ExpContext> expContextList = ctx.exp();
-        if (ctx.PLUS() != null) {
+        if (ctx.PLUS() != null || ctx.MINUS() != null) {
             assert (expContextList.size() == 2);
             LuaParser.ExpContext l = expContextList.get(0);
             Symbol symbolL = this.annotatedTree.symbolsOfNodes.get(l);
+            if (symbolL == null) {
+                String lText = l.getText();
+                Scope curScope = this.scopeStack.peek();
+                symbolL = curScope.resolve(lText);
+            }
             LuaParser.ExpContext r = expContextList.get(1);
             Symbol symbolR = this.annotatedTree.symbolsOfNodes.get(r);
+            if (symbolR == null) {
+                String rText = r.getText();
+                Scope curScope = this.scopeStack.peek();
+                symbolL = curScope.resolve(rText);
+            }
             if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
                 String name = ctx.getText();
                 Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
