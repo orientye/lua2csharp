@@ -116,7 +116,7 @@ public class ProcessTransformation extends LuaParserBaseListener {
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     terminalNode = terminalNodeList.get(idx);
 
-                    Symbol symbol = this.annotatedTree.symbolsOfNodes.get(terminalNode);
+                    Symbol symbol = this.annotatedTree.symbols.get(terminalNode);
                     Token t = ctx.start;
                     switch (symbol.getType()) {
                         case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN -> {

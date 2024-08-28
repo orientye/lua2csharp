@@ -92,14 +92,14 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
                 Scope curScope = this.scopeStack.peek();
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
-                annotatedTree.scopesOfNodes.put(funcnameContext, scope);
+                annotatedTree.scopes.put(funcnameContext, scope);
 
                 // params
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
                 LuaParser.NamelistContext namelistContext = parlistContext.namelist();
                 List<TerminalNode> terminalNodeList = namelistContext.NAME();
                 for (TerminalNode v : terminalNodeList) {
-                    annotatedTree.scopesOfNodes.put(v, scope);
+                    annotatedTree.scopes.put(v, scope);
                 }
             } else {
                 //TODO: class:func
@@ -146,13 +146,13 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
                     terminalNodeText = terminalNode.getSymbol().getText();
 
                     Symbol.Type symbolType = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-                    Symbol symbolExp = this.annotatedTree.symbolsOfNodes.get(expContext);
+                    Symbol symbolExp = this.annotatedTree.symbols.get(expContext);
                     if (symbolExp != null) {
                         symbolType = symbolExp.getType();
                     }
 
                     Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType);
-                    this.annotatedTree.symbolsOfNodes.put(terminalNode, symbolTerminal);
+                    this.annotatedTree.symbols.put(terminalNode, symbolTerminal);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
                     curScope.add(symbolTerminal);
@@ -336,7 +336,7 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             String name = ctx.getText();
             Symbol symbol = new Symbol(name, st);
-            this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+            this.annotatedTree.symbols.put(ctx, symbol);
         }
     }
 
@@ -351,14 +351,14 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
         if (ctx.PLUS() != null || ctx.MINUS() != null || ctx.STAR() != null || ctx.SLASH() != null) {
             assert (expContextList.size() == 2);
             LuaParser.ExpContext l = expContextList.get(0);
-            Symbol symbolL = this.annotatedTree.symbolsOfNodes.get(l);
+            Symbol symbolL = this.annotatedTree.symbols.get(l);
             if (symbolL == null) {
                 String lText = l.getText();
                 Scope curScope = this.scopeStack.peek();
                 symbolL = curScope.resolve(lText);
             }
             LuaParser.ExpContext r = expContextList.get(1);
-            Symbol symbolR = this.annotatedTree.symbolsOfNodes.get(r);
+            Symbol symbolR = this.annotatedTree.symbols.get(r);
             if (symbolR == null) {
                 String rText = r.getText();
                 Scope curScope = this.scopeStack.peek();
@@ -367,23 +367,23 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
             if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
                 String name = ctx.getText();
                 Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
-                this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+                this.annotatedTree.symbols.put(ctx, symbol);
             }
             if (ctx.PLUS() != null) {
                 if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
                     String name = ctx.getText();
                     Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING);
-                    this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+                    this.annotatedTree.symbols.put(ctx, symbol);
                 }
             }
         } else {
             //TODO: other case
-            if (this.annotatedTree.symbolsOfNodes.get(ctx) == null) {
+            if (this.annotatedTree.symbols.get(ctx) == null) {
                 String ctxText = ctx.getText();
                 Scope curScope = this.scopeStack.peek();
                 Symbol symbol = curScope.resolve(ctxText);
                 if (symbol != null) {
-                    this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+                    this.annotatedTree.symbols.put(ctx, symbol);
                 }
             }
         }
