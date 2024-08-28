@@ -24,8 +24,8 @@ public class Main {
         ParseTreeWalker walker = new ParseTreeWalker();
 
         //Pass
-        ProcessScope processScope = new ProcessScope(annotatedTree);
-        walker.walk(processScope, tree);
+        ProcessScopeAndType processScopeAndType = new ProcessScopeAndType(annotatedTree);
+        walker.walk(processScopeAndType, tree);
 
         //Pass
         ProcessTransformation shifter = new ProcessTransformation(annotatedTree, tokens);

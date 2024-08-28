@@ -7,13 +7,13 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.List;
 import java.util.Stack;
 
-public class ProcessScope extends LuaParserBaseListener {
+public class ProcessScopeAndType extends LuaParserBaseListener {
 
     private final AnnotatedTree annotatedTree;
 
     private final Stack<Scope> scopeStack = new Stack<Scope>();
 
-    public ProcessScope(AnnotatedTree annotatedTree) {
+    public ProcessScopeAndType(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
         Scope globalScope = new Scope("global", null);
         scopeStack.add(globalScope);
