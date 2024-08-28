@@ -107,6 +107,18 @@ public class ProcessScope extends LuaParserBaseListener {
         // varlist '=' explist
         // TODO:
 
+        //'function' funcname funcbody
+        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        if (funcnameContext != null) {
+            List<TerminalNode> names = funcnameContext.NAME();
+            int sz = names.size();
+            if (1 == sz) {
+                scopeStack.pop();
+            } else {
+                //TODO: class:func
+            }
+        }
+
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
@@ -346,6 +358,13 @@ public class ProcessScope extends LuaParserBaseListener {
                 String name = ctx.getText();
                 Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
                 this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+            }
+            if (ctx.PLUS() != null) {
+                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
+                    String name = ctx.getText();
+                    Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING);
+                    this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+                }
             }
         } else {
             //TODO: other case
