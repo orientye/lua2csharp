@@ -82,15 +82,26 @@ public class ProcessScope extends LuaParserBaseListener {
     public void enterStat(LuaParser.StatContext ctx) {
         //'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcnameContext != null) {
             List<TerminalNode> names = funcnameContext.NAME();
             int sz = names.size();
             if (1 == sz) {
+                // scope
                 String name = names.get(0).getText();
                 Scope curScope = this.scopeStack.peek();
                 Scope scope = new Scope(name, curScope);
-                annotatedTree.scopesOfNodes.put(funcnameContext, scope);
                 scopeStack.push(scope);
+                annotatedTree.scopesOfNodes.put(funcnameContext, scope);
+
+                // params
+                LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
+                LuaParser.NamelistContext namelistContext = parlistContext.namelist();
+                List<TerminalNode> terminalNodeList = namelistContext.NAME();
+                for (int i = 0; i < terminalNodeList.size(); i++) {
+                    String paramName = terminalNodeList.get(i).getText();
+                    annotatedTree.scopesOfNodes.put(terminalNodeList.get(i), scope);
+                }
             } else {
                 //TODO: class:func
             }

@@ -10,9 +10,9 @@ public class AnnotatedTree {
 
     private ParseTree ast = null;
 
-    Map<ParserRuleContext, Scope> scopesOfNodes = new HashMap<ParserRuleContext, Scope>();
+    Map<ParseTree, Scope> scopesOfNodes = new HashMap<>();
 
-    Map<ParseTree, Symbol> symbolsOfNodes = new HashMap<ParseTree, Symbol>();
+    Map<ParseTree, Symbol> symbolsOfNodes = new HashMap<>();
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;
