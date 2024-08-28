@@ -340,7 +340,7 @@ public class ProcessScope extends LuaParserBaseListener {
             if (symbolR == null) {
                 String rText = r.getText();
                 Scope curScope = this.scopeStack.peek();
-                symbolL = curScope.resolve(rText);
+                symbolR = curScope.resolve(rText);
             }
             if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
                 String name = ctx.getText();
