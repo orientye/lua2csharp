@@ -112,32 +112,24 @@ public class ProcessTransformation extends LuaParserBaseListener {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 assert (expContextList.size() == terminalNodeList.size());
-                LuaParser.ExpContext expContext = null;
                 TerminalNode terminalNode = null;
-                String terminalNodeText = null;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
-                    expContext = expContextList.get(idx);
                     terminalNode = terminalNodeList.get(idx);
-                    terminalNodeText = terminalNode.getSymbol().getText();
 
                     Symbol symbol = this.annotatedTree.symbolsOfNodes.get(terminalNode);
                     Token t = ctx.start;
                     switch (symbol.getType()) {
-                        case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN ->  {
+                        case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN -> {
                             rewriter.replace(t, "bool");
-                            break;
                         }
                         case Symbol.Type.SYMBOL_TYPE_LUA_NUMBER -> {
                             rewriter.replace(t, "int");
-                            break;
                         }
                         case Symbol.Type.SYMBOL_TYPE_LUA_STRING -> {
                             rewriter.replace(t, "string");
-                            break;
                         }
                     }
                 }
-
             } else {
 
             }
@@ -149,7 +141,7 @@ public class ProcessTransformation extends LuaParserBaseListener {
             List<TerminalNode> names = funcnameContext.NAME();
             int sz = names.size();
             if (1 == sz) {
-                
+
             } else {
                 //TODO: class:func
             }
@@ -372,6 +364,7 @@ public class ProcessTransformation extends LuaParserBaseListener {
     public void exitFunctioncall(LuaParser.FunctioncallContext ctx) {
         Token token = ctx.start;
         String funcName = token.getText();
+        //TODO: generalization
         if (funcName.equals("print")) {
             rewriter.replace(token, "Console.WriteLine");
         }
