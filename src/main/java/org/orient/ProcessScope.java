@@ -326,7 +326,7 @@ public class ProcessScope extends LuaParserBaseListener {
     @Override
     public void exitExp(LuaParser.ExpContext ctx) {
         List<LuaParser.ExpContext> expContextList = ctx.exp();
-        if (ctx.PLUS() != null || ctx.MINUS() != null) {
+        if (ctx.PLUS() != null || ctx.MINUS() != null || ctx.STAR() != null || ctx.SLASH() != null) {
             assert (expContextList.size() == 2);
             LuaParser.ExpContext l = expContextList.get(0);
             Symbol symbolL = this.annotatedTree.symbolsOfNodes.get(l);
