@@ -347,6 +347,16 @@ public class ProcessScope extends LuaParserBaseListener {
                 Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
                 this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
             }
+        } else {
+            //TODO: other case
+            if (this.annotatedTree.symbolsOfNodes.get(ctx) == null) {
+                String ctxText = ctx.getText();
+                Scope curScope = this.scopeStack.peek();
+                Symbol symbol = curScope.resolve(ctxText);
+                if (symbol != null) {
+                    this.annotatedTree.symbolsOfNodes.put(ctx, symbol);
+                }
+            }
         }
     }
 
