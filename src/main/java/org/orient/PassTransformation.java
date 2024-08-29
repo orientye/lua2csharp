@@ -1,22 +1,25 @@
 package org.orient;
 
+import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
-import java.util.Stack;
 
-public class ProcessScopeAndType extends LuaParserBaseListener {
+public class PassTransformation extends LuaParserBaseListener {
 
     private final AnnotatedTree annotatedTree;
 
-    private final Stack<Scope> scopeStack = new Stack<Scope>();
+    BufferedTokenStream tokens;
+    TokenStreamRewriter rewriter;
 
-    public ProcessScopeAndType(AnnotatedTree annotatedTree) {
+    public PassTransformation(AnnotatedTree annotatedTree, BufferedTokenStream tokens) {
         this.annotatedTree = annotatedTree;
-        Scope globalScope = new Scope("global", null);
-        scopeStack.add(globalScope);
+        this.tokens = tokens;
+        rewriter = new TokenStreamRewriter(tokens);
     }
 
     /**
@@ -80,29 +83,16 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterStat(LuaParser.StatContext ctx) {
-        //'function' funcname funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-        LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-                // scope
-                String name = names.get(0).getText();
-                Scope curScope = this.scopeStack.peek();
-                annotatedTree.scopes.put(funcnameContext, curScope);
-                Scope scope = new Scope(name, curScope);
-                scopeStack.push(scope);
-
-                // params
-                LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
-                LuaParser.NamelistContext namelistContext = parlistContext.namelist();
-                List<TerminalNode> terminalNodeList = namelistContext.NAME();
-                for (TerminalNode v : terminalNodeList) {
-                    annotatedTree.scopes.put(v, scope);
-                }
-            } else {
-                //TODO: class:func
+        Token semi = ctx.getStart();
+        int i = semi.getTokenIndex();
+        List<Token> cmtChannel = tokens.getHiddenTokensToLeft(i, LuaLexer.COMMENTS);
+        if (cmtChannel != null) {
+            Token cmt = cmtChannel.get(0);
+            if (cmt != null) {
+                String txt = cmt.getText().substring(2);
+                String newCmt = "/* " + txt.trim() + " */\n";
+                rewriter.insertBefore(ctx.start, newCmt);
+                rewriter.replace(cmt, "");
             }
         }
     }
@@ -114,21 +104,6 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
-        // varlist '=' explist
-        // TODO:
-
-        //'function' funcname funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-                scopeStack.pop();
-            } else {
-                //TODO: class:func
-            }
-        }
-
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
@@ -137,29 +112,38 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 assert (expContextList.size() == terminalNodeList.size());
-                LuaParser.ExpContext expContext = null;
                 TerminalNode terminalNode = null;
-                String terminalNodeText = null;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
-                    expContext = expContextList.get(idx);
                     terminalNode = terminalNodeList.get(idx);
-                    terminalNodeText = terminalNode.getSymbol().getText();
 
-                    Symbol.Type symbolType = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-                    Symbol symbolExp = this.annotatedTree.symbols.get(expContext);
-                    if (symbolExp != null) {
-                        symbolType = symbolExp.getType();
+                    Symbol symbol = this.annotatedTree.symbols.get(terminalNode);
+                    Token t = ctx.start;
+                    switch (symbol.getType()) {
+                        case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN -> {
+                            rewriter.replace(t, "bool");
+                        }
+                        case Symbol.Type.SYMBOL_TYPE_LUA_NUMBER -> {
+                            rewriter.replace(t, "int");
+                        }
+                        case Symbol.Type.SYMBOL_TYPE_LUA_STRING -> {
+                            rewriter.replace(t, "string");
+                        }
                     }
-
-                    Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType);
-                    this.annotatedTree.symbols.put(terminalNode, symbolTerminal);
-                    Scope curScope = this.scopeStack.peek();
-                    assert (curScope != null);
-                    curScope.add(symbolTerminal);
                 }
-
             } else {
 
+            }
+        }
+
+        //'function' funcname funcbody
+        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+        if (funcnameContext != null) {
+            List<TerminalNode> names = funcnameContext.NAME();
+            int sz = names.size();
+            if (1 == sz) {
+
+            } else {
+                //TODO: class:func
             }
         }
     }
@@ -315,29 +299,6 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterExp(LuaParser.ExpContext ctx) {
-        LuaParser.NumberContext i = ctx.number();
-        Symbol.Type st = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-        if (i != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_NUMBER;
-        }
-        LuaParser.StringContext s = ctx.string();
-        if (s != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_STRING;
-        }
-        TerminalNode bt = ctx.TRUE();
-        if (bt != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-        }
-        TerminalNode bf = ctx.FALSE();
-        if (bf != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-        }
-
-        if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
-            String name = ctx.getText();
-            Symbol symbol = new Symbol(name, st);
-            this.annotatedTree.symbols.put(ctx, symbol);
-        }
     }
 
     /**
@@ -347,46 +308,6 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitExp(LuaParser.ExpContext ctx) {
-        List<LuaParser.ExpContext> expContextList = ctx.exp();
-        if (ctx.PLUS() != null || ctx.MINUS() != null || ctx.STAR() != null || ctx.SLASH() != null) {
-            assert (expContextList.size() == 2);
-            LuaParser.ExpContext l = expContextList.get(0);
-            Symbol symbolL = this.annotatedTree.symbols.get(l);
-            if (symbolL == null) {
-                String lText = l.getText();
-                Scope curScope = this.scopeStack.peek();
-                symbolL = curScope.resolve(lText);
-            }
-            LuaParser.ExpContext r = expContextList.get(1);
-            Symbol symbolR = this.annotatedTree.symbols.get(r);
-            if (symbolR == null) {
-                String rText = r.getText();
-                Scope curScope = this.scopeStack.peek();
-                symbolR = curScope.resolve(rText);
-            }
-            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
-                String name = ctx.getText();
-                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
-                this.annotatedTree.symbols.put(ctx, symbol);
-            }
-            if (ctx.PLUS() != null) {
-                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
-                    String name = ctx.getText();
-                    Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING);
-                    this.annotatedTree.symbols.put(ctx, symbol);
-                }
-            }
-        } else {
-            //TODO: other case
-            if (this.annotatedTree.symbols.get(ctx) == null) {
-                String ctxText = ctx.getText();
-                Scope curScope = this.scopeStack.peek();
-                Symbol symbol = curScope.resolve(ctxText);
-                if (symbol != null) {
-                    this.annotatedTree.symbols.put(ctx, symbol);
-                }
-            }
-        }
     }
 
     /**
@@ -441,6 +362,12 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitFunctioncall(LuaParser.FunctioncallContext ctx) {
+        Token token = ctx.start;
+        String funcName = token.getText();
+        //TODO: generalization
+        if (funcName.equals("print")) {
+            rewriter.replace(token, "Console.WriteLine");
+        }
     }
 
     /**

@@ -28,11 +28,11 @@ public class Main {
         ParseTreeWalker walker = new ParseTreeWalker();
 
         //Pass
-        ProcessScopeAndType processScopeAndType = new ProcessScopeAndType(annotatedTree);
-        walker.walk(processScopeAndType, tree);
+        PassScopeAndType PassScopeAndType = new PassScopeAndType(annotatedTree);
+        walker.walk(PassScopeAndType, tree);
 
         //Pass
-        ProcessTransformation shifter = new ProcessTransformation(annotatedTree, tokens);
+        PassTransformation shifter = new PassTransformation(annotatedTree, tokens);
         walker.walk(shifter, tree);
         System.out.println(shifter.rewriter.getText());
 
