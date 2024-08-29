@@ -7,7 +7,7 @@ function func_scope(a, s)
     return b;
 end
 
-local mstr = m + "_str"
+local mm = m + "append_str"
 
 n = func_scope(100, "param_str");
 print(n);
