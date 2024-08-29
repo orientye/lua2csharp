@@ -94,6 +94,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
 
+                //symbol
+                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION);
+                annotatedTree.symbols.put(funcnameContext, symbol);
+                curScope.add(symbol);
+
                 // params
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
                 LuaParser.NamelistContext namelistContext = parlistContext.namelist();
@@ -432,6 +437,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterFunctioncall(LuaParser.FunctioncallContext ctx) {
+        List<TerminalNode> terminalNodeList = ctx.NAME();
+        LuaParser.ArgsContext argsContext = ctx.args();
     }
 
     /**
