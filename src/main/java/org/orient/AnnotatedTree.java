@@ -7,11 +7,9 @@ import java.util.Map;
 
 public class AnnotatedTree {
 
-    private ParseTree ast = null;
-
     Map<ParseTree, Scope> scopes = new HashMap<>();
-
     Map<ParseTree, Symbol> symbols = new HashMap<>();
+    private ParseTree ast = null;
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;

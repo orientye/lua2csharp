@@ -9,6 +9,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        System.out.println("\n===================================\n");
+
         InputStream inStream = Main.class.getClassLoader().getResourceAsStream("scope.lua");
 
         ANTLRInputStream input = new ANTLRInputStream(inStream);
@@ -20,6 +22,8 @@ public class Main {
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
 
         AnnotatedTree annotatedTree = new AnnotatedTree(tree);
+        annotatedTree.dump();
+        System.out.println("\n===================================");
 
         ParseTreeWalker walker = new ParseTreeWalker();
 
@@ -30,11 +34,8 @@ public class Main {
         //Pass
         ProcessTransformation shifter = new ProcessTransformation(annotatedTree, tokens);
         walker.walk(shifter, tree);
-        System.out.print(shifter.rewriter.getText());
+        System.out.println(shifter.rewriter.getText());
 
-        System.out.println("\n");
-
-        AnnotatedTree at = new AnnotatedTree(tree);
-        at.dump();
+        System.out.println("\n===================================\n");
     }
 }
