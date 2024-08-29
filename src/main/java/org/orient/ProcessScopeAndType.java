@@ -90,9 +90,9 @@ public class ProcessScopeAndType extends LuaParserBaseListener {
                 // scope
                 String name = names.get(0).getText();
                 Scope curScope = this.scopeStack.peek();
+                annotatedTree.scopes.put(funcnameContext, curScope);
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
-                annotatedTree.scopes.put(funcnameContext, scope);
 
                 // params
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
