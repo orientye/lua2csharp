@@ -437,6 +437,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterFunctioncall(LuaParser.FunctioncallContext ctx) {
+        //NAME ('[' exp ']' | '.' NAME)* args
         List<TerminalNode> terminalNodeList = ctx.NAME();
         LuaParser.ArgsContext argsContext = ctx.args();
     }
