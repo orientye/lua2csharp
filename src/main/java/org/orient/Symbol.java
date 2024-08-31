@@ -6,14 +6,14 @@ public class Symbol {
 
     private final String name;
     private final Type ty;
+    private final ParseTree parseTree;
 
-    private Scope scope;
-
-    private ParseTree parseTree;
-
-    public Symbol(String name, Type type) {
+    public Symbol(String name, Type type, ParseTree parseTree, AnnotatedTree annotatedTree) {
         this.name = name;
         this.ty = type;
+        this.parseTree = parseTree;
+
+        annotatedTree.symbols.put(parseTree, this);
     }
 
     public String getName() {
@@ -24,20 +24,8 @@ public class Symbol {
         return ty;
     }
 
-    public Scope getScope() {
-        return scope;
-    }
-
-    public void setScope(Scope scope) {
-        this.scope = scope;
-    }
-
     public ParseTree getParseTree() {
         return parseTree;
-    }
-
-    public void setParseTree(ParseTree parseTree) {
-        this.parseTree = parseTree;
     }
 
     public String toString() {

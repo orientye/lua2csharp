@@ -15,7 +15,6 @@ public class Scope {
 
     public void add(Symbol sym) {
         symbols.put(sym.getName(), sym);
-        sym.setScope(this);
     }
 
     public Symbol resolve(String name) {
@@ -23,10 +22,6 @@ public class Scope {
         if (s != null) return s;
         if (enclosingScope != null) return enclosingScope.resolve(name);
         return null;
-    }
-
-    public Scope getEnclosingScope() {
-        return enclosingScope;
     }
 
     public String toString() {

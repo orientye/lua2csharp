@@ -96,8 +96,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 scopeStack.push(scope);
 
                 //symbol
-                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION);
-                annotatedTree.symbols.put(funcnameContext, symbol);
+                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION, funcbodyContext, annotatedTree);
                 curScope.add(symbol);
 
                 // params
@@ -157,8 +156,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         symbolType = symbolExp.getType();
                     }
 
-                    Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType);
-                    this.annotatedTree.symbols.put(terminalNode, symbolTerminal);
+                    Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType, terminalNode, annotatedTree);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
                     curScope.add(symbolTerminal);
@@ -341,8 +339,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             String name = ctx.getText();
-            Symbol symbol = new Symbol(name, st);
-            this.annotatedTree.symbols.put(ctx, symbol);
+            Symbol symbol = new Symbol(name, st, ctx, annotatedTree);
         }
     }
 
@@ -372,14 +369,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
             }
             if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
                 String name = ctx.getText();
-                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER);
-                this.annotatedTree.symbols.put(ctx, symbol);
+                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER, ctx, annotatedTree);
             }
             if (ctx.PLUS() != null) {
                 if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
                     String name = ctx.getText();
-                    Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING);
-                    this.annotatedTree.symbols.put(ctx, symbol);
+                    Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING, ctx, annotatedTree);
                 }
             }
         } else {
