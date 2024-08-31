@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("\n===================================\n");
 
-        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("exp.lua");
+        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("scope.lua");
 
         ANTLRInputStream input = new ANTLRInputStream(inStream);
         LuaLexer lexer = new LuaLexer(input);
