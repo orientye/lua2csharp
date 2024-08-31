@@ -32,6 +32,10 @@ public class Symbol {
         this.scope = scope;
     }
 
+    public ParseTree getParseTree() {
+        return parseTree;
+    }
+
     public void setParseTree(ParseTree parseTree) {
         this.parseTree = parseTree;
     }
