@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Scope {
-    String name;
-    Scope enclosingScope; // null if global (outermost) scope
-    Map<String, Symbol> symbols = new LinkedHashMap<String, Symbol>();
+    private String name;
+    private Scope enclosingScope; // null if global (outermost) scope
+    private Map<String, Symbol> symbols = new LinkedHashMap<String, Symbol>();
 
     public Scope(String name, Scope enclosingScope) {
         this.name = name;
