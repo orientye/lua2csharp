@@ -2,6 +2,7 @@ package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -445,6 +446,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         if (2 == childrenCount) {  //func(a,b)
             Scope curScope = this.scopeStack.peek();
             Symbol symbol = curScope.resolve(terminalNodeList.get(0).getText());
+            ParseTree parseTree = symbol.getParseTree();
             System.out.println(symbol.toString());
         }
     }
