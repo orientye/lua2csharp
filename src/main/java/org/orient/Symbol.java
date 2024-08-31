@@ -1,11 +1,15 @@
 package org.orient;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 public class Symbol {
 
     private final String name;
     private final Type ty;
 
     private Scope scope;
+
+    private ParseTree parseTree;
 
     public Symbol(String name, Type type) {
         this.name = name;
@@ -26,6 +30,10 @@ public class Symbol {
 
     public void setScope(Scope scope) {
         this.scope = scope;
+    }
+
+    public void setParseTree(ParseTree parseTree) {
+        this.parseTree = parseTree;
     }
 
     public String toString() {

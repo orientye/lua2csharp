@@ -443,7 +443,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
         List<TerminalNode> terminalNodeList = ctx.NAME();
         LuaParser.ArgsContext argsContext = ctx.args();
         if (2 == childrenCount) {  //func(a,b)
-
+            Scope curScope = this.scopeStack.peek();
+            Symbol symbol = curScope.resolve(terminalNodeList.get(0).getText());
+            System.out.println(symbol.toString());
         }
     }
 
