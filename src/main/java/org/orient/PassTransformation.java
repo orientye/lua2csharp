@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -74,6 +75,36 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void exitBlock(LuaParser.BlockContext ctx) {
+        LuaParser.RetstatContext retstatContext = ctx.retstat();
+        if (retstatContext != null) {
+            LuaParser.ExplistContext explistContext = retstatContext.explist();
+            if (explistContext != null) { // return a, b, c;
+                List<LuaParser.ExpContext> expContextList = explistContext.exp();
+                ParseTree parentTree = ctx.getParent();
+                assert (parentTree instanceof LuaParser.FuncbodyContext);
+                LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                ParseTree parentParentTree = parentTree.getParent();
+                if (parentParentTree instanceof LuaParser.StatContext) {
+                    LuaParser.StatContext statContext = (LuaParser.StatContext) parentParentTree;
+                    assert(statContext.FUNCTION() != null);
+                    if (statContext.LOCAL() != null) {
+                        rewriter.replace(statContext.LOCAL().getSymbol(), "");
+                    }
+                    //TODO: multi return value
+                    for (int i = 0; i < expContextList.size(); i++) {
+                        LuaParser.ExpContext expContext = expContextList.get(i);
+                        Symbol symbol = this.annotatedTree.symbols.get(expContext);
+                        rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(symbol.getType()));
+                    }
+                } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
+
+                } else {
+                    assert(false);
+                }
+            } else { //void
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     /**
@@ -115,7 +146,6 @@ public class PassTransformation extends LuaParserBaseListener {
                 TerminalNode terminalNode;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     terminalNode = terminalNodeList.get(idx);
-
                     Symbol symbol = this.annotatedTree.symbols.get(terminalNode);
                     Token t = ctx.start;
                     rewriter.replace(t, Util.SymbolType2Str(symbol.getType()));
