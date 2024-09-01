@@ -5,8 +5,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class PassScopeAndType extends LuaParserBaseListener {
 
@@ -439,10 +438,26 @@ public class PassScopeAndType extends LuaParserBaseListener {
         List<TerminalNode> terminalNodeList = ctx.NAME();
         LuaParser.ArgsContext argsContext = ctx.args();
         if (2 == childrenCount) {  //func(a,b)
+            LuaParser.ExplistContext explistContext = argsContext.explist();
+            List<LuaParser.ExpContext> expContextList = explistContext.exp();
+            List<Symbol.Type> stList = new ArrayList<>();
+            for (LuaParser.ExpContext expContext : expContextList) {
+                Symbol symbol = annotatedTree.symbols.get(expContext);
+                if (symbol != null) {
+                    Symbol.Type st = symbol.getType();
+                    stList.add(st);
+                } else {
+                    Symbol.Type st = Util.GetExpContextType(expContext);
+                    stList.add(st);
+                }
+            }
             Scope curScope = this.scopeStack.peek();
             Symbol symbol = curScope.resolve(terminalNodeList.getFirst().getText());
             if (symbol != null) {
                 ParseTree parseTree = symbol.getParseTree();
+                assert (parseTree instanceof LuaParser.FuncbodyContext);
+                LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parseTree;
+                LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
                 System.out.println(parseTree.toString());
             }
         }
