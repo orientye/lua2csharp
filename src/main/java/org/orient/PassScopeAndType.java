@@ -458,7 +458,17 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 assert (parseTree instanceof LuaParser.FuncbodyContext);
                 LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parseTree;
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
-                System.out.println(parseTree.toString());
+                LuaParser.NamelistContext namelistContext = parlistContext.namelist();// TODO: ... Varargs
+                List<TerminalNode> terminalNodes = namelistContext.NAME();
+                for (int i = 0; i < terminalNodes.size(); i++) {
+                    TerminalNode terminalNode = terminalNodes.get(i);
+                    Symbol terminalNodeSymbol = annotatedTree.symbols.get(terminalNode);
+                    if (terminalNodeSymbol == null) {
+                        Symbol.Type st = stList.get(i);
+                        assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+                        Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
+                    }
+                }
             }
         }
     }
