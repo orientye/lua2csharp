@@ -30,6 +30,6 @@ public class Util {
                 return "string";
             }
         }
-        return "unknown-SymbolType2Str";
+        return "unknown";
     }
 }

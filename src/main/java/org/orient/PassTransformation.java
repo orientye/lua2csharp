@@ -118,17 +118,7 @@ public class PassTransformation extends LuaParserBaseListener {
 
                     Symbol symbol = this.annotatedTree.symbols.get(terminalNode);
                     Token t = ctx.start;
-                    switch (symbol.getType()) {
-                        case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN -> {
-                            rewriter.replace(t, "bool");
-                        }
-                        case Symbol.Type.SYMBOL_TYPE_LUA_NUMBER -> {
-                            rewriter.replace(t, "int");
-                        }
-                        case Symbol.Type.SYMBOL_TYPE_LUA_STRING -> {
-                            rewriter.replace(t, "string");
-                        }
-                    }
+                    rewriter.replace(t, Util.SymbolType2Str(symbol.getType()));
                 }
             } else {
 
