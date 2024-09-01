@@ -87,7 +87,7 @@ public class PassTransformation extends LuaParserBaseListener {
         int i = semi.getTokenIndex();
         List<Token> cmtChannel = tokens.getHiddenTokensToLeft(i, LuaLexer.COMMENTS);
         if (cmtChannel != null) {
-            Token cmt = cmtChannel.get(0);
+            Token cmt = cmtChannel.getFirst();
             if (cmt != null) {
                 String txt = cmt.getText().substring(2);
                 String newCmt = "/* " + txt.trim() + " */\n";
@@ -112,7 +112,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 assert (expContextList.size() == terminalNodeList.size());
-                TerminalNode terminalNode = null;
+                TerminalNode terminalNode;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     terminalNode = terminalNodeList.get(idx);
 
