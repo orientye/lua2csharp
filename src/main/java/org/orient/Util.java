@@ -17,4 +17,19 @@ public class Util {
         }
         return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
     }
+
+    public static String SymbolType2Str(Symbol.Type st) {
+        switch (st) {
+            case Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN -> {
+                return "bool";
+            }
+            case Symbol.Type.SYMBOL_TYPE_LUA_NUMBER -> {
+                return "int";
+            }
+            case Symbol.Type.SYMBOL_TYPE_LUA_STRING -> {
+                return "string";
+            }
+        }
+        return "unknown-SymbolType2Str";
+    }
 }

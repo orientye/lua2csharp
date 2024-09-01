@@ -136,14 +136,17 @@ public class PassTransformation extends LuaParserBaseListener {
         }
 
         //'function' funcname funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-
-            } else {
-                //TODO: class:func
+        //local' 'function' NAME funcbody
+        LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
+        if (funcbodyContext != null) {
+            LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
+            LuaParser.NamelistContext namelistContext = parlistContext.namelist();// TODO: ... Varargs
+            List<TerminalNode> terminalNodes = namelistContext.NAME();
+            for (TerminalNode terminalNode : terminalNodes) {
+                Symbol terminalNodeSymbol = annotatedTree.symbols.get(terminalNode);
+                Symbol.Type st = terminalNodeSymbol.getType();
+                System.out.println(st);
+                rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
             }
         }
     }
