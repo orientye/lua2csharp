@@ -95,7 +95,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 scopeStack.push(scope);
 
                 //symbol
-                Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION, funcbodyContext, annotatedTree);
+                Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FUNCTION, funcbodyContext, annotatedTree);
                 curScope.add(symbol);
 
                 // params
@@ -318,24 +318,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterExp(LuaParser.ExpContext ctx) {
-        LuaParser.NumberContext i = ctx.number();
-        Symbol.Type st = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-        if (i != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_NUMBER;
-        }
-        LuaParser.StringContext s = ctx.string();
-        if (s != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_STRING;
-        }
-        TerminalNode bt = ctx.TRUE();
-        if (bt != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-        }
-        TerminalNode bf = ctx.FALSE();
-        if (bf != null) {
-            st = Symbol.Type.SYMBOL_TYPE_LUA_BOOLEAN;
-        }
-
+        Symbol.Type st = Util.GetExpContextType(ctx);
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             String name = ctx.getText();
             Symbol.create(name, st, ctx, annotatedTree);
@@ -366,14 +349,18 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 Scope curScope = this.scopeStack.peek();
                 symbolR = curScope.resolve(rText);
             }
-            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
+            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_INT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_INT) {
                 String name = ctx.getText();
-                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER, ctx, annotatedTree);
+                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_INT, ctx, annotatedTree);
+            }
+            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT) {
+                String name = ctx.getText();
+                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FLOAT, ctx, annotatedTree);
             }
             if (ctx.PLUS() != null) {
-                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
+                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_STRING) {
                     String name = ctx.getText();
-                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING, ctx, annotatedTree);
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_STRING, ctx, annotatedTree);
                 }
             }
         } else {
