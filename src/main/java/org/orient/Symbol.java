@@ -4,16 +4,20 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Symbol {
 
-    private final String name;
-    private final Type ty;
-    private final ParseTree parseTree;
+    private String name;
+    private Type ty;
+    private ParseTree parseTree;
 
-    public Symbol(String name, Type type, ParseTree parseTree, AnnotatedTree annotatedTree) {
-        this.name = name;
-        this.ty = type;
-        this.parseTree = parseTree;
+    private Symbol() {
+    }
 
-        annotatedTree.symbols.put(parseTree, this);
+    public static Symbol create(String name, Type type, ParseTree parseTree, AnnotatedTree annotatedTree) {
+        Symbol symbol = new Symbol();
+        symbol.name = name;
+        symbol.ty = type;
+        symbol.parseTree = parseTree;
+        annotatedTree.symbols.put(parseTree, symbol);
+        return symbol;
     }
 
     public String getName() {

@@ -2,6 +2,7 @@ package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
     private final AnnotatedTree annotatedTree;
 
-    private final Stack<Scope> scopeStack = new Stack<Scope>();
+    private final Stack<Scope> scopeStack = new Stack<>();
 
     public PassScopeAndType(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
@@ -88,14 +89,14 @@ public class PassScopeAndType extends LuaParserBaseListener {
             int sz = names.size();
             if (1 == sz) {
                 // scope
-                String name = names.get(0).getText();
+                String name = names.getFirst().getText();
                 Scope curScope = this.scopeStack.peek();
                 annotatedTree.scopes.put(funcnameContext, curScope);
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
 
                 //symbol
-                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION, funcbodyContext, annotatedTree);
+                Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_FUNCTION, funcbodyContext, annotatedTree);
                 curScope.add(symbol);
 
                 // params
@@ -141,9 +142,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 assert (expContextList.size() == terminalNodeList.size());
-                LuaParser.ExpContext expContext = null;
-                TerminalNode terminalNode = null;
-                String terminalNodeText = null;
+                LuaParser.ExpContext expContext;
+                TerminalNode terminalNode;
+                String terminalNodeText;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     expContext = expContextList.get(idx);
                     terminalNode = terminalNodeList.get(idx);
@@ -155,7 +156,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         symbolType = symbolExp.getType();
                     }
 
-                    Symbol symbolTerminal = new Symbol(terminalNodeText, symbolType, terminalNode, annotatedTree);
+                    Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, annotatedTree);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
                     curScope.add(symbolTerminal);
@@ -338,7 +339,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             String name = ctx.getText();
-            Symbol symbol = new Symbol(name, st, ctx, annotatedTree);
+            Symbol.create(name, st, ctx, annotatedTree);
         }
     }
 
@@ -352,7 +353,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         List<LuaParser.ExpContext> expContextList = ctx.exp();
         if (ctx.PLUS() != null || ctx.MINUS() != null || ctx.STAR() != null || ctx.SLASH() != null) {
             assert (expContextList.size() == 2);
-            LuaParser.ExpContext l = expContextList.get(0);
+            LuaParser.ExpContext l = expContextList.getFirst();
             Symbol symbolL = this.annotatedTree.symbols.get(l);
             if (symbolL == null) {
                 String lText = l.getText();
@@ -368,12 +369,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
             }
             if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_NUMBER) {
                 String name = ctx.getText();
-                Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER, ctx, annotatedTree);
+                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_NUMBER, ctx, annotatedTree);
             }
             if (ctx.PLUS() != null) {
                 if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_LUA_STRING) {
                     String name = ctx.getText();
-                    Symbol symbol = new Symbol(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING, ctx, annotatedTree);
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_LUA_STRING, ctx, annotatedTree);
                 }
             }
         } else {
@@ -439,9 +440,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
         LuaParser.ArgsContext argsContext = ctx.args();
         if (2 == childrenCount) {  //func(a,b)
             Scope curScope = this.scopeStack.peek();
-            Symbol symbol = curScope.resolve(terminalNodeList.get(0).getText());
-            //ParseTree parseTree = symbol.getParseTree();
-            //System.out.println(symbol.toString());
+            Symbol symbol = curScope.resolve(terminalNodeList.getFirst().getText());
+            if (symbol != null) {
+                ParseTree parseTree = symbol.getParseTree();
+                System.out.println(parseTree.toString());
+            }
         }
     }
 
