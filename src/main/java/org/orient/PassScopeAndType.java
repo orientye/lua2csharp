@@ -119,7 +119,10 @@ public class PassScopeAndType extends LuaParserBaseListener {
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
         // varlist '=' explist
-        // TODO:
+        LuaParser.VarlistContext varlistContext = ctx.varlist();
+        if (varlistContext != null) {
+            System.out.println(varlistContext.getText());
+        }
 
         //'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
