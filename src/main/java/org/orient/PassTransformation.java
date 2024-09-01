@@ -145,7 +145,6 @@ public class PassTransformation extends LuaParserBaseListener {
             for (TerminalNode terminalNode : terminalNodes) {
                 Symbol terminalNodeSymbol = annotatedTree.symbols.get(terminalNode);
                 Symbol.Type st = terminalNodeSymbol.getType();
-                System.out.println(st);
                 rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
             }
         }
