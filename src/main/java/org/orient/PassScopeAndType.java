@@ -471,8 +471,20 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
                     }
                 }
-                //ctx.parent.parent FunctioncallContext->PrefixexpContex->ExpContext
-                //TODO:
+            }
+
+            //TODO:
+            //ctx.parent.parent FunctioncallContext->PrefixexpContex->ExpContext
+            ParseTree parent = ctx.getParent();
+            assert(parent != null);
+            ParseTree parentParent = ctx.getParent();
+            assert(parentParent != null);
+            if (parentParent instanceof LuaParser.ExpContext) {
+                Symbol sym = annotatedTree.symbols.get(parentParent);
+                if (sym == null) {
+                    //TODO:
+                    Symbol.create(parentParent.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN, parentParent, annotatedTree);
+                }
             }
         }
     }
