@@ -97,7 +97,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(symbol.getType()));
                     }
                 } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
-
+                    throw new UnsupportedOperationException();
                 } else {
                     assert(false);
                 }
