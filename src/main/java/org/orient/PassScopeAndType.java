@@ -477,7 +477,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             //ctx.parent.parent FunctioncallContext->PrefixexpContex->ExpContext
             ParseTree parent = ctx.getParent();
             assert(parent != null);
-            ParseTree parentParent = ctx.getParent();
+            ParseTree parentParent = parent.getParent();
             assert(parentParent != null);
             if (parentParent instanceof LuaParser.ExpContext) {
                 Symbol sym = annotatedTree.symbols.get(parentParent);
