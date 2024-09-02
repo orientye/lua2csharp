@@ -121,8 +121,19 @@ public class PassScopeAndType extends LuaParserBaseListener {
         // varlist '=' explist
         LuaParser.VarlistContext varlistContext = ctx.varlist();
         if (varlistContext != null) {
+            List<LuaParser.VarContext> varContextList = varlistContext.var();
             LuaParser.ExplistContext explistContext = ctx.explist();
-            System.out.println(varlistContext.getText());
+            List<LuaParser.ExpContext> expContextList = explistContext.exp();
+            for (int i = 0 ; i < varContextList.size(); i++) {
+                LuaParser.VarContext varContext = varContextList.get(i);
+                TerminalNode terminalNode = varContext.NAME();
+                if (terminalNode != null) {
+                    LuaParser.ExpContext expContext = expContextList.get(i);
+                    System.out.println(expContext.getText());
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
         }
 
         //'function' funcname funcbody
