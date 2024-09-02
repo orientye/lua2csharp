@@ -121,6 +121,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         // varlist '=' explist
         LuaParser.VarlistContext varlistContext = ctx.varlist();
         if (varlistContext != null) {
+            LuaParser.ExplistContext explistContext = ctx.explist();
             System.out.println(varlistContext.getText());
         }
 
