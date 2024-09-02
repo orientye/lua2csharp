@@ -439,7 +439,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         //NAME ('[' exp ']' | '.' NAME)* args
         List<TerminalNode> terminalNodeList = ctx.NAME();
         LuaParser.ArgsContext argsContext = ctx.args();
-        if (2 == childrenCount) {  //func(a,b)
+        if (2 == childrenCount) {  //func(a,b,c)
             LuaParser.ExplistContext explistContext = argsContext.explist();
             List<LuaParser.ExpContext> expContextList = explistContext.exp();
             List<Symbol.Type> stList = new ArrayList<>();
@@ -471,6 +471,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
                     }
                 }
+                //ctx.parent.parent FunctioncallContext->PrefixexpContex->ExpContext
+                //TODO:
             }
         }
     }
