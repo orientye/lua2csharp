@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public class AnnotatedTree {
-
-    Map<ParseTree, Scope> scopes = new HashMap<>();
-    Map<ParseTree, Symbol> symbols = new HashMap<>();
-
-    Map<ParseTree, List<Symbol.Type>> funcReturns = new HashMap<>();
-
-    private ParseTree ast = null;
+    final Map<ParseTree, Scope> scopes = new HashMap<>();
+    final Map<ParseTree, Symbol> symbols = new HashMap<>();
+    final Map<ParseTree, List<Symbol.Type>> funcReturns = new HashMap<>();
+    private final ParseTree ast;
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;
