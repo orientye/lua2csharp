@@ -10,7 +10,9 @@ public class AnnotatedTree {
 
     Map<ParseTree, Scope> scopes = new HashMap<>();
     Map<ParseTree, Symbol> symbols = new HashMap<>();
+
     Map<ParseTree, List<Symbol.Type>> funcReturns = new HashMap<>();
+
     private ParseTree ast = null;
 
     public AnnotatedTree(ParseTree parseTree) {
