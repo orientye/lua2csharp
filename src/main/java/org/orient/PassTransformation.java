@@ -155,8 +155,8 @@ public class PassTransformation extends LuaParserBaseListener {
             }
         }
 
-        //'function' funcname funcbody
-        //local' 'function' NAME funcbody
+        // 'function' funcname funcbody
+        // local' 'function' NAME funcbody
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcbodyContext != null) {
             LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();

@@ -5,7 +5,9 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class PassScopeAndType extends LuaParserBaseListener {
 
@@ -80,7 +82,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterStat(LuaParser.StatContext ctx) {
-        //'function' funcname funcbody
+        // 'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcnameContext != null) {
@@ -94,7 +96,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
 
-                //symbol
+                // symbol
                 Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FUNCTION, funcbodyContext, annotatedTree);
                 curScope.add(symbol);
 
@@ -124,7 +126,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
             LuaParser.ExplistContext explistContext = ctx.explist();
             List<LuaParser.ExpContext> expContextList = explistContext.exp();
-            for (int i = 0 ; i < varContextList.size(); i++) {
+            for (int i = 0; i < varContextList.size(); i++) {
                 LuaParser.VarContext varContext = varContextList.get(i);
                 TerminalNode terminalNode = varContext.NAME();
                 if (terminalNode != null) {
@@ -136,7 +138,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             }
         }
 
-        //'function' funcname funcbody
+        // 'function' funcname funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         if (funcnameContext != null) {
             List<TerminalNode> names = funcnameContext.NAME();
@@ -379,7 +381,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 }
             }
         } else {
-            //TODO: other case
+            // TODO: other case
             if (this.annotatedTree.symbols.get(ctx) == null) {
                 String ctxText = ctx.getText();
                 Scope curScope = this.scopeStack.peek();
@@ -436,7 +438,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void enterFunctioncall(LuaParser.FunctioncallContext ctx) {
         int childrenCount = ctx.children.size();
 
-        //NAME ('[' exp ']' | '.' NAME)* args
+        // NAME ('[' exp ']' | '.' NAME)* args
         List<TerminalNode> terminalNodeList = ctx.NAME();
         LuaParser.ArgsContext argsContext = ctx.args();
         if (2 == childrenCount) {  //func(a,b,c)
@@ -459,6 +461,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 ParseTree parseTree = symbol.getParseTree();
                 assert (parseTree instanceof LuaParser.FuncbodyContext);
                 LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parseTree;
+
+                // params
                 LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
                 LuaParser.NamelistContext namelistContext = parlistContext.namelist();// TODO: ... Varargs
                 List<TerminalNode> terminalNodes = namelistContext.NAME();
@@ -471,20 +475,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
                     }
                 }
-            }
 
-            //TODO:
-            //ctx.parent.parent FunctioncallContext->PrefixexpContex->ExpContext
-            ParseTree parent = ctx.getParent();
-            assert(parent != null);
-            ParseTree parentParent = parent.getParent();
-            assert(parentParent != null);
-            if (parentParent instanceof LuaParser.ExpContext) {
-                Symbol sym = annotatedTree.symbols.get(parentParent);
-                if (sym == null) {
-                    //TODO:
-                    Symbol.create(parentParent.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN, parentParent, annotatedTree);
-                }
+                // returns
+                annotatedTree.funcReturns.put(funcbodyContext, stList);
             }
         }
     }
