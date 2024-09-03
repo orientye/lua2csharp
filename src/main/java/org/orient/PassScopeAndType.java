@@ -157,7 +157,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 TerminalNode terminalNode = varContext.NAME();
                 if (terminalNode != null) {
                     LuaParser.ExpContext expContext = expContextList.get(i);
-                    System.out.println(expContext.getText());
+                    Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                    System.out.println(st);
                 } else {
                     throw new UnsupportedOperationException();
                 }
