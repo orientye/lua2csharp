@@ -136,6 +136,25 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
+        // varlist '=' explist
+        LuaParser.VarlistContext varlistContext = ctx.varlist();
+        if (varlistContext != null) {
+            List<LuaParser.VarContext> varContextList = varlistContext.var();
+            LuaParser.ExplistContext explistContext = ctx.explist();
+            List<LuaParser.ExpContext> expContextList = explistContext.exp();
+            for (int i = 0; i < varContextList.size(); i++) {
+                LuaParser.VarContext varContext = varContextList.get(i);
+                TerminalNode terminalNode = varContext.NAME();
+                if (terminalNode != null) {
+                    LuaParser.ExpContext expContext = expContextList.get(i);
+                    Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                    System.out.println(st);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
