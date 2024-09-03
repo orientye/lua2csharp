@@ -23,6 +23,19 @@ public class Util {
         return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
     }
 
+    public static Symbol.Type GetExpContextTypeInTree(LuaParser.ExpContext ctx, AnnotatedTree annotatedTree) {
+        assert(annotatedTree  != null);
+        Symbol.Type st = GetExpContextType(ctx);
+        if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+            Symbol symbol = annotatedTree.symbols.get(ctx);
+            if (symbol != null)
+            {
+                st = symbol.getType();
+            }
+        }
+        return st;
+    }
+
     public static String SymbolType2Str(Symbol.Type st) {
         switch (st) {
             case Symbol.Type.SYMBOL_TYPE_BOOLEAN -> {

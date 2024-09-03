@@ -73,6 +73,32 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitBlock(LuaParser.BlockContext ctx) {
+        LuaParser.RetstatContext retstatContext = ctx.retstat();
+        if (retstatContext != null) {
+            LuaParser.ExplistContext explistContext = retstatContext.explist();
+            if (explistContext != null) { // return a, b, c;
+                List<LuaParser.ExpContext> expContextList = explistContext.exp();
+                ParseTree parentTree = ctx.getParent();
+                assert (parentTree instanceof LuaParser.FuncbodyContext);
+                LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                ParseTree parentParentTree = parentTree.getParent();
+                if (parentParentTree instanceof LuaParser.StatContext) {
+                    List<Symbol.Type> stList = new ArrayList<>();
+                    for (int i = 0; i < expContextList.size(); i++) {
+                        LuaParser.ExpContext expContext = expContextList.get(i);
+                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);;
+                        stList.add(st);
+                    }
+                    annotatedTree.funcReturns.put(funcbodyContext, stList);
+                } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    assert(false);
+                }
+            } else { //void
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     /**
@@ -475,9 +501,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
                     }
                 }
-
-                // returns
-                annotatedTree.funcReturns.put(funcbodyContext, stList);
             }
         }
     }

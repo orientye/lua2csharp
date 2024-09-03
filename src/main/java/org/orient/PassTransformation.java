@@ -83,6 +83,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 ParseTree parentTree = ctx.getParent();
                 assert (parentTree instanceof LuaParser.FuncbodyContext);
                 LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+
                 ParseTree parentParentTree = parentTree.getParent();
                 if (parentParentTree instanceof LuaParser.StatContext) {
                     LuaParser.StatContext statContext = (LuaParser.StatContext) parentParentTree;
@@ -90,11 +91,11 @@ public class PassTransformation extends LuaParserBaseListener {
                     if (statContext.LOCAL() != null) {
                         rewriter.replace(statContext.LOCAL().getSymbol(), "");
                     }
+                    List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
                     //TODO: multi return value
                     for (int i = 0; i < expContextList.size(); i++) {
-                        LuaParser.ExpContext expContext = expContextList.get(i);
-                        Symbol symbol = this.annotatedTree.symbols.get(expContext);
-                        rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(symbol.getType()));
+                        Symbol.Type st = typeList.get(i);
+                        rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(st));
                     }
                 } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
                     throw new UnsupportedOperationException();
