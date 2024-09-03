@@ -3,7 +3,7 @@ local m = "m_str";
 function func_scope(a, s)
     local m = 200;
     local b = m + 1;
-    return m+b;
+    return a + b;
 end
 
 local mm = m + "append_str"
