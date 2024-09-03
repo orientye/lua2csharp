@@ -86,7 +86,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     List<Symbol.Type> stList = new ArrayList<>();
                     for (int i = 0; i < expContextList.size(); i++) {
                         LuaParser.ExpContext expContext = expContextList.get(i);
-                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);;
+                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                         stList.add(st);
                     }
                     annotatedTree.funcReturns.put(funcbodyContext, stList);
@@ -484,15 +484,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
                         Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
                     }
-                }
-
-                //exp
-                ParseTree parent = ctx.getParent();
-                assert(parent != null);
-                ParseTree parentParent = parent.getParent();
-                assert(parentParent != null);
-                if (parentParent instanceof LuaParser.ExpContext) {
-                    this.annotatedTree.funcReturns.put(parentParent, stList);
                 }
             }
         }
