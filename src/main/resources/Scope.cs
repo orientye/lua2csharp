@@ -1,19 +1,12 @@
-using System;
+string m = "m_str";
 
-class Program
-{
-    static string m = "m_str";
+int func_scope(int a, string s)
+    int m = 200;
+    int b = m + 1;
+    return b;
+end
 
-    static int FuncScope(int a)
-    {
-        int m = 200;
-        int b = m + a;
-        return b;
-    }
+string mm = m + "append_str"
 
-    static void Main()
-    {
-        int n = FuncScope(100);
-        Console.WriteLine(n);
-    }
-}
+int n = func_scope(100, "param_str");
+Console.WriteLine(n);
