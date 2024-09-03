@@ -1,5 +1,7 @@
 package org.orient;
 
+import java.util.List;
+
 public class Util {
 
     public static Symbol.Type GetExpContextType(LuaParser.ExpContext ctx) {
@@ -31,6 +33,13 @@ public class Util {
             if (symbol != null)
             {
                 st = symbol.getType();
+            }
+        }
+        if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+            List<Symbol.Type> typeList = annotatedTree.funcReturns.get(ctx);
+            if (typeList != null)
+            {
+                st = typeList.getFirst();
             }
         }
         return st;
