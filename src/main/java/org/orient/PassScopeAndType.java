@@ -374,18 +374,20 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 Scope curScope = this.scopeStack.peek();
                 symbolR = curScope.resolve(rText);
             }
-            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_INT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_INT) {
-                String name = ctx.getText();
-                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_INT, ctx, annotatedTree);
-            }
-            if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT) {
-                String name = ctx.getText();
-                Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FLOAT, ctx, annotatedTree);
-            }
-            if (ctx.PLUS() != null) {
-                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_STRING) {
+            if (symbolL != null && symbolR != null) {
+                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_INT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_INT) {
                     String name = ctx.getText();
-                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_STRING, ctx, annotatedTree);
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_INT, ctx, annotatedTree);
+                }
+                if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT) {
+                    String name = ctx.getText();
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FLOAT, ctx, annotatedTree);
+                }
+                if (ctx.PLUS() != null) {
+                    if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_STRING) {
+                        String name = ctx.getText();
+                        Symbol.create(name, Symbol.Type.SYMBOL_TYPE_STRING, ctx, annotatedTree);
+                    }
                 }
             }
         } else {
