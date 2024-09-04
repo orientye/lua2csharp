@@ -494,7 +494,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 if (parentParent instanceof LuaParser.ExpContext) {
                     List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
                     if (typeList != null) {
-                        this.annotatedTree.funcReturns.put(parentParent, stList);
+                        this.annotatedTree.funcReturns.put(parentParent, typeList);
                     }
                 }
             }
