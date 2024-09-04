@@ -89,7 +89,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                         stList.add(st);
                     }
-                    annotatedTree.funcReturns.put(funcbodyContext, stList);
+                    this.annotatedTree.funcReturns.put(funcbodyContext, stList);
                 } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
                     throw new UnsupportedOperationException();
                 } else {
