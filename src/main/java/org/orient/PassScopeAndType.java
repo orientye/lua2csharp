@@ -15,16 +15,16 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
     private final Stack<Scope> scopeStack = new Stack<>();
 
-    private Scope globalScope = new Scope("global", null);
+    private final Scope globalScope = new Scope("global", null);
 
     public PassScopeAndType(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
-        scopeStack.add(globalScope);
+        this.scopeStack.add(globalScope);
     }
 
     public void Reset() {
-        scopeStack.clear();
-        scopeStack.add(globalScope);
+        this.scopeStack.clear();
+        this.scopeStack.add(globalScope);
         this.annotatedTree.scopes.clear();
     }
 
@@ -100,7 +100,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
                     throw new UnsupportedOperationException();
                 } else {
-                    assert(false);
+                    assert (false);
                 }
             } else { //void
                 throw new UnsupportedOperationException();
@@ -125,12 +125,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 // scope
                 String name = names.getFirst().getText();
                 Scope curScope = this.scopeStack.peek();
-                annotatedTree.scopes.put(funcbodyContext, curScope);
+                this.annotatedTree.scopes.put(funcbodyContext, curScope);
                 Scope scope = new Scope(name, curScope);
-                scopeStack.push(scope);
+                this.scopeStack.push(scope);
 
                 // symbol
-                Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FUNCTION, funcbodyContext, annotatedTree);
+                Symbol symbol = Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FUNCTION, funcbodyContext, this.annotatedTree);
                 curScope.add(symbol);
 
                 // params
@@ -138,7 +138,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 LuaParser.NamelistContext namelistContext = parlistContext.namelist();
                 List<TerminalNode> terminalNodeList = namelistContext.NAME();
                 for (TerminalNode v : terminalNodeList) {
-                    annotatedTree.scopes.put(v, scope);
+                    this.annotatedTree.scopes.put(v, scope);
                 }
             } else {
                 //TODO: class:func
@@ -159,7 +159,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             List<TerminalNode> names = funcnameContext.NAME();
             int sz = names.size();
             if (1 == sz) {
-                scopeStack.pop();
+                this.scopeStack.pop();
             } else {
                 //TODO: class:func
             }
@@ -187,7 +187,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         symbolType = symbolExp.getType();
                     }
 
-                    Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, annotatedTree);
+                    Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, this.annotatedTree);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);
                     curScope.add(symbolTerminal);
@@ -353,7 +353,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         Symbol.Type st = Util.GetExpContextType(ctx);
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             String name = ctx.getText();
-            Symbol.create(name, st, ctx, annotatedTree);
+            Symbol.create(name, st, ctx, this.annotatedTree);
         }
     }
 
@@ -384,16 +384,16 @@ public class PassScopeAndType extends LuaParserBaseListener {
             if (symbolL != null && symbolR != null) {
                 if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_INT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_INT) {
                     String name = ctx.getText();
-                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_INT, ctx, annotatedTree);
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_INT, ctx, this.annotatedTree);
                 }
                 if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_FLOAT) {
                     String name = ctx.getText();
-                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FLOAT, ctx, annotatedTree);
+                    Symbol.create(name, Symbol.Type.SYMBOL_TYPE_FLOAT, ctx, this.annotatedTree);
                 }
                 if (ctx.PLUS() != null) {
                     if (symbolL.getType() == Symbol.Type.SYMBOL_TYPE_STRING && symbolR.getType() == Symbol.Type.SYMBOL_TYPE_STRING) {
                         String name = ctx.getText();
-                        Symbol.create(name, Symbol.Type.SYMBOL_TYPE_STRING, ctx, annotatedTree);
+                        Symbol.create(name, Symbol.Type.SYMBOL_TYPE_STRING, ctx, this.annotatedTree);
                     }
                 }
             }
@@ -463,7 +463,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             List<LuaParser.ExpContext> expContextList = explistContext.exp();
             List<Symbol.Type> stList = new ArrayList<>();
             for (LuaParser.ExpContext expContext : expContextList) {
-                Symbol symbol = annotatedTree.symbols.get(expContext);
+                Symbol symbol = this.annotatedTree.symbols.get(expContext);
                 if (symbol != null) {
                     Symbol.Type st = symbol.getType();
                     stList.add(st);
@@ -485,7 +485,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 List<TerminalNode> terminalNodes = namelistContext.NAME();
                 for (int i = 0; i < terminalNodes.size(); i++) {
                     TerminalNode terminalNode = terminalNodes.get(i);
-                    Symbol terminalNodeSymbol = annotatedTree.symbols.get(terminalNode);
+                    Symbol terminalNodeSymbol = this.annotatedTree.symbols.get(terminalNode);
                     if (terminalNodeSymbol == null) {
                         Symbol.Type st = stList.get(i);
                         assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
@@ -499,9 +499,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
                 //exp
                 ParseTree parent = ctx.getParent();
-                assert(parent != null);
+                assert (parent != null);
                 ParseTree parentParent = parent.getParent();
-                assert(parentParent != null);
+                assert (parentParent != null);
                 if (parentParent instanceof LuaParser.ExpContext) {
                     List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
                     if (typeList != null) {
