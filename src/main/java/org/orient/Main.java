@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("\n===================================\n");
 
-        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("scope.lua");
+        InputStream inStream = Main.class.getClassLoader().getResourceAsStream("simple.lua");
         assert (inStream != null);
         CharStream charStream = CharStreams.fromStream(inStream);
 
