@@ -93,7 +93,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     List<Symbol.Type> stList = new ArrayList<>();
                     for (int i = 0; i < expContextList.size(); i++) {
                         LuaParser.ExpContext expContext = expContextList.get(i);
-                        Symbol.Type st = Util.GetExpContextTypeInTreeWithResolve(expContext, this.annotatedTree, this.scopeStack);
+                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                         stList.add(st);
                     }
                     this.annotatedTree.funcReturns.put(funcbodyContext, stList);
