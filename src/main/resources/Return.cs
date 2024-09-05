@@ -5,8 +5,8 @@
     return (a + b, s);
 }
 
-var (n, _) = FuncReturn("param_str", 100);
-var (n1, s1) = FuncReturn("param_str2", n);
+(int n, _) = FuncReturn("param_str", 100);
+(int n1, string s1) = FuncReturn("param_str2", n);
 
 Console.WriteLine(n);
 Console.WriteLine(n1);
