@@ -31,6 +31,8 @@ public class Main {
         //Pass
         PassScopeAndType PassScopeAndType = new PassScopeAndType(annotatedTree);
         walker.walk(PassScopeAndType, tree);
+        PassScopeAndType.Reset();
+        walker.walk(PassScopeAndType, tree);
 
         //Pass
         PassTransformation shifter = new PassTransformation(annotatedTree, tokens);

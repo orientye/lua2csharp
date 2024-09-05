@@ -15,10 +15,17 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
     private final Stack<Scope> scopeStack = new Stack<>();
 
+    private Scope globalScope = new Scope("global", null);
+
     public PassScopeAndType(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
-        Scope globalScope = new Scope("global", null);
         scopeStack.add(globalScope);
+    }
+
+    public void Reset() {
+        scopeStack.clear();
+        scopeStack.add(globalScope);
+        this.annotatedTree.scopes.clear();
     }
 
     /**
@@ -86,7 +93,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     List<Symbol.Type> stList = new ArrayList<>();
                     for (int i = 0; i < expContextList.size(); i++) {
                         LuaParser.ExpContext expContext = expContextList.get(i);
-                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                        Symbol.Type st = Util.GetExpContextTypeInTreeWithResolve(expContext, this.annotatedTree, this.scopeStack);
                         stList.add(st);
                     }
                     this.annotatedTree.funcReturns.put(funcbodyContext, stList);
@@ -118,7 +125,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 // scope
                 String name = names.getFirst().getText();
                 Scope curScope = this.scopeStack.peek();
-                annotatedTree.scopes.put(funcnameContext, curScope);
+                annotatedTree.scopes.put(funcbodyContext, curScope);
                 Scope scope = new Scope(name, curScope);
                 scopeStack.push(scope);
 
@@ -482,7 +489,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     if (terminalNodeSymbol == null) {
                         Symbol.Type st = stList.get(i);
                         assert (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN);
-                        Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
+                        Symbol sym = Symbol.create(terminalNode.getText(), st, terminalNode, annotatedTree);
+                        Scope funcScope = this.annotatedTree.scopes.get(funcbodyContext);
+                        if (funcScope != null) {
+                            funcScope.add(sym);
+                        }
                     }
                 }
 
