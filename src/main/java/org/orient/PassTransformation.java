@@ -167,7 +167,7 @@ public class PassTransformation extends LuaParserBaseListener {
             if (explistContext != null) {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
-                assert (expContextList.size() == terminalNodeList.size());
+                //assert (expContextList.size() == terminalNodeList.size());
                 TerminalNode terminalNode;
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     terminalNode = terminalNodeList.get(idx);
