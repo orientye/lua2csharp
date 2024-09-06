@@ -1,5 +1,6 @@
 package org.orient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
@@ -26,7 +27,6 @@ public class Util {
     }
 
     public static Symbol.Type GetExpContextTypeInTree(LuaParser.ExpContext ctx, AnnotatedTree annotatedTree) {
-        assert (annotatedTree != null);
         Symbol.Type st = GetExpContextType(ctx);
         if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
             Symbol symbol = annotatedTree.symbols.get(ctx);
@@ -34,13 +34,19 @@ public class Util {
                 st = symbol.getType();
             }
         }
-        if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
-            List<Symbol.Type> typeList = annotatedTree.funcReturns.get(ctx);
-            if (typeList != null) {
-                st = typeList.getFirst();
-            }
-        }
         return st;
+    }
+
+    public static List<Symbol.Type> GetExpContextMultiTypeInTree(LuaParser.ExpContext ctx, AnnotatedTree annotatedTree) {
+        Symbol.Type st = GetExpContextTypeInTree(ctx, annotatedTree);
+        if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+            List<Symbol.Type> typeList = new ArrayList<>();
+            typeList.add(st);
+            return typeList;
+        }
+
+        List<Symbol.Type> typeList = annotatedTree.funcReturns.get(ctx);
+        return typeList;
     }
 
     public static String SymbolType2Str(Symbol.Type st) {
@@ -59,5 +65,23 @@ public class Util {
             }
         }
         return "unknown";
+    }
+
+    public static String SymbolType2Str(List<Symbol.Type> typeList) {
+        int sz = typeList.size();
+        assert (sz >= 0);
+        if (typeList.size() == 1) {
+            return SymbolType2Str(typeList.getFirst());
+        }
+        StringBuilder sb = new StringBuilder("(");
+        for (int i = 0; i < sz; i++) {
+            String s = SymbolType2Str(typeList.get(i));
+            sb.append(s);
+            if (i != (sz - 1)) {
+                sb.append(", ");
+            }
+        }
+        sb.append(')');
+        return sb.toString();
     }
 }

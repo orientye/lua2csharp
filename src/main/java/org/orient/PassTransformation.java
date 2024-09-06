@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PassTransformation extends LuaParserBaseListener {
@@ -90,11 +91,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         this.rewriter.replace(statContext.LOCAL().getSymbol(), "");
                     }
                     List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
-                    //TODO: multi return value
-                    for (int i = 0; i < expContextList.size(); i++) {
-                        Symbol.Type st = typeList.get(i);
-                        this.rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(st));
-                    }
+                    this.rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
                 } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
                     throw new UnsupportedOperationException();
                 } else {
@@ -138,14 +135,23 @@ public class PassTransformation extends LuaParserBaseListener {
         LuaParser.VarlistContext varlistContext = ctx.varlist();
         if (varlistContext != null) {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
+
             LuaParser.ExplistContext explistContext = ctx.explist();
             List<LuaParser.ExpContext> expContextList = explistContext.exp();
+            List<Symbol.Type> rightList = new ArrayList<>();
+            for (int i = 0; i < expContextList.size(); i++) {
+                LuaParser.ExpContext expContext = expContextList.get(i);
+                List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, this.annotatedTree);
+                if (typeList != null) {
+                    rightList.addAll(typeList);
+                }
+            }
+
             for (int i = 0; i < varContextList.size(); i++) {
                 LuaParser.VarContext varContext = varContextList.get(i);
                 TerminalNode terminalNode = varContext.NAME();
                 if (terminalNode != null) {
-                    LuaParser.ExpContext expContext = expContextList.get(i);
-                    Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                    Symbol.Type st = rightList.get(i);
                     Token t = varContext.start;
                     this.rewriter.insertBefore(t, Util.SymbolType2Str(st) + " ");
                 } else {
