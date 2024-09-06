@@ -1,8 +1,6 @@
-
-
 local ProjectDef = {}
 
-ProjectDef.id = 1
-ProjectDef.name = "abc"
+ProjectDef.ID = 1
+ProjectDef.NAME = "abc"
 
 return ProjectDef
