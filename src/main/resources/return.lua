@@ -4,8 +4,6 @@ function func_return(s, a)
     return a + b, s;
 end
 
-n = func_return("param_str", 100);
-n1, s1 = func_return("param_str2", n);
-print(n);
+n1, s1 = func_return("param_str2", 1);
 print(n1);
 print(s1);
