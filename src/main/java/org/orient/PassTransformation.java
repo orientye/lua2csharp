@@ -155,16 +155,23 @@ public class PassTransformation extends LuaParserBaseListener {
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
-                TerminalNode terminalNode;
+                int szTerminalNodeList = terminalNodeList.size();
                 for (int idx = 0; idx < terminalNodeList.size(); idx++) {
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     if (idx == 0) {
                         Token t = ctx.start;
-                        this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
+                        if (szTerminalNodeList > 1) {
+                            this.rewriter.replace(t, "(" + Util.SymbolType2Str(symbolType));
+                        } else {
+                            this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
+                        }
                     } else {
-                        terminalNode = terminalNodeList.get(idx);
+                        TerminalNode terminalNode = terminalNodeList.get(idx);
                         Token t = terminalNode.getSymbol();
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                        if (szTerminalNodeList > 1 && (idx + 1 == szTerminalNodeList)) {
+                            this.rewriter.insertAfter(t,  ")");
+                        }
                     }
                 }
             } else {
