@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println("\n===================================\n");
+        System.out.println("\n=================================================\n");
 
         InputStream inStream = Main.class.getClassLoader().getResourceAsStream("return.lua");
         assert (inStream != null);
@@ -19,12 +19,12 @@ public class Main {
         LuaLexer lexer = new LuaLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);
-        ParseTree tree = parser.start_(); // begin parsing at init rule
-        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+        ParseTree tree = parser.start_();
+        System.out.println(tree.toStringTree(parser));
 
         AnnotatedTree annotatedTree = new AnnotatedTree(tree);
         annotatedTree.dump();
-        System.out.println("\n===================================");
+        System.out.println("\n=================================================");
 
         ParseTreeWalker walker = new ParseTreeWalker();
 
@@ -39,6 +39,6 @@ public class Main {
         walker.walk(shifter, tree);
         System.out.println(shifter.rewriter.getText());
 
-        System.out.println("\n===================================\n");
+        System.out.println("\n=================================================\n");
     }
 }
