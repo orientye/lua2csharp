@@ -80,21 +80,25 @@ public class PassTransformation extends LuaParserBaseListener {
             if (explistContext != null) { // return a, b, c;
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 ParseTree parentTree = ctx.getParent();
-                assert (parentTree instanceof LuaParser.FuncbodyContext);
-                LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
-
-                ParseTree parentParentTree = parentTree.getParent();
-                if (parentParentTree instanceof LuaParser.StatContext statContext) {
-                    assert (statContext.FUNCTION() != null);
-                    if (statContext.LOCAL() != null) {
-                        this.rewriter.replace(statContext.LOCAL().getSymbol(), "");
+                if (parentTree instanceof LuaParser.FuncbodyContext) {
+                    LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                    ParseTree parentParentTree = parentTree.getParent();
+                    if (parentParentTree instanceof LuaParser.StatContext statContext) {
+                        assert (statContext.FUNCTION() != null);
+                        if (statContext.LOCAL() != null) {
+                            this.rewriter.replace(statContext.LOCAL().getSymbol(), "");
+                        }
+                        List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
+                        this.rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
+                    } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
+                        throw new UnsupportedOperationException();
+                    } else {
+                        assert (false);
                     }
-                    List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
-                    this.rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
-                } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
-                    throw new UnsupportedOperationException();
+                } else if (parentTree instanceof LuaParser.ChunkContext) {
+                    System.out.println(parentTree.toString());
                 } else {
-                    assert (false);
+                    throw new UnsupportedOperationException();
                 }
             } else { //void
                 throw new UnsupportedOperationException();

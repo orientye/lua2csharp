@@ -23,6 +23,9 @@ public class Util {
         if (ctx.FALSE() != null) {
             return Symbol.Type.SYMBOL_TYPE_BOOLEAN;
         }
+        if (ctx.tableconstructor() != null) {
+            return Symbol.Type.SYMBOL_TYPE_LUA_TABLE;
+        }
         return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
     }
 
@@ -79,6 +82,9 @@ public class Util {
             }
             case Symbol.Type.SYMBOL_TYPE_STRING -> {
                 return "string";
+            }
+            case Symbol.Type.SYMBOL_TYPE_LUA_TABLE -> {
+                return "class";
             }
         }
         return "unknown";

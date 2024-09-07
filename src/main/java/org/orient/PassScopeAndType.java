@@ -86,21 +86,26 @@ public class PassScopeAndType extends LuaParserBaseListener {
             if (explistContext != null) { // return a, b, c;
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 ParseTree parentTree = ctx.getParent();
-                assert (parentTree instanceof LuaParser.FuncbodyContext);
-                LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
-                ParseTree parentParentTree = parentTree.getParent();
-                if (parentParentTree instanceof LuaParser.StatContext) {
-                    List<Symbol.Type> stList = new ArrayList<>();
-                    for (int i = 0; i < expContextList.size(); i++) {
-                        LuaParser.ExpContext expContext = expContextList.get(i);
-                        Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
-                        stList.add(st);
+                if (parentTree instanceof LuaParser.FuncbodyContext) {
+                    LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                    ParseTree parentParentTree = parentTree.getParent();
+                    if (parentParentTree instanceof LuaParser.StatContext) {
+                        List<Symbol.Type> stList = new ArrayList<>();
+                        for (int i = 0; i < expContextList.size(); i++) {
+                            LuaParser.ExpContext expContext = expContextList.get(i);
+                            Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                            stList.add(st);
+                        }
+                        this.annotatedTree.funcReturns.put(funcbodyContext, stList);
+                    } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
+                        throw new UnsupportedOperationException();
+                    } else {
+                        assert (false);
                     }
-                    this.annotatedTree.funcReturns.put(funcbodyContext, stList);
-                } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
-                    throw new UnsupportedOperationException();
+                } else if (parentTree instanceof LuaParser.ChunkContext) {
+                    System.out.println(parentTree.toString());
                 } else {
-                    assert (false);
+                    throw new UnsupportedOperationException();
                 }
             } else { //void
                 throw new UnsupportedOperationException();
