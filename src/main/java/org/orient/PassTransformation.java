@@ -136,13 +136,25 @@ public class PassTransformation extends LuaParserBaseListener {
         if (varlistContext != null) {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
             LuaParser.ExplistContext explistContext = ctx.explist();
-            for (int i = 0; i < varContextList.size(); i++) {
-                LuaParser.VarContext varContext = varContextList.get(i);
+            int szVarContextList = varContextList.size();
+            for (int idx = 0; idx < szVarContextList; idx++) {
+                LuaParser.VarContext varContext = varContextList.get(idx);
                 TerminalNode terminalNode = varContext.NAME();
-                Symbol.Type symbolType = Util.GetExpContextTypeInList(i, explistContext, annotatedTree);
+                Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                 if (terminalNode != null) {
-                    Token t = varContext.start;
-                    this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                     Token t = varContext.start;
+                    if (idx == 0) {
+                        if (szVarContextList > 1) {
+                            this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
+                        } else {
+                            this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                        }
+                    } else {
+                        this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                        if (szVarContextList > 1 && (idx + 1 == szVarContextList)) {
+                            this.rewriter.insertAfter(t,  ")");
+                        }
+                    }
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -156,7 +168,7 @@ public class PassTransformation extends LuaParserBaseListener {
             if (explistContext != null) {
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 int szTerminalNodeList = terminalNodeList.size();
-                for (int idx = 0; idx < terminalNodeList.size(); idx++) {
+                for (int idx = 0; idx < szTerminalNodeList; idx++) {
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     if (idx == 0) {
                         Token t = ctx.start;
