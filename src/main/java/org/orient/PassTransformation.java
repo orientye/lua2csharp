@@ -202,6 +202,10 @@ public class PassTransformation extends LuaParserBaseListener {
                 Symbol.Type st = terminalNodeSymbol.getType();
                 this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
             }
+            TerminalNode cp = funcbodyContext.CP();
+            this.rewriter.insertAfter(cp.getSymbol(), "\n{");
+            TerminalNode end = funcbodyContext.END();
+            this.rewriter.replace(end.getSymbol(), "}");
         }
     }
 
