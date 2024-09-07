@@ -78,10 +78,8 @@ public class PassTransformation extends LuaParserBaseListener {
         if (retstatContext != null) {
             LuaParser.ExplistContext explistContext = retstatContext.explist();
             if (explistContext != null) { // return a, b, c;
-                List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 ParseTree parentTree = ctx.getParent();
-                if (parentTree instanceof LuaParser.FuncbodyContext) {
-                    LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                if (parentTree instanceof LuaParser.FuncbodyContext funcbodyContext) {
                     ParseTree parentParentTree = parentTree.getParent();
                     if (parentParentTree instanceof LuaParser.StatContext statContext) {
                         assert (statContext.FUNCTION() != null);
@@ -96,7 +94,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         assert (false);
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
-                    System.out.println(parentTree.toString());
+
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -154,7 +152,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         }
                     } else {
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
-                        if (szVarContextList > 1 && (idx + 1 == szVarContextList)) {
+                        if (idx + 1 == szVarContextList) {
                             this.rewriter.insertAfter(t, ")");
                         }
                     }
@@ -184,7 +182,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         TerminalNode terminalNode = terminalNodeList.get(idx);
                         Token t = terminalNode.getSymbol();
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
-                        if (szTerminalNodeList > 1 && (idx + 1 == szTerminalNodeList)) {
+                        if (idx + 1 == szTerminalNodeList) {
                             this.rewriter.insertAfter(t, ")");
                         }
                     }

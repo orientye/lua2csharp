@@ -48,8 +48,7 @@ public class Util {
             return typeList;
         }
 
-        List<Symbol.Type> typeList = annotatedTree.funcReturns.get(ctx);
-        return typeList;
+        return annotatedTree.funcReturns.get(ctx);
     }
 
     public static Symbol.Type GetExpContextTypeInList(int idx, LuaParser.ExplistContext explistContext, AnnotatedTree annotatedTree) {
@@ -92,7 +91,7 @@ public class Util {
 
     public static String SymbolType2Str(List<Symbol.Type> typeList) {
         int sz = typeList.size();
-        assert (sz >= 0);
+        assert (sz > 0);
         if (typeList.size() == 1) {
             return SymbolType2Str(typeList.getFirst());
         }

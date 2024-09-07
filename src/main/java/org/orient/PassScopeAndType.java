@@ -86,13 +86,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
             if (explistContext != null) { // return a, b, c;
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 ParseTree parentTree = ctx.getParent();
-                if (parentTree instanceof LuaParser.FuncbodyContext) {
-                    LuaParser.FuncbodyContext funcbodyContext = (LuaParser.FuncbodyContext) parentTree;
+                if (parentTree instanceof LuaParser.FuncbodyContext funcbodyContext) {
                     ParseTree parentParentTree = parentTree.getParent();
                     if (parentParentTree instanceof LuaParser.StatContext) {
                         List<Symbol.Type> stList = new ArrayList<>();
-                        for (int i = 0; i < expContextList.size(); i++) {
-                            LuaParser.ExpContext expContext = expContextList.get(i);
+                        for (LuaParser.ExpContext expContext : expContextList) {
                             Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                             stList.add(st);
                         }
@@ -103,7 +101,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         assert (false);
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
-                    System.out.println(parentTree.toString());
+
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -457,13 +455,13 @@ public class PassScopeAndType extends LuaParserBaseListener {
             List<Symbol.Type> stList = new ArrayList<>();
             for (LuaParser.ExpContext expContext : expContextList) {
                 Symbol symbol = this.annotatedTree.symbols.get(expContext);
+                Symbol.Type st;
                 if (symbol != null) {
-                    Symbol.Type st = symbol.getType();
-                    stList.add(st);
+                    st = symbol.getType();
                 } else {
-                    Symbol.Type st = Util.GetExpContextType(expContext);
-                    stList.add(st);
+                    st = Util.GetExpContextType(expContext);
                 }
+                stList.add(st);
             }
             Scope curScope = this.scopeStack.peek();
             Symbol symbol = curScope.resolve(terminalNodeList.getFirst().getText());
