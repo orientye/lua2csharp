@@ -39,6 +39,7 @@ public class Symbol {
 
     public enum Type {
         SYMBOL_TYPE_UNKNOWN,
+
         SYMBOL_TYPE_LUA_NIL,
 
         //SYMBOL_TYPE_LUA_BOOLEAN,
@@ -47,8 +48,7 @@ public class Symbol {
         //SYMBOL_TYPE_LUA_LIGHTUSERDATA,
 
         //SYMBOL_TYPE_LUA_NUMBER,
-        SYMBOL_TYPE_INT,
-        SYMBOL_TYPE_FLOAT,
+        SYMBOL_TYPE_INT, SYMBOL_TYPE_FLOAT,
 
         //SYMBOL_TYPE_LUA_STRING,
         SYMBOL_TYPE_STRING,
