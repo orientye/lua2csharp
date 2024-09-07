@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PassTransformation extends LuaParserBaseListener {
@@ -142,7 +141,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 TerminalNode terminalNode = varContext.NAME();
                 Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                 if (terminalNode != null) {
-                     Token t = varContext.start;
+                    Token t = varContext.start;
                     if (idx == 0) {
                         if (szVarContextList > 1) {
                             this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
@@ -152,7 +151,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     } else {
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                         if (szVarContextList > 1 && (idx + 1 == szVarContextList)) {
-                            this.rewriter.insertAfter(t,  ")");
+                            this.rewriter.insertAfter(t, ")");
                         }
                     }
                 } else {
@@ -182,7 +181,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         Token t = terminalNode.getSymbol();
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                         if (szTerminalNodeList > 1 && (idx + 1 == szTerminalNodeList)) {
-                            this.rewriter.insertAfter(t,  ")");
+                            this.rewriter.insertAfter(t, ")");
                         }
                     }
                 }
