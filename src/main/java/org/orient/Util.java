@@ -49,6 +49,23 @@ public class Util {
         return typeList;
     }
 
+    public static Symbol.Type GetExpContextTypeInList(int idx, LuaParser.ExplistContext explistContext, AnnotatedTree annotatedTree) {
+        Symbol.Type symbolType;
+        List<LuaParser.ExpContext> expContextList = explistContext.exp();
+        int szExpContextList = expContextList.size();
+        assert (szExpContextList > 0);
+        if (1 == szExpContextList) {
+            LuaParser.ExpContext expContext = expContextList.getFirst();
+            List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
+            symbolType = typeList.get(idx);
+        } else {
+            LuaParser.ExpContext expContext = expContextList.get(idx);
+            List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
+            symbolType = typeList.getFirst();
+        }
+        return symbolType;
+    }
+
     public static String SymbolType2Str(Symbol.Type st) {
         switch (st) {
             case Symbol.Type.SYMBOL_TYPE_BOOLEAN -> {

@@ -171,22 +171,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
                 List<LuaParser.ExpContext> expContextList = explistContext.exp();
-                int szExpContextList = expContextList.size();
-                assert (szExpContextList > 0);
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 for (int idx = 0; idx < expContextList.size(); idx++) {
                     TerminalNode terminalNode = terminalNodeList.get(idx);
                     String terminalNodeText = terminalNode.getSymbol().getText();
-                    Symbol.Type symbolType;
-                    if (1 == szExpContextList) {
-                        LuaParser.ExpContext expContext = expContextList.getFirst();
-                        List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
-                        symbolType = typeList.get(idx);
-                    } else {
-                        LuaParser.ExpContext expContext = expContextList.get(idx);
-                        List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
-                        symbolType = typeList.getFirst();
-                    }
+                    Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, this.annotatedTree);
                     Scope curScope = this.scopeStack.peek();
                     assert (curScope != null);

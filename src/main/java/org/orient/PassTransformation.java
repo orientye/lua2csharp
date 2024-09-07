@@ -135,25 +135,14 @@ public class PassTransformation extends LuaParserBaseListener {
         LuaParser.VarlistContext varlistContext = ctx.varlist();
         if (varlistContext != null) {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
-
             LuaParser.ExplistContext explistContext = ctx.explist();
-            List<LuaParser.ExpContext> expContextList = explistContext.exp();
-            List<Symbol.Type> rightList = new ArrayList<>();
-            for (int i = 0; i < expContextList.size(); i++) {
-                LuaParser.ExpContext expContext = expContextList.get(i);
-                List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, this.annotatedTree);
-                if (typeList != null) {
-                    rightList.addAll(typeList);
-                }
-            }
-
             for (int i = 0; i < varContextList.size(); i++) {
                 LuaParser.VarContext varContext = varContextList.get(i);
                 TerminalNode terminalNode = varContext.NAME();
+                Symbol.Type symbolType = Util.GetExpContextTypeInList(i, explistContext, annotatedTree);
                 if (terminalNode != null) {
-                    Symbol.Type st = rightList.get(i);
                     Token t = varContext.start;
-                    this.rewriter.insertBefore(t, Util.SymbolType2Str(st) + " ");
+                    this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -165,18 +154,21 @@ public class PassTransformation extends LuaParserBaseListener {
         if (attnamelistContext != null) {
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
-                List<LuaParser.ExpContext> expContextList = explistContext.exp();
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
-                //assert (expContextList.size() == terminalNodeList.size());
                 TerminalNode terminalNode;
-                for (int idx = 0; idx < expContextList.size(); idx++) {
-                    terminalNode = terminalNodeList.get(idx);
-                    Symbol symbol = this.annotatedTree.symbols.get(terminalNode);
-                    Token t = ctx.start;
-                    this.rewriter.replace(t, Util.SymbolType2Str(symbol.getType()));
+                for (int idx = 0; idx < terminalNodeList.size(); idx++) {
+                    Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
+                    if (idx == 0) {
+                        Token t = ctx.start;
+                        this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
+                    } else {
+                        terminalNode = terminalNodeList.get(idx);
+                        Token t = terminalNode.getSymbol();
+                        this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                    }
                 }
             } else {
-
+                //TODO:
             }
         }
 
