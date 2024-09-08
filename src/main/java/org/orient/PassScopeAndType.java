@@ -101,10 +101,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         assert (false);
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
-                    assert(expContextList.size() == 1);
-                    LuaParser.ExpContext expContext = expContextList.getFirst();
-                    Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
-                    assert(st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
+                    assert (true);
                 } else {
                     throw new UnsupportedOperationException();
                 }

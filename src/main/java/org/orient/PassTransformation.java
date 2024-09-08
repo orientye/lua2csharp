@@ -94,7 +94,11 @@ public class PassTransformation extends LuaParserBaseListener {
                         assert (false);
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
-
+                    List<LuaParser.ExpContext> expContextList = explistContext.exp();
+                    assert(expContextList.size() == 1);
+                    LuaParser.ExpContext expContext = expContextList.getFirst();
+                    Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                    assert(st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
                 } else {
                     throw new UnsupportedOperationException();
                 }
