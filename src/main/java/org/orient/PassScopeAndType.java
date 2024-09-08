@@ -1,6 +1,7 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -101,7 +102,16 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         assert (false);
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
-                    assert (true);
+                    assert(expContextList.size() == 1);
+                    LuaParser.ExpContext expContext = expContextList.getFirst();
+
+                    Scope curScope = this.scopeStack.peek();
+                    assert (curScope == this.globalScope);
+                    Symbol symbol = curScope.resolve(expContext.getText());
+                    assert (symbol != null);
+                    ParseTree parseTree = symbol.getParseTree();
+
+                    this.annotatedTree.refs.put(expContext, parseTree);
                 } else {
                     throw new UnsupportedOperationException();
                 }
