@@ -100,9 +100,13 @@ public class PassTransformation extends LuaParserBaseListener {
                     Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                     assert(st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
 
+                    //return ClassABC;
                     Token t = retstatContext.RETURN().getSymbol();
                     rewriter.replace(t, "}");
                     rewriter.replace(expContext.start, "");
+
+                    //local ClassABC = {}
+                    
                 } else {
                     throw new UnsupportedOperationException();
                 }
