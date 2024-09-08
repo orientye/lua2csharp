@@ -110,7 +110,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     Symbol symbol = curScope.resolve(expContext.getText());
                     assert (symbol != null);
                     ParseTree parseTree = symbol.getParseTree();
-
                     this.annotatedTree.refs.put(expContext, parseTree);
                 } else {
                     throw new UnsupportedOperationException();
