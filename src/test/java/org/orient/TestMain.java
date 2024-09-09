@@ -9,7 +9,7 @@ public class TestMain {
         traverseFolder(folder);
     }
 
-    public static void traverseFolder(File folder) {
+    public static void traverseFolder(File folder) throws Exception {
         if (folder.isDirectory()) {
             File[] listOfFiles = folder.listFiles();
             if (listOfFiles != null) {
@@ -19,7 +19,12 @@ public class TestMain {
                         if (fileName.endsWith("lua")) {
                             String path = GetCSharpFileName(listOfFile.getPath());
                             File csharpFile = new File(path);
+                            System.out.println("\n=================================================\n\n");
                             System.out.println("lua: " + listOfFile.getAbsolutePath());
+
+                            String cs = Transform.transformFromFileName(listOfFile.getPath());
+                            String result = cs.replaceAll("\\s", "");
+                            System.out.println(result);
                             System.out.println("cs:  " + csharpFile.getAbsolutePath());
                         }
                     } else if (listOfFile.isDirectory()) {
