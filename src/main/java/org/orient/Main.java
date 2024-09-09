@@ -21,10 +21,9 @@ public class Main {
         LuaParser parser = new LuaParser(tokens);
         ParseTree tree = parser.start_();
         System.out.println(tree.toStringTree(parser));
+        System.out.println("\n=================================================\n");
 
         AnnotatedTree annotatedTree = new AnnotatedTree(tree);
-        annotatedTree.dump();
-        System.out.println("\n=================================================");
 
         ParseTreeWalker walker = new ParseTreeWalker();
 
