@@ -35,9 +35,9 @@ public class Main {
         walker.walk(PassScopeAndType, tree);
 
         //Pass
-        PassTransformation shifter = new PassTransformation(annotatedTree, tokens);
-        walker.walk(shifter, tree);
-        System.out.println(shifter.rewriter.getText());
+        PassTransformation passTransformation = new PassTransformation(annotatedTree, tokens);
+        walker.walk(passTransformation, tree);
+        System.out.println(passTransformation.getResult());
 
         System.out.println("\n=================================================\n");
     }

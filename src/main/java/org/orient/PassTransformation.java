@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PassTransformation extends LuaParserBaseListener {
 
-    final TokenStreamRewriter rewriter;
+    private final TokenStreamRewriter rewriter;
     private final AnnotatedTree annotatedTree;
     private final BufferedTokenStream tokens;
 
@@ -20,6 +20,10 @@ public class PassTransformation extends LuaParserBaseListener {
         this.annotatedTree = annotatedTree;
         this.tokens = tokens;
         this.rewriter = new TokenStreamRewriter(tokens);
+    }
+
+    public String getResult() {
+        return this.rewriter.getText();
     }
 
     /**
