@@ -9,14 +9,14 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.InputStream;
 
 public class Transform {
-    public static String transform(InputStream inputStream) throws Exception {
-        assert (inputStream != null);
-        CharStream charStream = CharStreams.fromStream(inputStream);
-
+    public static String transform(CharStream charStream) throws Exception {
+        assert (charStream != null);
         LuaLexer lexer = new LuaLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);
         ParseTree tree = parser.start_();
+        System.out.println(tree.toStringTree(parser));
+        System.out.println("\n=================================================\n");
 
         AnnotatedTree annotatedTree = new AnnotatedTree(tree);
 
@@ -34,5 +34,15 @@ public class Transform {
 
         String result = passTransformation.getResult();
         return result;
+    }
+
+    public static String transformFromFileName(String fileName) throws Exception {
+        CharStream charStream = CharStreams.fromFileName(fileName);
+        return transform(charStream);
+    }
+
+    public static String transformFromInputStream(InputStream inputStream) throws Exception {
+        CharStream charStream = CharStreams.fromStream(inputStream);
+        return transform(charStream);
     }
 }

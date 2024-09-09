@@ -8,7 +8,7 @@ public class Main {
 
         InputStream inStream = Main.class.getClassLoader().getResourceAsStream("HelloWorld.lua");
         assert (inStream != null);
-        String result = Transform.transform(inStream);
+        String result = Transform.transformFromInputStream(inStream);
         System.out.println(result);
 
         System.out.println("\n=================================================\n");
