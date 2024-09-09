@@ -1,4 +1,4 @@
 # lua2csharp
 lua2csharp
 
-examples: src/main/resources/
+examples: src/test/examples/
