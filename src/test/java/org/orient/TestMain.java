@@ -17,13 +17,10 @@ public class TestMain {
                     if (listOfFile.isFile()) {
                         String fileName = listOfFile.getName();
                         if (fileName.endsWith("lua")) {
-                            System.out.println("lua: " + listOfFile.getName());
+                            String path = GetCSharpFileName(listOfFile.getPath());
+                            File csharpFile = new File(path);
                             System.out.println("lua: " + listOfFile.getAbsolutePath());
-                            System.out.println("lua: " + listOfFile.getPath());
-                        } else if (fileName.endsWith("cs")) {
-                            System.out.println("cs:  " + listOfFile.getName());
-                            System.out.println("cs:  " + listOfFile.getAbsolutePath());
-                            System.out.println("cs:  " + listOfFile.getPath());
+                            System.out.println("cs:  " + csharpFile.getAbsolutePath());
                         }
                     } else if (listOfFile.isDirectory()) {
                         traverseFolder(listOfFile);
@@ -33,5 +30,12 @@ public class TestMain {
         } else {
             System.err.println(folder.getName() + " is not a directory");
         }
+    }
+
+    private static String GetCSharpFileName(String luaFileName) {
+        assert(luaFileName != null);
+        int lastIndexOfDot = luaFileName.lastIndexOf('.');
+        assert(lastIndexOfDot != -1);
+        return luaFileName.substring(0, lastIndexOfDot) + ".cs";
     }
 }
