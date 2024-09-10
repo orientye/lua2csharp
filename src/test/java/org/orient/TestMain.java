@@ -5,7 +5,7 @@ import java.nio.file.Files;
 
 public class TestMain {
     public static void main(String[] args) throws Exception {
-        File file = new File("./src/test/examples/return.lua");
+        File file = new File("./src/test/examples/FuncReturnVoid.lua");
         doFile(file);
     }
 
