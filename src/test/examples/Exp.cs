@@ -2,7 +2,7 @@
 int n1 = 2 + 3;
 int n2 = n1 - 1;
 int n3 = n2 * 2;
-float n4 = 16 + n3 / 5f;
+int n4 = 16 + n3 / 5;
 
 // float
 float f1 = 0.4f;
