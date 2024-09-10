@@ -19,15 +19,15 @@ public class TestMain {
                         String fileName = f.getName();
                         if (fileName.endsWith("lua")) {
                             String path = GetCSharpFileName(f.getPath());
-                            File csharpFile = new File(path);
+                            File csFile = new File(path);
                             System.out.println("\n=================================================\n\n");
                             System.out.println("lua: " + f.getPath());
 
-                            String cs = Transform.transformFromFileName(f.getPath());
-                            String result = cs.replaceAll("\\s", "");
-
-                            System.out.println(result);
-                            byte[] bytes = Files.readAllBytes(csharpFile.toPath());
+                            String result = Transform.transformFromFileName(f.getPath());
+                            String csResult = result.replaceAll("\\s", "");
+                            System.out.println(csResult);
+                            
+                            byte[] bytes = Files.readAllBytes(csFile.toPath());
                             String content = new String(bytes);
                             String csFileContent = content.replaceAll("\\s", "");
                             System.out.println(csFileContent);
