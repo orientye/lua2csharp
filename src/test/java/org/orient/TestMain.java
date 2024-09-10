@@ -12,18 +12,18 @@ public class TestMain {
 
     public static void doFolder(File folder) throws Exception {
         if (folder.isDirectory()) {
-            File[] listOfFiles = folder.listFiles();
-            if (listOfFiles != null) {
-                for (File listOfFile : listOfFiles) {
-                    if (listOfFile.isFile()) {
-                        String fileName = listOfFile.getName();
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile()) {
+                        String fileName = f.getName();
                         if (fileName.endsWith("lua")) {
-                            String path = GetCSharpFileName(listOfFile.getPath());
+                            String path = GetCSharpFileName(f.getPath());
                             File csharpFile = new File(path);
                             System.out.println("\n=================================================\n\n");
-                            System.out.println("lua: " + listOfFile.getAbsolutePath());
+                            System.out.println("lua: " + f.getPath());
 
-                            String cs = Transform.transformFromFileName(listOfFile.getPath());
+                            String cs = Transform.transformFromFileName(f.getPath());
                             String result = cs.replaceAll("\\s", "");
 
                             System.out.println(result);
@@ -32,8 +32,8 @@ public class TestMain {
                             String csFileContent = content.replaceAll("\\s", "");
                             System.out.println(csFileContent);
                         }
-                    } else if (listOfFile.isDirectory()) {
-                        doFolder(listOfFile);
+                    } else if (f.isDirectory()) {
+                        doFolder(f);
                     }
                 }
             }
