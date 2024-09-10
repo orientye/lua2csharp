@@ -5,10 +5,10 @@ int n3 = n2 * 2;
 int n4 = 16 + n3 / 5;
 
 // float
-float f1 = 0.4f;
-float f2 = 4.57e-3f;
-float f3 = 0.3e12f;
-float f4 = 5e+20f;
+double f1 = 0.4;
+double f2 = 4.57e-3;
+double f3 = 0.3e12;
+double f4 = 5e+20;
 
 // bool
 bool b1 = false;

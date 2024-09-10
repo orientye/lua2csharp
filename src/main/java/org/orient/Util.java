@@ -77,7 +77,7 @@ public class Util {
                 return "int";
             }
             case Symbol.Type.SYMBOL_TYPE_FLOAT -> {
-                return "float";
+                return "double";
             }
             case Symbol.Type.SYMBOL_TYPE_STRING -> {
                 return "string";
