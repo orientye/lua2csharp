@@ -15,8 +15,7 @@ public class Transform {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);
         ParseTree tree = parser.start_();
-        System.out.println(tree.toStringTree(parser));
-        System.out.println("\n=================================================\n");
+        System.out.println(tree.toStringTree(parser) + "\n");
 
         AnnotatedTree annotatedTree = new AnnotatedTree(tree);
 

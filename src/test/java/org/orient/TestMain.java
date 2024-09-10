@@ -1,15 +1,16 @@
 package org.orient;
 
 import java.io.File;
+import java.nio.file.Files;
 
 public class TestMain {
     public static void main(String[] args) throws Exception {
 
         File folder = new File("./src/test/examples");
-        traverseFolder(folder);
+        doFolder(folder);
     }
 
-    public static void traverseFolder(File folder) throws Exception {
+    public static void doFolder(File folder) throws Exception {
         if (folder.isDirectory()) {
             File[] listOfFiles = folder.listFiles();
             if (listOfFiles != null) {
@@ -24,11 +25,15 @@ public class TestMain {
 
                             String cs = Transform.transformFromFileName(listOfFile.getPath());
                             String result = cs.replaceAll("\\s", "");
+
                             System.out.println(result);
-                            System.out.println("cs:  " + csharpFile.getAbsolutePath());
+                            byte[] bytes = Files.readAllBytes(csharpFile.toPath());
+                            String content = new String(bytes);
+                            String csFileContent = content.replaceAll("\\s", "");
+                            System.out.println(csFileContent);
                         }
                     } else if (listOfFile.isDirectory()) {
-                        traverseFolder(listOfFile);
+                        doFolder(listOfFile);
                     }
                 }
             }
@@ -38,9 +43,9 @@ public class TestMain {
     }
 
     private static String GetCSharpFileName(String luaFileName) {
-        assert(luaFileName != null);
+        assert (luaFileName != null);
         int lastIndexOfDot = luaFileName.lastIndexOf('.');
-        assert(lastIndexOfDot != -1);
+        assert (lastIndexOfDot != -1);
         return luaFileName.substring(0, lastIndexOfDot) + ".cs";
     }
 }
