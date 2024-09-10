@@ -1,4 +1,5 @@
 # lua2csharp
-lua2csharp
+
+use ANTLR
 
 examples: src/test/examples/
