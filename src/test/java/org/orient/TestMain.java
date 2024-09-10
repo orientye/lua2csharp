@@ -26,11 +26,18 @@ public class TestMain {
                             String result = Transform.transformFromFileName(f.getPath());
                             String csResult = result.replaceAll("\\s", "");
                             System.out.println(csResult);
-                            
+
                             byte[] bytes = Files.readAllBytes(csFile.toPath());
                             String content = new String(bytes);
                             String csFileContent = content.replaceAll("\\s", "");
                             System.out.println(csFileContent);
+
+                            if (csResult.equals(csFileContent)) {
+                                System.out.println(fileName + " transform success");
+                            } else {
+                                System.err.println(fileName + " transform failed!!!");
+                                assert(false);
+                            }
                         }
                     } else if (f.isDirectory()) {
                         doFolder(f);
