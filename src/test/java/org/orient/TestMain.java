@@ -18,20 +18,23 @@ public class TestMain {
                     if (f.isFile()) {
                         String fileName = f.getName();
                         if (fileName.endsWith("lua")) {
-                            String path = GetCSharpFileName(f.getPath());
-                            File csFile = new File(path);
                             System.out.println("\n=================================================\n\n");
                             System.out.println("lua: " + f.getPath());
 
+                            //lua2csharp
                             String result = Transform.transformFromFileName(f.getPath());
                             String csResult = result.replaceAll("\\s", "");
                             System.out.println(csResult);
 
+                            //target
+                            String path = getCsFileName(f.getPath());
+                            File csFile = new File(path);
                             byte[] bytes = Files.readAllBytes(csFile.toPath());
                             String content = new String(bytes);
                             String csFileContent = content.replaceAll("\\s", "");
                             System.out.println(csFileContent);
 
+                            //compare
                             if (csResult.equals(csFileContent)) {
                                 System.out.println(fileName + " transform success");
                             } else {
@@ -49,7 +52,7 @@ public class TestMain {
         }
     }
 
-    private static String GetCSharpFileName(String luaFileName) {
+    private static String getCsFileName(String luaFileName) {
         assert (luaFileName != null);
         int lastIndexOfDot = luaFileName.lastIndexOf('.');
         assert (lastIndexOfDot != -1);
