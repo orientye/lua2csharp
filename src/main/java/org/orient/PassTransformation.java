@@ -136,7 +136,7 @@ public class PassTransformation extends LuaParserBaseListener {
             Token cmt = cmtChannel.getFirst();
             if (cmt != null) {
                 String txt = cmt.getText().substring(2);
-                String newCmt = "/* " + txt.trim() + " */\n";
+                String newCmt = "//" + txt.trim() + "\n";
                 this.rewriter.insertBefore(ctx.start, newCmt);
                 this.rewriter.replace(cmt, "");
             }
