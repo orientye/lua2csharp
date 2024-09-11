@@ -10,8 +10,3 @@ print(n1);
 print(s1);
 local n2 = func_return("param_str2", 200);
 local n3, s3 = func_return("param_str3", n2);
-
-function func_void()
-    print("I am a void function");
-end
-func_void();
