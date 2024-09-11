@@ -50,6 +50,7 @@ public class TestMain {
                 System.out.println(fileName + " transform success");
             } else {
                 System.err.println(fileName + " transform failed!!!");
+                System.out.println("\n" + result + "\n");
                 assert (false);
             }
         }
