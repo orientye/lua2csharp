@@ -224,6 +224,16 @@ public class PassTransformation extends LuaParserBaseListener {
                     this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
                 }
             } else {
+                //at an alternative:
+                /**
+                int tokenIndex = funcbodyContext.start.getTokenIndex();
+                Token functionToken = this.rewriter.getTokenStream().get(tokenIndex - 3);// or tokenIndex - 4
+                if (!functionToken.getText().equals("function")) {
+                    functionToken = this.rewriter.getTokenStream().get(tokenIndex - 4);
+                }
+                assert(functionToken.getText().equals("function"));
+                this.rewriter.replace(functionToken, "void");
+                */
                 ParseTree parentParentTree = funcbodyContext.getParent();
                 if (parentParentTree instanceof LuaParser.StatContext statContext) {
                     assert (statContext.FUNCTION() != null);
