@@ -92,6 +92,10 @@ public class PassTransformation extends LuaParserBaseListener {
                         }
                         List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
                         this.rewriter.replace(statContext.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
+                        if (typeList.size() > 1) {
+                            this.rewriter.insertBefore(explistContext.exp().getFirst().start, "(");
+                            this.rewriter.insertAfter(explistContext.exp().getLast().stop, ")");
+                        }
                     } else if (parentParentTree instanceof LuaParser.FunctiondefContext) {
                         throw new UnsupportedOperationException();
                     } else {
