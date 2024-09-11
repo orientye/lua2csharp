@@ -99,10 +99,10 @@ public class PassTransformation extends LuaParserBaseListener {
                     }
                 } else if (parentTree instanceof LuaParser.ChunkContext) {
                     List<LuaParser.ExpContext> expContextList = explistContext.exp();
-                    assert(expContextList.size() == 1);
+                    assert (expContextList.size() == 1);
                     LuaParser.ExpContext expContext = expContextList.getFirst();
                     Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
-                    assert(st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
+                    assert (st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
 
                     //return ClassABC;
                     Token t = retstatContext.RETURN().getSymbol();
@@ -111,7 +111,7 @@ public class PassTransformation extends LuaParserBaseListener {
 
                     //local ClassABC = {}
                     ParseTree parseTree = this.annotatedTree.refs.get(expContext);
-                    assert(parseTree instanceof TerminalNode);
+                    assert (parseTree instanceof TerminalNode);
                     TerminalNode terminalNode = (TerminalNode) parseTree;
                 } else {
                     throw new UnsupportedOperationException();
@@ -216,11 +216,13 @@ public class PassTransformation extends LuaParserBaseListener {
         if (funcbodyContext != null) {
             LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
             LuaParser.NamelistContext namelistContext = parlistContext.namelist();// TODO: ... Varargs
-            List<TerminalNode> terminalNodes = namelistContext.NAME();
-            for (TerminalNode terminalNode : terminalNodes) {
-                Symbol terminalNodeSymbol = this.annotatedTree.symbols.get(terminalNode);
-                Symbol.Type st = terminalNodeSymbol.getType();
-                this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
+            if (namelistContext != null) {
+                List<TerminalNode> terminalNodes = namelistContext.NAME();
+                for (TerminalNode terminalNode : terminalNodes) {
+                    Symbol terminalNodeSymbol = this.annotatedTree.symbols.get(terminalNode);
+                    Symbol.Type st = terminalNodeSymbol.getType();
+                    this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
+                }
             }
             TerminalNode cp = funcbodyContext.CP();
             this.rewriter.insertAfter(cp.getSymbol(), "\n{");
