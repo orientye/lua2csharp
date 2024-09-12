@@ -68,6 +68,18 @@ public class Util {
         return symbolType;
     }
 
+    public static int GetExpContextReturnCount(LuaParser.ExplistContext explistContext, AnnotatedTree annotatedTree) {
+        List<LuaParser.ExpContext> expContextList = explistContext.exp();
+        int szExpContextList = expContextList.size();
+        assert (szExpContextList > 0);
+        if (1 == szExpContextList) {
+            LuaParser.ExpContext expContext = expContextList.getFirst();
+            List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
+            return typeList.size();
+        }
+        return szExpContextList;
+    }
+
     public static String SymbolType2Str(Symbol.Type st) {
         switch (st) {
             case Symbol.Type.SYMBOL_TYPE_BOOLEAN -> {
