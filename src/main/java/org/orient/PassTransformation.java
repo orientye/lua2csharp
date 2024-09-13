@@ -159,6 +159,7 @@ public class PassTransformation extends LuaParserBaseListener {
         if (varlistContext != null) {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
             LuaParser.ExplistContext explistContext = ctx.explist();
+            int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
             int szVarContextList = varContextList.size();
             for (int idx = 0; idx < szVarContextList; idx++) {
                 LuaParser.VarContext varContext = varContextList.get(idx);
