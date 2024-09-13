@@ -95,7 +95,7 @@ public class Util {
                 return "string";
             }
             case Symbol.Type.SYMBOL_TYPE_LUA_TABLE -> {
-                return "class"; //TODO: default
+                return "public class"; //TODO: default
             }
         }
         return "unknown";
