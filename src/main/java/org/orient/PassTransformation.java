@@ -177,15 +177,20 @@ public class PassTransformation extends LuaParserBaseListener {
                     if (terminalNode != null) {
                         Token t = varContext.start;
                         if (idx == 0) {
-                            if (szVarContextList > 1) {
-                                this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
-                            } else {
-                                this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
-                            }
+                            this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
                         } else {
                             this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
-                            if (idx + 1 == szVarContextList) {
+                        }
+                        if (idx + 1 == szVarContextList) {
+                            if (idx + 1 == returnCount) {
                                 this.rewriter.insertAfter(t, ")");
+                            } else {
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 0; i < returnCount - idx - 1; i++) {
+                                    sb.append(", _");
+                                }
+                                sb.append(")");
+                                this.rewriter.insertAfter(t, sb);
                             }
                         }
                     } else {
