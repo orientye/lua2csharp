@@ -1,10 +1,11 @@
 string m = "m_str";
 
 int func_scope(int a, string s)
+{
     int m = 200;
     int b = m + 1;
-    return b;
-end
+    return a + b;
+}
 
 string mm = m + "append_str"
 
