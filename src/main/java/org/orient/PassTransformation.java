@@ -189,23 +189,37 @@ public class PassTransformation extends LuaParserBaseListener {
         if (attnamelistContext != null) {
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
+                int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 int szTerminalNodeList = terminalNodeList.size();
-                for (int idx = 0; idx < szTerminalNodeList; idx++) {
-                    Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
-                    if (idx == 0) {
-                        Token t = ctx.start;
-                        if (szTerminalNodeList > 1) {
-                            this.rewriter.replace(t, "(" + Util.SymbolType2Str(symbolType));
-                        } else {
-                            this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
-                        }
-                    } else {
+                assert(szTerminalNodeList <= returnCount);
+                if (returnCount == 1) {
+                    assert(szTerminalNodeList == 1);
+                    Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                    Token t = ctx.start;
+                    this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
+                } else {
+                    int idx = 0;
+                    for (; idx < szTerminalNodeList; idx++) {
+                        Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                         TerminalNode terminalNode = terminalNodeList.get(idx);
                         Token t = terminalNode.getSymbol();
-                        this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                        if (idx == 0) {
+                            this.rewriter.replace(ctx.start, "(" + Util.SymbolType2Str(symbolType));
+                        } else {
+                            this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                        }
                         if (idx + 1 == szTerminalNodeList) {
-                            this.rewriter.insertAfter(t, ")");
+                            if (idx + 1 == returnCount) {
+                                this.rewriter.insertAfter(t, ")");
+                            } else {
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 0 ; i < returnCount - idx - 1; i++) {
+                                    sb.append(", _");
+                                }
+                                sb.append(")");
+                                this.rewriter.insertAfter(t, sb);
+                            }
                         }
                     }
                 }
