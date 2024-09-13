@@ -161,27 +161,34 @@ public class PassTransformation extends LuaParserBaseListener {
             LuaParser.ExplistContext explistContext = ctx.explist();
             int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
             int szVarContextList = varContextList.size();
-            assert(szVarContextList <= returnCount);
-            for (int idx = 0; idx < szVarContextList; idx++) {
-                LuaParser.VarContext varContext = varContextList.get(idx);
-                TerminalNode terminalNode = varContext.NAME();
-                Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
-                if (terminalNode != null) {
-                    Token t = varContext.start;
-                    if (idx == 0) {
-                        if (szVarContextList > 1) {
-                            this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
+            assert (szVarContextList <= returnCount);
+            if (returnCount == 1) {
+                assert (szVarContextList == 1);
+                Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                Token t = varContextList.getFirst().start;
+                this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+            } else {
+                for (int idx = 0; idx < szVarContextList; idx++) {
+                    LuaParser.VarContext varContext = varContextList.get(idx);
+                    TerminalNode terminalNode = varContext.NAME();
+                    Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
+                    if (terminalNode != null) {
+                        Token t = varContext.start;
+                        if (idx == 0) {
+                            if (szVarContextList > 1) {
+                                this.rewriter.insertBefore(t, "(" + Util.SymbolType2Str(symbolType) + " ");
+                            } else {
+                                this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                            }
                         } else {
                             this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                            if (idx + 1 == szVarContextList) {
+                                this.rewriter.insertAfter(t, ")");
+                            }
                         }
                     } else {
-                        this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
-                        if (idx + 1 == szVarContextList) {
-                            this.rewriter.insertAfter(t, ")");
-                        }
+                        throw new UnsupportedOperationException();
                     }
-                } else {
-                    throw new UnsupportedOperationException();
                 }
             }
         }
@@ -194,9 +201,9 @@ public class PassTransformation extends LuaParserBaseListener {
                 int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
                 List<TerminalNode> terminalNodeList = attnamelistContext.NAME();
                 int szTerminalNodeList = terminalNodeList.size();
-                assert(szTerminalNodeList <= returnCount);
+                assert (szTerminalNodeList <= returnCount);
                 if (returnCount == 1) {
-                    assert(szTerminalNodeList == 1);
+                    assert (szTerminalNodeList == 1);
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                     Token t = ctx.start;
                     this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
@@ -216,7 +223,7 @@ public class PassTransformation extends LuaParserBaseListener {
                                 this.rewriter.insertAfter(t, ")");
                             } else {
                                 StringBuilder sb = new StringBuilder();
-                                for (int i = 0 ; i < returnCount - idx - 1; i++) {
+                                for (int i = 0; i < returnCount - idx - 1; i++) {
                                     sb.append(", _");
                                 }
                                 sb.append(")");
@@ -246,14 +253,14 @@ public class PassTransformation extends LuaParserBaseListener {
             } else {
                 //at an alternative:
                 /**
-                int tokenIndex = funcbodyContext.start.getTokenIndex();
-                Token functionToken = this.rewriter.getTokenStream().get(tokenIndex - 3);// or tokenIndex - 4
-                if (!functionToken.getText().equals("function")) {
-                    functionToken = this.rewriter.getTokenStream().get(tokenIndex - 4);
-                }
-                assert(functionToken.getText().equals("function"));
-                this.rewriter.replace(functionToken, "void");
-                */
+                 int tokenIndex = funcbodyContext.start.getTokenIndex();
+                 Token functionToken = this.rewriter.getTokenStream().get(tokenIndex - 3);// or tokenIndex - 4
+                 if (!functionToken.getText().equals("function")) {
+                 functionToken = this.rewriter.getTokenStream().get(tokenIndex - 4);
+                 }
+                 assert(functionToken.getText().equals("function"));
+                 this.rewriter.replace(functionToken, "void");
+                 */
                 ParseTree parentParentTree = funcbodyContext.getParent();
                 if (parentParentTree instanceof LuaParser.StatContext statContext) {
                     assert (statContext.FUNCTION() != null);
