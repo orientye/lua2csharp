@@ -168,7 +168,9 @@ public class PassTransformation extends LuaParserBaseListener {
                 Token t = varContextList.getFirst().start;
                 this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
             } else {
-                for (int idx = 0; idx < szVarContextList; idx++) {
+                assert (returnCount > 1);
+                int idx = 0;
+                for (; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
                     TerminalNode terminalNode = varContext.NAME();
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
@@ -208,6 +210,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     Token t = ctx.start;
                     this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
                 } else {
+                    assert (returnCount > 1);
                     int idx = 0;
                     for (; idx < szTerminalNodeList; idx++) {
                         Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
