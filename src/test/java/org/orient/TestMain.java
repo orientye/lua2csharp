@@ -35,7 +35,7 @@ public class TestMain {
             //lua2csharp
             String result = Transform.transformFromFileName(f.getPath());
             String csResult = result.replaceAll("\\s", "");
-            System.out.println(csResult);
+            System.out.println("result: " + csResult);
 
             //target
             String path = getCsFileName(f.getPath());
@@ -43,7 +43,7 @@ public class TestMain {
             byte[] bytes = Files.readAllBytes(csFile.toPath());
             String content = new String(bytes);
             String csFileContent = content.replaceAll("\\s", "");
-            System.out.println(csFileContent);
+            System.out.println("target: " + csFileContent);
 
             //compare
             if (csResult.equals(csFileContent)) {
