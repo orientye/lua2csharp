@@ -10,7 +10,7 @@ public class TestMain {
         excludes.add("CustomClass.lua");
 
         File file = new File("./src/test/examples/");
-        doFile(file);
+        doFile(file, excludes);
     }
 
     private static void doFile(File file, HashSet<String> excludes) throws Exception {
@@ -33,6 +33,10 @@ public class TestMain {
     private static void doOneFile(File f, HashSet<String> excludes) throws Exception {
         String fileName = f.getName();
         if (fileName.endsWith("lua")) {
+            if (excludes.contains(fileName))
+            {
+                return;
+            }
             System.out.println("\n=================================================\n\n");
             System.out.println("lua: " + f.getPath());
 
