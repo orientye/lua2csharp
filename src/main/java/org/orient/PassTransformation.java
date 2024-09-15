@@ -120,6 +120,10 @@ public class PassTransformation extends LuaParserBaseListener {
                     assert(parent instanceof LuaParser.AttnamelistContext);
                     ParseTree parentParent = parent.getParent();
                     assert(parentParent instanceof LuaParser.StatContext);
+                    LuaParser.StatContext statContext = (LuaParser.StatContext)parentParent;
+                    LuaParser.ExplistContext context = statContext.explist();
+                    LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
+                    rewriter.delete(tableconstructorContext.CCU().getSymbol());
                     TerminalNode terminalNode = (TerminalNode) parseTree;
                 } else {
                     throw new UnsupportedOperationException();
