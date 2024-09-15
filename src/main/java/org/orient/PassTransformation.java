@@ -110,8 +110,8 @@ public class PassTransformation extends LuaParserBaseListener {
 
                     //return ClassABC;
                     Token t = retstatContext.RETURN().getSymbol();
-                    rewriter.replace(t, "}");
-                    rewriter.replace(expContext.start, "");
+                    this.rewriter.replace(t, "}");
+                    this.rewriter.replace(expContext.start, "");
 
                     //local ClassABC = {}
                     ParseTree parseTree = this.annotatedTree.refs.get(expContext);
@@ -123,8 +123,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     LuaParser.StatContext statContext = (LuaParser.StatContext)parentParent;
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
-                    rewriter.delete(tableconstructorContext.CCU().getSymbol());
-                    TerminalNode terminalNode = (TerminalNode) parseTree;
+                    this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
                 } else {
                     throw new UnsupportedOperationException();
                 }
