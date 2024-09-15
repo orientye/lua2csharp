@@ -121,6 +121,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     ParseTree parentParent = parent.getParent();
                     assert(parentParent instanceof LuaParser.StatContext);
                     LuaParser.StatContext statContext = (LuaParser.StatContext)parentParent;
+                    this.rewriter.delete(statContext.EQ().getSymbol());
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
                     this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
