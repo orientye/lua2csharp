@@ -116,6 +116,8 @@ public class PassTransformation extends LuaParserBaseListener {
                     //local ClassABC = {}
                     ParseTree parseTree = this.annotatedTree.refs.get(expContext);
                     assert (parseTree instanceof TerminalNode);
+                    ParseTree parent = parseTree.getParent();
+                    assert(parent instanceof LuaParser.AttnamelistContext);
                     TerminalNode terminalNode = (TerminalNode) parseTree;
                 } else {
                     throw new UnsupportedOperationException();
