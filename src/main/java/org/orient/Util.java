@@ -59,6 +59,7 @@ public class Util {
         if (1 == szExpContextList) {
             LuaParser.ExpContext expContext = expContextList.getFirst();
             List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
+            assert (typeList != null);
             symbolType = typeList.get(idx);
         } else {
             LuaParser.ExpContext expContext = expContextList.get(idx);
