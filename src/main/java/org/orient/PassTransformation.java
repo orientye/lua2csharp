@@ -175,7 +175,12 @@ public class PassTransformation extends LuaParserBaseListener {
                 Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                 LuaParser.VarContext varContext = varContextList.getFirst();
                 Token t = varContext.start;
-                this.rewriter.insertBefore(t, "public const " + Util.SymbolType2Str(symbolType) + " ");
+                if (varContext.DOT() != null && varContext.prefixexp() != null) {
+                    this.rewriter.insertBefore(t, "public const " + Util.SymbolType2Str(symbolType) + " ");
+                } else {
+                    this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                }
+
             } else {
                 assert (returnCount > 1);
                 int idx = 0;
