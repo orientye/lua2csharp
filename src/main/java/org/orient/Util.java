@@ -52,15 +52,21 @@ public class Util {
     }
 
     public static Symbol.Type GetExpContextTypeInList(int idx, LuaParser.ExplistContext explistContext, AnnotatedTree annotatedTree) {
-        Symbol.Type symbolType;
+        Symbol.Type symbolType = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
         List<LuaParser.ExpContext> expContextList = explistContext.exp();
         int szExpContextList = expContextList.size();
         assert (szExpContextList > 0);
         if (1 == szExpContextList) {
             LuaParser.ExpContext expContext = expContextList.getFirst();
             List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
-            assert (typeList != null);
-            symbolType = typeList.get(idx);
+            if (typeList != null) {
+                symbolType = typeList.get(idx);
+            } else {
+                String text = expContext.getText(); //class("CustomClass")
+                if (text.startsWith("class(")) {
+                    symbolType = Symbol.Type.SYMBOL_TYPE_CLASS;
+                }
+            }
         } else {
             LuaParser.ExpContext expContext = expContextList.get(idx);
             List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
@@ -97,6 +103,9 @@ public class Util {
             }
             case Symbol.Type.SYMBOL_TYPE_LUA_TABLE -> {
                 return "public class"; //TODO: default
+            }
+            case Symbol.Type.SYMBOL_TYPE_CLASS -> {
+                return "public class";
             }
         }
         return "unknown";

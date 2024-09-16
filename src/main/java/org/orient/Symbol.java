@@ -54,6 +54,7 @@ public class Symbol {
         SYMBOL_TYPE_STRING,
 
         SYMBOL_TYPE_LUA_TABLE,
+        SYMBOL_TYPE_CLASS,
 
         //SYMBOL_TYPE_LUA_FUNCTION,
         SYMBOL_TYPE_FUNCTION,
