@@ -8,8 +8,9 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         HashSet<String> excludes = new HashSet<>();
         excludes.add("CustomClass.lua");
+        excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/Table.lua");
+        File file = new File("./src/test/examples/");
         doFile(file, excludes);
     }
 
