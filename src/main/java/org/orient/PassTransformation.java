@@ -464,6 +464,8 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
+        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
+        TerminalNode dotTerminalNode = ctx.DOT();
     }
 
     /**

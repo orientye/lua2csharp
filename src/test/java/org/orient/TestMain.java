@@ -9,7 +9,7 @@ public class TestMain {
         HashSet<String> excludes = new HashSet<>();
         excludes.add("CustomClass.lua");
 
-        File file = new File("./src/test/examples/");
+        File file = new File("./src/test/examples/Table.lua");
         doFile(file, excludes);
     }
 
