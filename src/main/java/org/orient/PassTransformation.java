@@ -464,12 +464,6 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
-        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
-        TerminalNode dotTerminalNode = ctx.DOT();
-        if (dotTerminalNode != null && prefixexpContext != null) {
-            this.rewriter.replace(prefixexpContext.start, "public const"); //TODO:
-            this.rewriter.delete(dotTerminalNode.getSymbol());
-        }
     }
 
     /**
@@ -479,6 +473,12 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void exitVar(LuaParser.VarContext ctx) {
+        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
+        TerminalNode dotTerminalNode = ctx.DOT();
+        if (dotTerminalNode != null && prefixexpContext != null) {
+            this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop); //TODO: sure?
+            this.rewriter.delete(dotTerminalNode.getSymbol());
+        }
     }
 
     /**
