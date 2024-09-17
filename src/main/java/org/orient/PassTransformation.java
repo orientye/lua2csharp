@@ -301,15 +301,13 @@ public class PassTransformation extends LuaParserBaseListener {
 
                     LuaParser.FuncnameContext funcnameContext = statContext.funcname();
                     if (funcnameContext != null) {
-                        System.out.println(funcnameContext.getText());
                         if (funcnameContext.COL() != null) {
-                            //TODO: function CustomClass:ctor()
                             List<TerminalNode> list = funcnameContext.NAME();
                             String className = list.getFirst().getText();
                             String funcName = list.getLast().getText();
-                            this.rewriter.delete(list.getFirst().getSymbol());
-                            this.rewriter.delete(funcnameContext.COL().getSymbol());
-                            if (funcName.equals("ctor")) {
+                            this.rewriter.delete(list.getFirst().getSymbol()); // delete className
+                            this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
+                            if (funcName.equals("ctor")) { //CustomClass
                                 this.rewriter.replace(list.getLast().getSymbol(), className);
                             }
                         }
