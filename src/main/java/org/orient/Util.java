@@ -125,4 +125,8 @@ public class Util {
         sb.append(')');
         return sb.toString();
     }
+
+    public static boolean IsConstructorFunction() {
+        return false;
+    }
 }
