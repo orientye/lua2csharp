@@ -124,7 +124,11 @@ public class PassTransformation extends LuaParserBaseListener {
                     this.rewriter.delete(statContext.EQ().getSymbol());
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
-                    this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
+                    if (tableconstructorContext != null) {
+                        this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
+                    } else {
+                        this.rewriter.delete(expContext.start, expContext.stop);
+                    }
                 } else {
                     throw new UnsupportedOperationException();
                 }
