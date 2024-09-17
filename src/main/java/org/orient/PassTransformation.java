@@ -303,7 +303,11 @@ public class PassTransformation extends LuaParserBaseListener {
                     if (funcnameContext != null) {
                         System.out.println(funcnameContext.getText());
                         if (funcnameContext.COL() != null) {
-
+                            //TODO: function CustomClass:ctor()
+                            List<TerminalNode> list = funcnameContext.NAME();
+                            this.rewriter.delete(list.getFirst().getSymbol());
+                            this.rewriter.delete(funcnameContext.COL().getSymbol());
+                            this.rewriter.replace(list.getLast().getSymbol(), list.getFirst().getText());
                         }
                     }
                 }
