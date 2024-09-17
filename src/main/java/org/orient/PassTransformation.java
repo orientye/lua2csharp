@@ -106,7 +106,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     assert (expContextList.size() == 1);
                     LuaParser.ExpContext expContext = expContextList.getFirst();
                     Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
-                    assert (st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
+                    assert (st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE || st == Symbol.Type.SYMBOL_TYPE_CLASS);
 
                     //return ClassABC;
                     Token t = retstatContext.RETURN().getSymbol();

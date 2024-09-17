@@ -26,6 +26,10 @@ public class Util {
         if (ctx.tableconstructor() != null) {
             return Symbol.Type.SYMBOL_TYPE_LUA_TABLE;
         }
+        String text = ctx.getText(); //class("CustomClass")
+        if (text.startsWith("class(")) {
+            return Symbol.Type.SYMBOL_TYPE_CLASS;
+        }
         return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
     }
 
@@ -59,14 +63,7 @@ public class Util {
         if (1 == szExpContextList) {
             LuaParser.ExpContext expContext = expContextList.getFirst();
             List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
-            if (typeList != null) {
-                symbolType = typeList.get(idx);
-            } else {
-                String text = expContext.getText(); //class("CustomClass")
-                if (text.startsWith("class(")) {
-                    symbolType = Symbol.Type.SYMBOL_TYPE_CLASS;
-                }
-            }
+            symbolType = typeList.get(idx);
         } else {
             LuaParser.ExpContext expContext = expContextList.get(idx);
             List<Symbol.Type> typeList = Util.GetExpContextMultiTypeInTree(expContext, annotatedTree);
