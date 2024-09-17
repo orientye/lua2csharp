@@ -56,7 +56,7 @@ public class Util {
     }
 
     public static Symbol.Type GetExpContextTypeInList(int idx, LuaParser.ExplistContext explistContext, AnnotatedTree annotatedTree) {
-        Symbol.Type symbolType = Symbol.Type.SYMBOL_TYPE_UNKNOWN;
+        Symbol.Type symbolType;
         List<LuaParser.ExpContext> expContextList = explistContext.exp();
         int szExpContextList = expContextList.size();
         assert (szExpContextList > 0);

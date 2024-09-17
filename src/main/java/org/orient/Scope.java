@@ -6,7 +6,7 @@ import java.util.Map;
 public class Scope {
     private final String name;
     private final Scope enclosingScope; // null if global (outermost) scope
-    private final Map<String, Symbol> symbols = new LinkedHashMap<String, Symbol>();
+    private final Map<String, Symbol> symbols = new LinkedHashMap<>();
 
     public Scope(String name, Scope enclosingScope) {
         this.name = name;

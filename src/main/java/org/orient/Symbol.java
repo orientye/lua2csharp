@@ -65,7 +65,4 @@ public class Symbol {
     }
 
     //https://github.com/antlr/grammars-v4/blob/master/csharp/CSharpParser.g4
-    public enum CSharpType {
-        SYMBOL_TYPE_UNKNOWN,
-    }
 }
