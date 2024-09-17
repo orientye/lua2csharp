@@ -298,6 +298,14 @@ public class PassTransformation extends LuaParserBaseListener {
                     List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
                     assert (typeList == null);
                     this.rewriter.replace(statContext.FUNCTION().getSymbol(), "void");
+
+                    LuaParser.FuncnameContext funcnameContext = statContext.funcname();
+                    if (funcnameContext != null) {
+                        System.out.println(funcnameContext.getText());
+                        if (funcnameContext.COL() != null) {
+
+                        }
+                    }
                 }
             }
             TerminalNode cp = funcbodyContext.CP();
