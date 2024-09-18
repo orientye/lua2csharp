@@ -181,8 +181,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
             int sz = names.size();
             if (1 == sz) {
                 this.scopeStack.pop();
-            } else {
-                //TODO: class:func
+            } else { //class:func or class.func
+                TerminalNode terminalNode = funcnameContext.COL();
+                if (terminalNode != null) {
+                    this.scopeStack.pop();
+                }
             }
         }
 
