@@ -154,7 +154,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     }
                 }
             } else {
-                //TODO: class:func
+                TerminalNode terminalNode = funcnameContext.COL();
+                if (terminalNode != null) {
+                    String className = funcnameContext.NAME().getFirst().getText();
+                    System.out.println(className);
+                }
             }
         }
     }
@@ -279,11 +283,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterFuncname(LuaParser.FuncnameContext ctx) {
-        TerminalNode terminalNode = ctx.COL();
-        if (terminalNode != null) {
-            String className = ctx.NAME().getFirst().getText();
-            System.out.println(className);
-        }
     }
 
     /**
