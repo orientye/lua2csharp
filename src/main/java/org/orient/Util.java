@@ -126,7 +126,11 @@ public class Util {
         return sb.toString();
     }
 
-    public static boolean IsConstructorFunction() {
+    public static boolean IsConstructorFunction(String funcName) {
+        if (funcName.equals("ctor") || funcName.endsWith(".ctor"))
+            return true;
+        if (funcName.equals("new") || funcName.endsWith(".new"))
+            return true;
         return false;
     }
 }

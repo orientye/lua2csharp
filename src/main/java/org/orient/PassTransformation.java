@@ -307,7 +307,7 @@ public class PassTransformation extends LuaParserBaseListener {
                             String funcName = list.getLast().getText();
                             this.rewriter.delete(list.getFirst().getSymbol()); // delete className
                             this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
-                            if (funcName.equals("ctor")) { //CustomClass
+                            if (Util.IsConstructorFunction(funcName)) { //CustomClass
                                 this.rewriter.replace(list.getLast().getSymbol(), className);
                             }
                         }
