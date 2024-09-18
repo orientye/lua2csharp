@@ -156,8 +156,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
             } else { //class:func or class.func
                 TerminalNode terminalNode = funcnameContext.COL();
                 if (terminalNode != null) {
+                    // scope
                     String className = funcnameContext.NAME().getFirst().getText();
-                    System.out.println(className);
+                    Scope curScope = this.scopeStack.peek();
+                    this.annotatedTree.scopes.put(funcbodyContext, curScope);
+                    Scope scope = new Scope(className, curScope);
+                    this.scopeStack.push(scope);
                 }
             }
         }
