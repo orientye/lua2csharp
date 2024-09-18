@@ -153,7 +153,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         this.annotatedTree.scopes.put(v, scope);
                     }
                 }
-            } else { //class:func or  class.func
+            } else { //class:func or class.func
                 TerminalNode terminalNode = funcnameContext.COL();
                 if (terminalNode != null) {
                     String className = funcnameContext.NAME().getFirst().getText();
