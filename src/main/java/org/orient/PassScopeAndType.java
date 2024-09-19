@@ -179,17 +179,22 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void exitStat(LuaParser.StatContext ctx) {
         // 'function' funcname funcbody
         // local' 'function' NAME funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-                this.scopeStack.pop();
-            } else { //class:func or class.func
-                TerminalNode terminalNode = funcnameContext.COL();
-                if (terminalNode != null) {
+        LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
+        if (funcbodyContext != null) {
+            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+            if (funcnameContext != null) {
+                List<TerminalNode> names = funcnameContext.NAME();
+                int sz = names.size();
+                if (1 == sz) {
                     this.scopeStack.pop();
+                } else { //class:func or class.func
+                    TerminalNode terminalNode = funcnameContext.COL();
+                    if (terminalNode != null) {
+                        this.scopeStack.pop();
+                    }
                 }
+            } else {
+                this.scopeStack.pop();
             }
         }
 
