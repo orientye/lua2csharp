@@ -269,6 +269,34 @@ public class PassTransformation extends LuaParserBaseListener {
         // local' 'function' NAME funcbody
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcbodyContext != null) {
+            //return
+            assert (ctx.FUNCTION() != null);
+            if (ctx.LOCAL() != null) {
+                this.rewriter.replace(ctx.LOCAL().getSymbol(), "");
+            }
+            List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
+            if (typeList != null) {
+                this.rewriter.replace(ctx.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
+            } else {
+                this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
+            }
+
+            //funcname
+            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+            if (funcnameContext != null) {
+                if (funcnameContext.COL() != null) {
+                    List<TerminalNode> list = funcnameContext.NAME();
+                    String className = list.getFirst().getText();
+                    String funcName = list.getLast().getText();
+                    this.rewriter.delete(list.getFirst().getSymbol()); // delete className
+                    this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
+                    if (Util.IsConstructorFunction(funcName)) { //CustomClass
+                        this.rewriter.replace(list.getLast().getSymbol(), className);
+                    }
+                }
+            }
+
+            //prarmas
             LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
             LuaParser.NamelistContext namelistContext = parlistContext.namelist();// TODO: ... Varargs
             if (namelistContext != null) {
@@ -278,42 +306,8 @@ public class PassTransformation extends LuaParserBaseListener {
                     Symbol.Type st = terminalNodeSymbol.getType();
                     this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
                 }
-            } else {
-                //at an alternative:
-                /**
-                 int tokenIndex = funcbodyContext.start.getTokenIndex();
-                 Token functionToken = this.rewriter.getTokenStream().get(tokenIndex - 3);// or tokenIndex - 4
-                 if (!functionToken.getText().equals("function")) {
-                 functionToken = this.rewriter.getTokenStream().get(tokenIndex - 4);
-                 }
-                 assert(functionToken.getText().equals("function"));
-                 this.rewriter.replace(functionToken, "void");
-                 */
-                ParseTree parentParentTree = funcbodyContext.getParent();
-                if (parentParentTree instanceof LuaParser.StatContext statContext) {
-                    assert (statContext.FUNCTION() != null);
-                    if (statContext.LOCAL() != null) {
-                        this.rewriter.replace(statContext.LOCAL().getSymbol(), "");
-                    }
-                    List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
-                    assert (typeList == null);
-                    this.rewriter.replace(statContext.FUNCTION().getSymbol(), "void");
-
-                    LuaParser.FuncnameContext funcnameContext = statContext.funcname();
-                    if (funcnameContext != null) {
-                        if (funcnameContext.COL() != null) {
-                            List<TerminalNode> list = funcnameContext.NAME();
-                            String className = list.getFirst().getText();
-                            String funcName = list.getLast().getText();
-                            this.rewriter.delete(list.getFirst().getSymbol()); // delete className
-                            this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
-                            if (Util.IsConstructorFunction(funcName)) { //CustomClass
-                                this.rewriter.replace(list.getLast().getSymbol(), className);
-                            }
-                        }
-                    }
-                }
             }
+            
             TerminalNode cp = funcbodyContext.CP();
             this.rewriter.insertAfter(cp.getSymbol(), "\n{");
             TerminalNode end = funcbodyContext.END();
