@@ -128,14 +128,26 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void enterStat(LuaParser.StatContext ctx) {
         // 'function' funcname funcbody
         // local' 'function' NAME funcbody
-        LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
-        if (funcnameContext != null) {
-            List<TerminalNode> names = funcnameContext.NAME();
-            int sz = names.size();
-            if (1 == sz) {
-                // scope
-                String name = names.getFirst().getText();
+        if (funcbodyContext != null) {
+            String name = null;
+            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+            if (funcnameContext != null) {
+                List<TerminalNode> names = funcnameContext.NAME();
+                int sz = names.size();
+                if (1 == sz) {
+                    name = names.getFirst().getText();
+                } else { //class:func or class.func
+                    TerminalNode terminalNode = funcnameContext.COL();
+                    if (terminalNode != null) {
+                        name = names.getFirst().getText(); // className
+                    }
+                }
+            } else {
+                name = ctx.NAME().getText();
+            }
+            if (name != null) {
+                //scope
                 Scope curScope = this.scopeStack.peek();
                 this.annotatedTree.scopes.put(funcbodyContext, curScope);
                 Scope scope = new Scope(name, curScope);
@@ -153,16 +165,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     for (TerminalNode v : terminalNodeList) {
                         this.annotatedTree.scopes.put(v, scope);
                     }
-                }
-            } else { //class:func or class.func
-                TerminalNode terminalNode = funcnameContext.COL();
-                if (terminalNode != null) {
-                    // scope
-                    String className = funcnameContext.NAME().getFirst().getText();
-                    Scope curScope = this.scopeStack.peek();
-                    this.annotatedTree.scopes.put(funcbodyContext, curScope);
-                    Scope scope = new Scope(className, curScope);
-                    this.scopeStack.push(scope);
                 }
             }
         }
