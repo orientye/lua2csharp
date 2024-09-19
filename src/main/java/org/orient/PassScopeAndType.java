@@ -127,6 +127,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
     @Override
     public void enterStat(LuaParser.StatContext ctx) {
         // 'function' funcname funcbody
+        // local' 'function' NAME funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcnameContext != null) {
@@ -175,6 +176,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
     @Override
     public void exitStat(LuaParser.StatContext ctx) {
         // 'function' funcname funcbody
+        // local' 'function' NAME funcbody
         LuaParser.FuncnameContext funcnameContext = ctx.funcname();
         if (funcnameContext != null) {
             List<TerminalNode> names = funcnameContext.NAME();
