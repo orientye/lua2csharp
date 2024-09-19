@@ -12,3 +12,8 @@ function func_void_has_param(a)
     print(a);
 end
 func_void_has_param(1);
+
+local function func_local_void_has_param(b)
+    print(b);
+end
+func_local_void_has_param(2);

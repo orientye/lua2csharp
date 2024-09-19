@@ -15,3 +15,9 @@ void func_void_has_param(int a)
     Console.WriteLine(a);
 }
 func_void_has_param(1);
+
+void func_local_void_has_param(int b)
+{
+    Console.WriteLine(b);
+}
+func_local_void_has_param(2);
