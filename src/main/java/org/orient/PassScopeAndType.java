@@ -133,16 +133,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
             String name = null;
             LuaParser.FuncnameContext funcnameContext = ctx.funcname();
             if (funcnameContext != null) {
-                List<TerminalNode> names = funcnameContext.NAME();
-                int sz = names.size();
-                if (1 == sz) {
-                    name = names.getFirst().getText();
-                } else { //class:func or class.func
-                    TerminalNode terminalNode = funcnameContext.COL();
-                    if (terminalNode != null) {
-                        name = funcnameContext.getText(); // className
-                    }
-                }
+                name = funcnameContext.getText();
             } else {
                 name = ctx.NAME().getText();
             }
@@ -181,21 +172,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         // local' 'function' NAME funcbody
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcbodyContext != null) {
-            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-            if (funcnameContext != null) {
-                List<TerminalNode> names = funcnameContext.NAME();
-                int sz = names.size();
-                if (1 == sz) {
-                    this.scopeStack.pop();
-                } else { //class:func or class.func
-                    TerminalNode terminalNode = funcnameContext.COL();
-                    if (terminalNode != null) {
-                        this.scopeStack.pop();
-                    }
-                }
-            } else {
-                this.scopeStack.pop();
-            }
+            this.scopeStack.pop();
         }
 
         // 'local' attnamelist ('=' explist)?
