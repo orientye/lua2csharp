@@ -117,10 +117,10 @@ public class PassTransformation extends LuaParserBaseListener {
                     ParseTree parseTree = this.annotatedTree.refs.get(expContext);
                     assert (parseTree instanceof TerminalNode);
                     ParseTree parent = parseTree.getParent();
-                    assert(parent instanceof LuaParser.AttnamelistContext);
+                    assert (parent instanceof LuaParser.AttnamelistContext);
                     ParseTree parentParent = parent.getParent();
-                    assert(parentParent instanceof LuaParser.StatContext);
-                    LuaParser.StatContext statContext = (LuaParser.StatContext)parentParent;
+                    assert (parentParent instanceof LuaParser.StatContext);
+                    LuaParser.StatContext statContext = (LuaParser.StatContext) parentParent;
                     this.rewriter.delete(statContext.EQ().getSymbol());
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
@@ -182,11 +182,11 @@ public class PassTransformation extends LuaParserBaseListener {
                 LuaParser.VarContext varContext = varContextList.getFirst();
                 Token t = varContext.start;
                 if (varContext.DOT() != null && varContext.prefixexp() != null) {
+                    //TODO:
                     this.rewriter.insertBefore(t, "public const " + Util.SymbolType2Str(symbolType) + " ");
                 } else {
                     this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                 }
-
             } else {
                 assert (returnCount > 1);
                 int idx = 0;
@@ -313,7 +313,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     this.rewriter.insertBefore(terminalNode.getSymbol(), Util.SymbolType2Str(st) + " ");
                 }
             }
-            
+
             TerminalNode cp = funcbodyContext.CP();
             this.rewriter.insertAfter(cp.getSymbol(), "\n{");
             TerminalNode end = funcbodyContext.END();
@@ -502,8 +502,11 @@ public class PassTransformation extends LuaParserBaseListener {
         LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
         TerminalNode dotTerminalNode = ctx.DOT();
         if (dotTerminalNode != null && prefixexpContext != null) {
-            this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop); //TODO: sure?
-            this.rewriter.delete(dotTerminalNode.getSymbol());
+            String prefix = prefixexpContext.getText();
+            if (prefix.equals("self")) {
+                this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop);
+                this.rewriter.delete(dotTerminalNode.getSymbol());
+            }
         }
     }
 
