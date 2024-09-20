@@ -278,6 +278,7 @@ public class PassTransformation extends LuaParserBaseListener {
             if (typeList != null) {
                 this.rewriter.replace(ctx.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
             } else {
+                assert (false);
                 this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
             }
 

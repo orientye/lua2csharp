@@ -7,4 +7,9 @@ public class CustomClass
     {
 
     }
+
+    public int GetId()
+    {
+        return id_;
+    }
 }

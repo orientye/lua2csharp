@@ -5,4 +5,8 @@ function CustomClass:ctor()
     self.name_ = ""
 end
 
+function CustomClass:getId()
+    return self.id_;
+end
+
 return CustomClass
