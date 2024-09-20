@@ -517,6 +517,11 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void enterPrefixexp(LuaParser.PrefixexpContext ctx) {
+        String prefix = ctx.getText();
+        if (prefix.startsWith("self.")) {
+            this.rewriter.delete(ctx.start);
+            this.rewriter.delete(ctx.DOT().getFirst().getSymbol());
+        }
     }
 
     /**
