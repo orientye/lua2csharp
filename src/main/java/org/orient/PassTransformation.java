@@ -278,8 +278,13 @@ public class PassTransformation extends LuaParserBaseListener {
             if (typeList != null) {
                 this.rewriter.replace(ctx.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
             } else {
-                assert (false);
-                this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
+                LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+                String funcName = funcnameContext.getText();
+                if (Util.IsConstructorFunction(funcName)) {
+                    this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public");
+                } else {
+                    this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
+                }
             }
 
             //funcname
