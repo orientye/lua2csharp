@@ -415,9 +415,16 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
-        Scope curScope = this.scopeStack.peek();
-        String scopeName = curScope.getName();
-        System.out.println(curScope.toString());
+        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
+        TerminalNode dotTerminalNode = ctx.DOT();
+        if (dotTerminalNode != null && prefixexpContext != null) {
+            String prefix = prefixexpContext.getText();
+            if (prefix.equals("self")) {
+                Scope curScope = this.scopeStack.peek();
+                String scopeName = curScope.getName();
+                System.out.println(curScope.toString());
+            }
+        }
     }
 
     /**
