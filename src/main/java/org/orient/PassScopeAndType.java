@@ -422,6 +422,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
             if (prefix.equals("self")) {
                 Scope curScope = this.scopeStack.peek();
                 String scopeName = curScope.getName();
+                int index = scopeName.indexOf(":");
+                assert(index != -1);
+                String className = scopeName.substring(0, index);
                 System.out.println(curScope.toString());
             }
         }
