@@ -428,6 +428,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 TerminalNode nameTerminalNode = ctx.NAME();
                 String name = nameTerminalNode.getText();
                 String symbolName = className + "." + name;
+                System.out.println(symbolName);
                 System.out.println(curScope.toString());
             }
         }
