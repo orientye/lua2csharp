@@ -24,6 +24,8 @@ public class Scope {
         return null;
     }
 
+    public String getName() { return name; }
+
     public String toString() {
         return "Scope " + name + " :" + symbols.keySet();
     }

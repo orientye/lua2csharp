@@ -416,6 +416,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
         Scope curScope = this.scopeStack.peek();
+        String scopeName = curScope.getName();
         System.out.println(curScope.toString());
     }
 
