@@ -425,6 +425,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 int index = scopeName.indexOf(":");
                 assert(index != -1);
                 String className = scopeName.substring(0, index);
+                TerminalNode nameTerminalNode = ctx.NAME();
+                String name = nameTerminalNode.getText();
+                String symbolName = className + "." + name;
                 System.out.println(curScope.toString());
             }
         }
