@@ -6,6 +6,9 @@ import java.util.List;
 public class Util {
 
     public static Symbol.Type GetExpContextType(LuaParser.ExpContext ctx) {
+        if (ctx.NIL() != null) {
+            return Symbol.Type.SYMBOL_TYPE_LUA_NIL;
+        }
         if (ctx.number() != null) {
             if (ctx.number().INT() != null || ctx.number().HEX() != null) {
                 return Symbol.Type.SYMBOL_TYPE_INT;
