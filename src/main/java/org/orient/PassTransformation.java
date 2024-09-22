@@ -281,7 +281,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 LuaParser.FuncnameContext funcnameContext = ctx.funcname();
                 if (funcnameContext != null) {
                     String funcName = funcnameContext.getText();
-                    if (Util.IsConstructorFunction(funcName)) {
+                    if (UtilTable.IsConstructorFunction(funcName)) {
                         this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public");
                     } else {
                         this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
@@ -300,7 +300,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     String funcName = list.getLast().getText();
                     this.rewriter.delete(list.getFirst().getSymbol()); // delete className
                     this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
-                    if (Util.IsConstructorFunction(funcName)) { //CustomClass
+                    if (UtilTable.IsConstructorFunction(funcName)) { //CustomClass
                         this.rewriter.replace(list.getLast().getSymbol(), className);
                     }
                 }
