@@ -10,7 +10,7 @@ public class TestMain {
         excludes.add("Class.lua");
         excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/CustomClass.lua");
+        File file = new File("./src/test/examples/Table.lua");
         doFile(file, excludes);
     }
 
