@@ -7,6 +7,7 @@ class T
     public void SayHello()
     {
         Console.WriteLine($"Hello {Name}");
+        Console.WriteLine($"Second {Name}");
     }
 }
 
