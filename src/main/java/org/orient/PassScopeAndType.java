@@ -171,7 +171,28 @@ public class PassScopeAndType extends LuaParserBaseListener {
         // varlist '=' explist
         LuaParser.VarlistContext varlistContext = ctx.varlist();
         if (varlistContext != null) {
-
+            List<LuaParser.VarContext> varContextList = varlistContext.var();
+            for (int i = 0; i < varContextList.size(); i++) {
+                LuaParser.VarContext varContext = varContextList.get(i);
+                LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
+                TerminalNode dotTerminalNode = varContext.DOT();
+                if (dotTerminalNode != null && prefixexpContext != null) {
+                    String prefix = prefixexpContext.getText();
+                    if (prefix.equals("self")) {
+                        Scope curScope = this.scopeStack.peek();
+                        String scopeName = curScope.getName();
+                        int index = scopeName.indexOf(":");
+                        assert(index != -1);
+                        String className = scopeName.substring(0, index);
+                        TerminalNode nameTerminalNode = varContext.NAME();
+                        String name = nameTerminalNode.getText();
+                        String symbolName = className + "." + name;
+                        Symbol.create(symbolName, Symbol.Type.SYMBOL_TYPE_UNKNOWN, prefixexpContext, this.annotatedTree);
+                        System.out.println(symbolName);
+                        System.out.println(curScope.toString());
+                    }
+                }
+            }
         }
 
         // 'function' funcname funcbody
@@ -421,24 +442,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void enterVar(LuaParser.VarContext ctx) {
-        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
-        TerminalNode dotTerminalNode = ctx.DOT();
-        if (dotTerminalNode != null && prefixexpContext != null) {
-            String prefix = prefixexpContext.getText();
-            if (prefix.equals("self")) {
-                Scope curScope = this.scopeStack.peek();
-                String scopeName = curScope.getName();
-                int index = scopeName.indexOf(":");
-                assert(index != -1);
-                String className = scopeName.substring(0, index);
-                TerminalNode nameTerminalNode = ctx.NAME();
-                String name = nameTerminalNode.getText();
-                String symbolName = className + "." + name;
-                Symbol.create(symbolName, Symbol.Type.SYMBOL_TYPE_UNKNOWN, prefixexpContext, this.annotatedTree);
-                System.out.println(symbolName);
-                System.out.println(curScope.toString());
-            }
-        }
     }
 
     /**
