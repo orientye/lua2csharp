@@ -1,0 +1,1 @@
+local person = {name = "Bob", age = 30}
