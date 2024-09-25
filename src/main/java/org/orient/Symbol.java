@@ -12,6 +12,7 @@ public class Symbol {
     }
 
     public static Symbol create(String name, Type type, ParseTree parseTree, AnnotatedTree annotatedTree) {
+        System.out.println("Symbol create name[" + name +"]" + " type[" + type +"]");
         Symbol symbol = new Symbol();
         symbol.name = name;
         symbol.ty = type;

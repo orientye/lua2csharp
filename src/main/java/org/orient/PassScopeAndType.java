@@ -1,6 +1,7 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -188,8 +189,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         String name = nameTerminalNode.getText();
                         String symbolName = className + "." + name;
                         Symbol.create(symbolName, Symbol.Type.SYMBOL_TYPE_UNKNOWN, prefixexpContext, this.annotatedTree);
-                        System.out.println(symbolName);
-                        System.out.println(curScope.toString());
                     }
                 }
             }
