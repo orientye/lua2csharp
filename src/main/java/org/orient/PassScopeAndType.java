@@ -1,6 +1,7 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -170,6 +171,37 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void exitStat(LuaParser.StatContext ctx) {
         // varlist '=' explist
         LuaParser.VarlistContext varlistContext = ctx.varlist();
+        if (varlistContext != null) {
+            List<LuaParser.VarContext> varContextList = varlistContext.var();
+            LuaParser.ExplistContext explistContext = ctx.explist();
+            int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
+            int szVarContextList = varContextList.size();
+            assert (szVarContextList <= returnCount);
+            if (returnCount == 1) {
+                assert (szVarContextList == 1);
+                Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                LuaParser.VarContext varContext = varContextList.getFirst();
+                Token t = varContext.start;
+                if (varContext.DOT() != null && varContext.prefixexp() != null) {
+                   //TODO:
+                } else {
+                    //TODO:
+                }
+            } else {
+                assert (returnCount > 1);
+                int idx = 0;
+                for (; idx < szVarContextList; idx++) {
+                    LuaParser.VarContext varContext = varContextList.get(idx);
+                    TerminalNode terminalNode = varContext.NAME();
+                    Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
+                    if (terminalNode != null) {
+                        //TODO:
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            }
+        }
         if (varlistContext != null) {
             List<LuaParser.VarContext> varContextList = varlistContext.var();
             Scope curScope = this.scopeStack.peek();
