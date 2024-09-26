@@ -177,42 +177,30 @@ public class PassScopeAndType extends LuaParserBaseListener {
             int returnCount = Util.GetExpContextReturnCount(explistContext, annotatedTree);
             int szVarContextList = varContextList.size();
             assert (szVarContextList <= returnCount);
+            Scope curScope = this.scopeStack.peek();
+            String scopeName = curScope.getName();
             if (returnCount == 1) {
                 assert (szVarContextList == 1);
                 Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                 LuaParser.VarContext varContext = varContextList.getFirst();
-                Token t = varContext.start;
-                if (varContext.DOT() != null && varContext.prefixexp() != null) {
-                   //TODO:
-                } else {
-                    //TODO:
+                LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
+                if (prefixexpContext != null) {
+                    String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
+                    assert (!symbolName.isEmpty());
+                    Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
                 }
             } else {
                 assert (returnCount > 1);
                 int idx = 0;
                 for (; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
-                    TerminalNode terminalNode = varContext.NAME();
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
-                    if (terminalNode != null) {
-                        //TODO:
-                    } else {
-                        throw new UnsupportedOperationException();
+                    LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
+                    if (prefixexpContext != null) {
+                        String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
+                        assert (!symbolName.isEmpty());
+                        Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
                     }
-                }
-            }
-        }
-        if (varlistContext != null) {
-            List<LuaParser.VarContext> varContextList = varlistContext.var();
-            Scope curScope = this.scopeStack.peek();
-            String scopeName = curScope.getName();
-            for (int i = 0; i < varContextList.size(); i++) {
-                LuaParser.VarContext varContext = varContextList.get(i);
-                LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
-                if (prefixexpContext != null) {
-                    String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
-                    assert (!symbolName.isEmpty());
-                    Symbol.create(symbolName, Symbol.Type.SYMBOL_TYPE_UNKNOWN, prefixexpContext, this.annotatedTree);
                 }
             }
         }
