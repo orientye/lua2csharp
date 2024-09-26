@@ -23,12 +23,15 @@ public class Transform {
 
         //Pass
         PassScopeAndType PassScopeAndType = new PassScopeAndType(annotatedTree);
+        System.out.println("\nPassScopeAndType 1st:");
         walker.walk(PassScopeAndType, tree);
         PassScopeAndType.Reset();
+        System.out.println("\nPassScopeAndType 2nd:");
         walker.walk(PassScopeAndType, tree);
 
         //Pass
         PassTransformation passTransformation = new PassTransformation(annotatedTree, tokens);
+        System.out.println("\nPassTransformation:");
         walker.walk(passTransformation, tree);
 
         String result = passTransformation.getResult();
