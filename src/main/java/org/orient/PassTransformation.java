@@ -261,7 +261,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     }
                 }
             } else {
-                //TODO:
+                throw new UnsupportedOperationException();
             }
         }
 

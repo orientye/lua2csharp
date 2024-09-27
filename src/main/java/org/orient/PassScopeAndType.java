@@ -228,7 +228,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     curScope.add(symbolTerminal);
                 }
             } else {
-                //TODO:
+                throw new UnsupportedOperationException();
             }
         }
     }
