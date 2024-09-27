@@ -22,9 +22,7 @@ public class TestMain {
         File file = new File("./src/test/examples/CustomClass.lua");
         if (file.isFile()) {
             String fileName = file.getName();
-            if (excludes.contains(fileName)) {
-                excludes.remove(fileName);
-            }
+            excludes.remove(fileName);
         }
         doFile(file, excludes);
     }
