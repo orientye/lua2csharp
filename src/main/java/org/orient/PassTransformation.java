@@ -206,9 +206,7 @@ public class PassTransformation extends LuaParserBaseListener {
                                 this.rewriter.insertAfter(t, ")");
                             } else {
                                 StringBuilder sb = new StringBuilder();
-                                for (int i = 0; i < returnCount - idx - 1; i++) {
-                                    sb.append(", _");
-                                }
+                                sb.append(", _".repeat(returnCount - idx - 1));
                                 sb.append(")");
                                 this.rewriter.insertAfter(t, sb);
                             }
@@ -251,9 +249,7 @@ public class PassTransformation extends LuaParserBaseListener {
                                 this.rewriter.insertAfter(t, ")");
                             } else {
                                 StringBuilder sb = new StringBuilder();
-                                for (int i = 0; i < returnCount - idx - 1; i++) {
-                                    sb.append(", _");
-                                }
+                                sb.append(", _".repeat(returnCount - idx - 1));
                                 sb.append(")");
                                 this.rewriter.insertAfter(t, sb);
                             }
@@ -498,7 +494,7 @@ public class PassTransformation extends LuaParserBaseListener {
         LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
         TerminalNode dotTerminalNode = ctx.DOT();
         if (dotTerminalNode != null && prefixexpContext != null) {
-            String prefix = prefixexpContext.getText();
+            //String prefix = prefixexpContext.getText();
             //if (prefix.equals("self")) { //TODO:
                 this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop);
                 this.rewriter.delete(dotTerminalNode.getSymbol());
