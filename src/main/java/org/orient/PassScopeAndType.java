@@ -1,7 +1,6 @@
 package org.orient;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -131,7 +130,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
         // local' 'function' NAME funcbody
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcbodyContext != null) {
-            String name = null;
+            String name;
             LuaParser.FuncnameContext funcnameContext = ctx.funcname();
             if (funcnameContext != null) {
                 name = funcnameContext.getText();
