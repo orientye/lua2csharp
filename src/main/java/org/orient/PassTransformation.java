@@ -189,8 +189,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 }
             } else {
                 assert (returnCount > 1);
-                int idx = 0;
-                for (; idx < szVarContextList; idx++) {
+                for (int idx = 0; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
                     TerminalNode terminalNode = varContext.NAME();
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
