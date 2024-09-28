@@ -141,6 +141,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 //scope
                 Scope curScope = this.scopeStack.peek();
                 this.annotatedTree.scopes.put(funcbodyContext, curScope);
+                //TODO: class scope
                 Scope scope = new Scope(name, curScope);
                 this.scopeStack.push(scope);
 
