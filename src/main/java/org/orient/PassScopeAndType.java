@@ -190,8 +190,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 }
             } else {
                 assert (returnCount > 1);
-                int idx = 0;
-                for (; idx < szVarContextList; idx++) {
+                for (int idx = 0; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();

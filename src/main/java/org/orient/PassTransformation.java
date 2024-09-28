@@ -234,8 +234,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     this.rewriter.replace(t, Util.SymbolType2Str(symbolType));
                 } else {
                     assert (returnCount > 1);
-                    int idx = 0;
-                    for (; idx < szTerminalNodeList; idx++) {
+                    for (int idx = 0; idx < szTerminalNodeList; idx++) {
                         Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                         TerminalNode terminalNode = terminalNodeList.get(idx);
                         Token t = terminalNode.getSymbol();
