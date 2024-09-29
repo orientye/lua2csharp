@@ -3,6 +3,20 @@ package org.orient;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilTable {
+    public static String GetClassNameFromFuncName(String funcName) {
+        int index = funcName.indexOf(":");
+        if (index != -1) {
+            String className = funcName.substring(0, index);
+            return className;
+        }
+        index = funcName.indexOf(".");
+        if (index != -1) {
+            String className = funcName.substring(0, index);
+            return className;
+        }
+        return "UnknownClassName";
+    }
+
     public static boolean IsConstructorFunction(String funcName) {
         if (funcName.equals("ctor") || funcName.endsWith(":ctor") || funcName.endsWith(".ctor")) return true;
         return funcName.equals("new") || funcName.endsWith(":new") || funcName.endsWith(".new");
