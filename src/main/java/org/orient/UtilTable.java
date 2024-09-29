@@ -14,7 +14,7 @@ public class UtilTable {
             String className = funcName.substring(0, index);
             return className;
         }
-        return "UnknownClassName";
+        return null;
     }
 
     public static boolean IsConstructorFunction(String funcName) {
