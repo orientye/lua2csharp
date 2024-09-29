@@ -456,6 +456,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 Symbol symbol = curScope.resolve(ctxText);
                 if (symbol != null) {
                     this.annotatedTree.symbols.put(ctx, symbol);
+                } else {
+                    //TODO: try class
                 }
             }
         }
