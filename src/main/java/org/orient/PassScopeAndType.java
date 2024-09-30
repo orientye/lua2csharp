@@ -28,6 +28,15 @@ public class PassScopeAndType extends LuaParserBaseListener {
         this.annotatedTree.scopes.clear();
     }
 
+    private Scope findScope(String name) {
+        for (Scope item : scopeStack) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -192,7 +201,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 if (prefixexpContext != null) {
                     String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
                     assert (!symbolName.isEmpty());
-                    Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                    Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                    curScope.getEnclosingScope().add(symbol);
                 }
             } else {
                 assert (returnCount > 1);
@@ -203,7 +213,8 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     if (prefixexpContext != null) {
                         String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
                         assert (!symbolName.isEmpty());
-                        Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                        Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                        curScope.getEnclosingScope().add(symbol);
                     }
                 }
             }

@@ -24,7 +24,13 @@ public class Scope {
         return null;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
+
+    public Scope getEnclosingScope() {
+        return enclosingScope;
+    }
 
     public String toString() {
         return "Scope " + name + " : " + symbols.keySet();
