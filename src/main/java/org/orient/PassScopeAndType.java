@@ -462,7 +462,10 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         String scopeName = curScope.getName();
                         String symbolName = UtilTable.GetMemberVariableSymbolName(prefixexpContext, scopeName);
                         if (!symbolName.isEmpty()) {
-                            System.out.println(symbolName);
+                            symbol = curScope.resolve(symbolName);
+                            if (symbol != null) {
+                                this.annotatedTree.symbols.put(ctx, symbol);
+                            }
                         }
                     }
                 }
