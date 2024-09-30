@@ -51,4 +51,19 @@ public class UtilTable {
         }
         return "";
     }
+
+    public static String GetMemberVariableSymbolName(LuaParser.PrefixexpContext prefixexpContext, String scopeName) {
+        if (prefixexpContext != null) {
+            String prefix = prefixexpContext.getText();// self or ClassName
+            int index = scopeName.indexOf(":");
+            assert (index != -1);
+            String className = scopeName.substring(0, index);
+            if (prefix.startsWith("self.")) {
+                String name = prefix.substring(5);
+                String symbolName = className + "." + name;
+                return symbolName;
+            }
+        }
+        return "";
+    }
 }

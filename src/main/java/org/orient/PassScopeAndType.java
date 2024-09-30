@@ -458,11 +458,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     this.annotatedTree.symbols.put(ctx, symbol);
                 } else {
                     LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
-                    if (ctxText.startsWith("self.")) {
+                    if (prefixexpContext != null) {
                         String scopeName = curScope.getName();
-                        String className = UtilTable.GetClassNameFromFuncName(scopeName);
-                        if (className != null) {
-                            System.out.println(ctxText);
+                        String symbolName = UtilTable.GetMemberVariableSymbolName(prefixexpContext, scopeName);
+                        if (!symbolName.isEmpty()) {
+                            System.out.println(symbolName);
                         }
                     }
                 }
