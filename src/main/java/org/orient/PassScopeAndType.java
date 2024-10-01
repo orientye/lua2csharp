@@ -196,6 +196,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     assert (!symbolName.isEmpty());
                     Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
                     curScope.add(symbol);
+                    //TODO: class field
                 }
             } else {
                 assert (returnCount > 1);
