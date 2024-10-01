@@ -28,15 +28,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
         this.annotatedTree.scopes.clear();
     }
 
-    private Scope findScope(String name) {
-        for (Scope item : scopeStack) {
-            if (item.getName().equals(name)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
     /**
      * {@inheritDoc}
      *
