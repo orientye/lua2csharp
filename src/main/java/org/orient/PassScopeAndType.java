@@ -152,9 +152,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 this.annotatedTree.scopes.put(funcbodyContext, curScope);
                 String className = UtilTable.GetClassNameFromFuncName(name);
                 if (className != null) {
-                    Scope classScope = new Scope(className, curScope);
-                    this.scopeStack.push(classScope);
-                    curScope = classScope;
+                    //TODO: create class if non exist
                 }
                 Scope scope = new Scope(name, curScope);
                 this.scopeStack.push(scope);
@@ -225,18 +223,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
         LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
         if (funcbodyContext != null) {
             this.scopeStack.pop();
-            //class scope
-            String name;
-            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
-            if (funcnameContext != null) {
-                name = funcnameContext.getText();
-            } else {
-                name = ctx.NAME().getText();
-            }
-            String className = UtilTable.GetClassNameFromFuncName(name);
-            if (className != null) {
-                this.scopeStack.pop();
-            }
         }
 
         // 'local' attnamelist ('=' explist)?
