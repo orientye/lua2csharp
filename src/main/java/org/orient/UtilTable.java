@@ -45,8 +45,7 @@ public class UtilTable {
                 if (prefix.equals(className) || prefix.equals("self")) {
                     TerminalNode nameTerminalNode = varContext.NAME();
                     String name = nameTerminalNode.getText();
-                    String symbolName = className + "." + name;
-                    return symbolName;
+                    return className + "." + name;
                 }
         }
         return "";
@@ -60,8 +59,7 @@ public class UtilTable {
                 String className = scopeName.substring(0, index);
                 if (prefix.startsWith("self.")) {
                     String name = prefix.substring(5);
-                    String symbolName = className + "." + name;
-                    return symbolName;
+                    return className + "." + name;
                 }
             }
         }
