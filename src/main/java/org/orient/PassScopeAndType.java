@@ -195,7 +195,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);
                     assert (fieldName != null);
                     Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, this.annotatedTree);
-                    curScope.add(symbol);
                     String className = UtilTable.GetClassNameFromFuncName(scopeName);
                     assert (className != null);
                     Class cls = this.annotatedTree.classes.get(className);
@@ -212,7 +211,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);
                         assert (fieldName != null);
                         Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, this.annotatedTree);
-                        curScope.add(symbol);
+                        String className = UtilTable.GetClassNameFromFuncName(scopeName);
+                        assert (className != null);
+                        Class cls = this.annotatedTree.classes.get(className);
+                        assert (cls != null);
+                        cls.fields.put(fieldName, symbol);
                     }
                 }
             }
