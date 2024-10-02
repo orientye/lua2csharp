@@ -192,11 +192,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 LuaParser.VarContext varContext = varContextList.getFirst();
                 LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
                 if (prefixexpContext != null) {
-                    String symbolName = UtilTable.GetMemberVariableName(varContext, scopeName);
-                    assert (!symbolName.isEmpty());
-                    Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                    String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);
+                    assert (fieldName != null);
+                    Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, this.annotatedTree);
                     curScope.add(symbol);
-                    //TODO: class field
+                    String className = UtilTable.GetClassNameFromFuncName(scopeName);
+                    assert (className != null);
                 }
             } else {
                 assert (returnCount > 1);
@@ -205,9 +206,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
                     if (prefixexpContext != null) {
-                        String symbolName = UtilTable.GetMemberVariableName(varContext, scopeName);
-                        assert (!symbolName.isEmpty());
-                        Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
+                        String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);
+                        assert (fieldName != null);
+                        Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, this.annotatedTree);
                         curScope.add(symbol);
                     }
                 }

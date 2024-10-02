@@ -45,7 +45,7 @@ public class UtilTable {
                     return nameTerminalNode.getText();
                 }
         }
-        return "";
+        return null;
     }
 
     public static String GetMemberVariableName(LuaParser.PrefixexpContext prefixexpContext, String scopeName) {
@@ -58,6 +58,6 @@ public class UtilTable {
                 }
             }
         }
-        return "";
+        return null;
     }
 }
