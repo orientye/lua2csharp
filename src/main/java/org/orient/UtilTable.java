@@ -32,7 +32,7 @@ public class UtilTable {
         }
     }
 
-    public static String GetMemberVariableSymbolName(LuaParser.VarContext varContext, String scopeName) {
+    public static String GetMemberVariableName(LuaParser.VarContext varContext, String scopeName) {
         LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
         TerminalNode dotTerminalNode = varContext.DOT();
         if (dotTerminalNode != null && prefixexpContext != null) {
@@ -48,7 +48,7 @@ public class UtilTable {
         return "";
     }
 
-    public static String GetMemberVariableSymbolName(LuaParser.PrefixexpContext prefixexpContext, String scopeName) {
+    public static String GetMemberVariableName(LuaParser.PrefixexpContext prefixexpContext, String scopeName) {
         if (prefixexpContext != null) {
             String prefix = prefixexpContext.getText();// self or ClassName
             int index = scopeName.indexOf(":");

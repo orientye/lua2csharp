@@ -192,7 +192,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 LuaParser.VarContext varContext = varContextList.getFirst();
                 LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
                 if (prefixexpContext != null) {
-                    String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
+                    String symbolName = UtilTable.GetMemberVariableName(varContext, scopeName);
                     assert (!symbolName.isEmpty());
                     Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
                     curScope.add(symbol);
@@ -205,7 +205,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
                     LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
                     if (prefixexpContext != null) {
-                        String symbolName = UtilTable.GetMemberVariableSymbolName(varContext, scopeName);
+                        String symbolName = UtilTable.GetMemberVariableName(varContext, scopeName);
                         assert (!symbolName.isEmpty());
                         Symbol symbol = Symbol.create(symbolName, symbolType, prefixexpContext, this.annotatedTree);
                         curScope.add(symbol);
@@ -453,7 +453,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
                     if (prefixexpContext != null) {
                         String scopeName = curScope.getName();
-                        String symbolName = UtilTable.GetMemberVariableSymbolName(prefixexpContext, scopeName);
+                        String symbolName = UtilTable.GetMemberVariableName(prefixexpContext, scopeName);
                         if (!symbolName.isEmpty()) {
                             symbol = curScope.resolve(symbolName);
                             if (symbol != null) {
