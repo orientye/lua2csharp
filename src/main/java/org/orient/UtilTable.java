@@ -6,13 +6,11 @@ public class UtilTable {
     public static String GetClassNameFromFuncName(String funcName) {
         int index = funcName.indexOf(":");
         if (index != -1) {
-            String className = funcName.substring(0, index);
-            return className;
+            return funcName.substring(0, index);
         }
         index = funcName.indexOf(".");
         if (index != -1) {
-            String className = funcName.substring(0, index);
-            return className;
+            return funcName.substring(0, index);
         }
         return null;
     }
@@ -44,8 +42,7 @@ public class UtilTable {
                 String className = scopeName.substring(0, index);
                 if (prefix.equals(className) || prefix.equals("self")) {
                     TerminalNode nameTerminalNode = varContext.NAME();
-                    String name = nameTerminalNode.getText();
-                    return className + "." + name;
+                    return nameTerminalNode.getText();
                 }
         }
         return "";
@@ -56,10 +53,8 @@ public class UtilTable {
             String prefix = prefixexpContext.getText();// self or ClassName
             int index = scopeName.indexOf(":");
             if (index != -1) {
-                String className = scopeName.substring(0, index);
                 if (prefix.startsWith("self.")) {
-                    String name = prefix.substring(5);
-                    return className + "." + name;
+                    return prefix.substring(5);
                 }
             }
         }
