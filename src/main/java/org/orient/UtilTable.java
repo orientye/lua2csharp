@@ -60,4 +60,18 @@ public class UtilTable {
         }
         return null;
     }
+
+    public static void AddField(LuaParser.VarContext varContext, String scopeName, Symbol.Type symbolType, AnnotatedTree annotatedTree) {
+        LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
+        if (prefixexpContext != null) {
+            String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);
+            assert (fieldName != null);
+            Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, annotatedTree);
+            String className = UtilTable.GetClassNameFromFuncName(scopeName);
+            assert (className != null);
+            Class cls = annotatedTree.classes.get(className);
+            assert (cls != null);
+            cls.fields.put(fieldName, symbol);
+        }
+    }
 }
