@@ -198,6 +198,9 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     curScope.add(symbol);
                     String className = UtilTable.GetClassNameFromFuncName(scopeName);
                     assert (className != null);
+                    Class cls = this.annotatedTree.classes.get(className);
+                    assert (cls != null);
+                    cls.fields.put(fieldName, symbol);
                 }
             } else {
                 assert (returnCount > 1);
