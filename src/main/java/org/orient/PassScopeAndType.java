@@ -99,7 +99,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                             Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                             if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
                                 if (funcName != null) {
-
+                                    st = UtilTable.GetExpContextTypeInClass(expContext, funcName);
                                 }
                             }
                             stList.add(st);

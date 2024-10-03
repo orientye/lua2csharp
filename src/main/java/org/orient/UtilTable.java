@@ -15,6 +15,11 @@ public class UtilTable {
         return null;
     }
 
+    public static Symbol.Type GetExpContextTypeInClass(LuaParser.ExpContext ctx, String funcName) {
+        String className = GetClassNameFromFuncName(funcName);
+        return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
+    }
+
     public static boolean IsConstructorFunction(String funcName) {
         if (funcName.equals("ctor") || funcName.endsWith(":ctor") || funcName.endsWith(".ctor")) return true;
         return funcName.equals("new") || funcName.endsWith(":new") || funcName.endsWith(".new");
