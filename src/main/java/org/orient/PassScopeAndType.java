@@ -89,6 +89,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 if (parentTree instanceof LuaParser.FuncbodyContext funcbodyContext) {
                     ParseTree parentParentTree = parentTree.getParent();
                     if (parentParentTree instanceof LuaParser.StatContext) {
+                        String funcName = null;
+                        LuaParser.FuncnameContext funcnameContext = ((LuaParser.StatContext) parentParentTree).funcname();
+                        if (funcnameContext != null) {
+                            funcName = funcnameContext.getText();
+                        }
                         List<Symbol.Type> stList = new ArrayList<>();
                         for (LuaParser.ExpContext expContext : expContextList) {
                             Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
