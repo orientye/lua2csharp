@@ -42,13 +42,13 @@ public class UtilTable {
         TerminalNode dotTerminalNode = varContext.DOT();
         if (dotTerminalNode != null && prefixexpContext != null) {
             String prefix = prefixexpContext.getText();// self or ClassName
-                int index = scopeName.indexOf(":");
-                assert (index != -1);
-                String className = scopeName.substring(0, index);
-                if (prefix.equals(className) || prefix.equals("self")) {
-                    TerminalNode nameTerminalNode = varContext.NAME();
-                    return nameTerminalNode.getText();
-                }
+            int index = scopeName.indexOf(":");
+            assert (index != -1);
+            String className = scopeName.substring(0, index);
+            if (prefix.equals(className) || prefix.equals("self")) {
+                TerminalNode nameTerminalNode = varContext.NAME();
+                return nameTerminalNode.getText();
+            }
         }
         return null;
     }
