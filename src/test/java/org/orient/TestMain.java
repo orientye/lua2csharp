@@ -47,8 +47,7 @@ public class TestMain {
     private static void doOneFile(File f, HashSet<String> excludes) throws Exception {
         String fileName = f.getName();
         if (fileName.endsWith("lua")) {
-            if (excludes.contains(fileName))
-            {
+            if (excludes.contains(fileName)) {
                 return;
             }
             System.out.println("\n=================================================\n\n");

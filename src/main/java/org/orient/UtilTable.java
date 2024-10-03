@@ -15,8 +15,19 @@ public class UtilTable {
         return null;
     }
 
-    public static Symbol.Type GetExpContextTypeInClass(LuaParser.ExpContext ctx, String funcName) {
+    public static Symbol.Type GetExpContextTypeInClass(LuaParser.ExpContext ctx, String funcName, AnnotatedTree annotatedTree) {
         String className = GetClassNameFromFuncName(funcName);
+        if (className != null) {
+            LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
+            if (prefixexpContext != null) {
+                String prefix = prefixexpContext.getText();// self or ClassName
+                int index = prefix.indexOf(".");
+                String fieldName = prefix.substring(index + 1);
+                Class cls = annotatedTree.classes.get(className);
+                Symbol symbol = cls.fields.get(fieldName);
+                return symbol.getType();
+            }
+        }
         return Symbol.Type.SYMBOL_TYPE_UNKNOWN;
     }
 
