@@ -97,6 +97,11 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         List<Symbol.Type> stList = new ArrayList<>();
                         for (LuaParser.ExpContext expContext : expContextList) {
                             Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
+                            if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+                                if (funcName != null) {
+
+                                }
+                            }
                             stList.add(st);
                         }
                         this.annotatedTree.funcReturns.put(funcbodyContext, stList);
