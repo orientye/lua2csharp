@@ -90,4 +90,8 @@ public class UtilTable {
             cls.fields.put(fieldName, symbol);
         }
     }
+
+    public static String GetClassFields(Class cls) {
+        return "";
+    }
 }
