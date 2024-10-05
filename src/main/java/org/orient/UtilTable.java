@@ -92,6 +92,10 @@ public class UtilTable {
     }
 
     public static String GetClassFields(Class cls) {
+        cls.fields.forEach((key, value) -> {
+            System.out.println(key);
+            System.out.println(value);
+        });
         return "";
     }
 }
