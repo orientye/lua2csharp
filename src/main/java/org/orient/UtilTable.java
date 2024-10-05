@@ -91,6 +91,11 @@ public class UtilTable {
         }
     }
 
+    public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
+        Class cls = annotatedTree.classes.get(className);
+        return GetClassFields(cls);
+    }
+
     public static String GetClassFields(Class cls) {
         cls.fields.forEach((key, value) -> {
             System.out.println(key);
