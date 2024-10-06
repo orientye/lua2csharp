@@ -28,10 +28,6 @@ public class Scope {
         return name;
     }
 
-    public Scope getEnclosingScope() {
-        return enclosingScope;
-    }
-
     public String toString() {
         return "Scope " + name + " : " + symbols.keySet();
     }
