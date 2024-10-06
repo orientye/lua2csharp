@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.InputStream;
 
 public class Transform {
-    public static String transform(CharStream charStream) throws Exception {
+    public static String transform(CharStream charStream) {
         assert (charStream != null);
         LuaLexer lexer = new LuaLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -34,8 +34,7 @@ public class Transform {
         System.out.println("\nPassTransformation:");
         walker.walk(passTransformation, tree);
 
-        String result = passTransformation.getResult();
-        return result;
+        return passTransformation.getResult();
     }
 
     public static String transformFromFileName(String fileName) throws Exception {
