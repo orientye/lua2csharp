@@ -12,13 +12,9 @@ public class AnnotatedTree {
     final Map<ParseTree, List<Symbol.Type>> funcReturns = new HashMap<>();
     final Map<ParseTree, ParseTree> refs = new HashMap<>();
     final Map<String, Class> classes = new HashMap<>();
-    private final ParseTree ast;
+    final ParseTree ast;
 
     public AnnotatedTree(ParseTree parseTree) {
         this.ast = parseTree;
-    }
-
-    public void dump() {
-        System.out.println(ast.toStringTree());
     }
 }
