@@ -1,14 +1,15 @@
-public class CustomClass
+class CustomClass
 {
-    private int id_ = 0;
-    private string name_ = "";
+    private int id_;
+    private string name_;
 
     public CustomClass()
     {
-
+        id_ = 0;
+        name_ = "";
     }
 
-    public int GetId()
+    public int getId()
     {
         return id_;
     }
