@@ -8,7 +8,6 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         HashSet<String> excludes = new HashSet<>();
         excludes.add("Class.lua");
-        excludes.add("CustomClass.lua");
         excludes.add("Table2AnonymousTypes.lua");
         excludes.add("Table2Array.lua");
         excludes.add("Table2Class.lua");
@@ -19,7 +18,7 @@ public class TestMain {
         excludes.add("Table2Struct.lua");
         excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/CustomClass.lua");
+        File file = new File("./src/test/examples/");
         if (file.isFile()) {
             String fileName = file.getName();
             excludes.remove(fileName);
