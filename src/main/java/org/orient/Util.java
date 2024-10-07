@@ -102,10 +102,10 @@ public class Util {
                 return "string";
             }
             case Symbol.Type.SYMBOL_TYPE_LUA_TABLE -> {
-                return "public class"; //TODO: default
+                return "class"; //TODO: default
             }
             case Symbol.Type.SYMBOL_TYPE_CLASS -> {
-                return "public class";
+                return "class";
             }
         }
         return "unknown";
