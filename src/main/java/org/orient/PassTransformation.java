@@ -129,8 +129,8 @@ public class PassTransformation extends LuaParserBaseListener {
                     } else {
                         this.rewriter.delete(expContext.start, expContext.stop);
                         //local CustomClass = class("CustomClass")
-                        String classFields = UtilTable.GetClassFields("", this.annotatedTree);
-                        this.rewriter.replace(context.start, context.stop, "{" + classFields);
+                        String classFields = UtilTable.GetClassFields(parseTree.getText(), this.annotatedTree);
+                        this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
                     }
                 } else {
                     throw new UnsupportedOperationException();

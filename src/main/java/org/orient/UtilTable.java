@@ -93,14 +93,10 @@ public class UtilTable {
 
     public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
-        return GetClassFields(cls);
-    }
-
-    private static String GetClassFields(Class cls) {
+        StringBuilder sb = new StringBuilder("");
         cls.fields.forEach((key, value) -> {
-            System.out.println(key);
-            System.out.println(value);
+            sb.append("private " + Util.SymbolType2Str(value.getType()) + " " + key  + ";\n");
         });
-        return null;
+        return sb.isEmpty() ? null : sb.toString();
     }
 }
