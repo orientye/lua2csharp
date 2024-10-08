@@ -269,11 +269,20 @@ public class PassTransformation extends LuaParserBaseListener {
             if (ctx.LOCAL() != null) {
                 this.rewriter.replace(ctx.LOCAL().getSymbol(), "");
             }
+            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
             List<Symbol.Type> typeList = this.annotatedTree.funcReturns.get(funcbodyContext);
             if (typeList != null) {
-                this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public " + Util.SymbolType2Str(typeList));
+                String className = null;
+                if (funcnameContext != null) {
+                    String funcName = funcnameContext.getText();
+                    className = UtilTable.GetClassNameFromFuncName(funcName);
+                }
+                if (className != null) {
+                    this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public " + Util.SymbolType2Str(typeList));
+                } else {
+                    this.rewriter.replace(ctx.FUNCTION().getSymbol(), Util.SymbolType2Str(typeList));
+                }
             } else {
-                LuaParser.FuncnameContext funcnameContext = ctx.funcname();
                 if (funcnameContext != null) {
                     String funcName = funcnameContext.getText();
                     if (UtilTable.IsConstructorFunction(funcName)) {
@@ -287,7 +296,6 @@ public class PassTransformation extends LuaParserBaseListener {
             }
 
             //funcname
-            LuaParser.FuncnameContext funcnameContext = ctx.funcname();
             if (funcnameContext != null) {
                 if (funcnameContext.COL() != null) {
                     List<TerminalNode> list = funcnameContext.NAME();
