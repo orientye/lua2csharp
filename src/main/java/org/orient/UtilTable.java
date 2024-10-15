@@ -54,6 +54,9 @@ public class UtilTable {
         if (dotTerminalNode != null && prefixexpContext != null) {
             String prefix = prefixexpContext.getText();// self or ClassName
             int index = scopeName.indexOf(":");
+            if (index == -1) {
+                index = scopeName.indexOf(".");
+            }
             assert (index != -1);
             String className = scopeName.substring(0, index);
             if (prefix.equals(className) || prefix.equals("self")) {
