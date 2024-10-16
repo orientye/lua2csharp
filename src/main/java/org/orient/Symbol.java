@@ -56,6 +56,7 @@ public class Symbol {
 
         SYMBOL_TYPE_LUA_TABLE,
         SYMBOL_TYPE_CLASS,
+        SYMBOL_TYPE_DICTIONARY,
 
         //SYMBOL_TYPE_LUA_FUNCTION,
         SYMBOL_TYPE_FUNCTION,

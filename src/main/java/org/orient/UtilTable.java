@@ -1,8 +1,15 @@
 package org.orient;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilTable {
+
+    public static Symbol.Type GetTableType(ParseTree tree) {
+        //TODO:
+        return Symbol.Type.SYMBOL_TYPE_DICTIONARY;
+    }
+
     public static String GetClassNameFromFuncName(String funcName) {
         int index = funcName.indexOf(":");
         if (index != -1) {
