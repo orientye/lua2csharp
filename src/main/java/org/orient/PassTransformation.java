@@ -15,6 +15,7 @@ public class PassTransformation extends LuaParserBaseListener {
     private final TokenStreamRewriter rewriter;
     private final AnnotatedTree annotatedTree;
     private final BufferedTokenStream tokens;
+    private int lastCommentLine = -1;
 
     public PassTransformation(AnnotatedTree annotatedTree, BufferedTokenStream tokens) {
         this.annotatedTree = annotatedTree;
@@ -153,19 +154,23 @@ public class PassTransformation extends LuaParserBaseListener {
         List<Token> cmtChannel = tokens.getHiddenTokensToLeft(i, LuaLexer.COMMENTS);
         //the comment in the last line
         if (cmtChannel != null) {
-            Token cmt = cmtChannel.getFirst();
-            if (cmt != null) {
-                String commentTxt = cmt.getText();
-                if (commentTxt.startsWith("--[[")) { // multi line comment
-                    String txt = commentTxt.substring(4, commentTxt.length() - 4);
-                    String newCmt = "/**\n" + txt.trim() + "\n*/\n";
-                    this.rewriter.insertBefore(ctx.start, newCmt);
-                    this.rewriter.replace(cmt, "");
-                } else { // single line comment
-                    String txt = commentTxt.substring(2);
-                    String newCmt = "//" + txt.trim() + "\n";
-                    this.rewriter.insertBefore(ctx.start, newCmt);
-                    this.rewriter.replace(cmt, "");
+            for (int j = 0; j < cmtChannel.size(); j++) {
+                Token cmt = cmtChannel.get(j);
+                int curLine = cmt.getLine();
+                if (cmt != null && curLine != lastCommentLine) {
+                    String commentTxt = cmt.getText();
+                    if (commentTxt.startsWith("--[[")) { // multi line comment
+                        String txt = commentTxt.substring(4, commentTxt.length() - 4);
+                        String newCmt = "/**\n" + txt.trim() + "\n*/\n";
+                        this.rewriter.insertBefore(ctx.start, newCmt);
+                        this.rewriter.replace(cmt, "");
+                    } else { // single line comment
+                        String txt = commentTxt.substring(2);
+                        String newCmt = "//" + txt.trim() + "\n";
+                        this.rewriter.insertBefore(ctx.start, newCmt);
+                        this.rewriter.replace(cmt, "");
+                    }
+                    lastCommentLine = curLine;
                 }
             }
         }
@@ -173,14 +178,16 @@ public class PassTransformation extends LuaParserBaseListener {
         cmtChannel = tokens.getHiddenTokensToRight(i, LuaLexer.COMMENTS);
         if (cmtChannel != null) {
             Token cmt = cmtChannel.getFirst();
-            if (cmt != null) {
-                if (semi.getLine() != cmt.getLine()) {
+            int curLine = cmt.getLine();
+            if (cmt != null && curLine != lastCommentLine) {
+                if (semi.getLine() != curLine) {
                     return;
                 }
                 String txt = cmt.getText().substring(2);
                 String newCmt = "//" + txt.trim() + "\n";
                 this.rewriter.insertAfter(ctx.stop, newCmt);
                 this.rewriter.replace(cmt, "");
+                lastCommentLine = curLine;
             }
         }
     }
