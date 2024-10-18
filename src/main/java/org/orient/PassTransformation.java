@@ -155,10 +155,18 @@ public class PassTransformation extends LuaParserBaseListener {
         if (cmtChannel != null) {
             Token cmt = cmtChannel.getFirst();
             if (cmt != null) {
-                String txt = cmt.getText().substring(2);
-                String newCmt = "//" + txt.trim() + "\n";
-                this.rewriter.insertBefore(ctx.start, newCmt);
-                this.rewriter.replace(cmt, "");
+                String commentTxt = cmt.getText();
+                if (commentTxt.startsWith("--[[")) { // multi line comment
+                    String txt = commentTxt.substring(4, commentTxt.length() - 4);
+                    String newCmt = "/**\n" + txt.trim() + "\n*/\n";
+                    this.rewriter.insertBefore(ctx.start, newCmt);
+                    this.rewriter.replace(cmt, "");
+                } else { // single line comment
+                    String txt = commentTxt.substring(2);
+                    String newCmt = "//" + txt.trim() + "\n";
+                    this.rewriter.insertBefore(ctx.start, newCmt);
+                    this.rewriter.replace(cmt, "");
+                }
             }
         }
         //the comment in the same line
@@ -518,8 +526,8 @@ public class PassTransformation extends LuaParserBaseListener {
         if (dotTerminalNode != null && prefixexpContext != null) {
             //String prefix = prefixexpContext.getText();
             //if (prefix.equals("self")) { //TODO:
-                this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop);
-                this.rewriter.delete(dotTerminalNode.getSymbol());
+            this.rewriter.delete(prefixexpContext.start, prefixexpContext.stop);
+            this.rewriter.delete(dotTerminalNode.getSymbol());
             //}
         }
     }
