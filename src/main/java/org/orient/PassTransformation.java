@@ -151,12 +151,27 @@ public class PassTransformation extends LuaParserBaseListener {
         Token semi = ctx.getStart();
         int i = semi.getTokenIndex();
         List<Token> cmtChannel = tokens.getHiddenTokensToLeft(i, LuaLexer.COMMENTS);
+        //the comment in the last line
         if (cmtChannel != null) {
             Token cmt = cmtChannel.getFirst();
             if (cmt != null) {
                 String txt = cmt.getText().substring(2);
                 String newCmt = "//" + txt.trim() + "\n";
                 this.rewriter.insertBefore(ctx.start, newCmt);
+                this.rewriter.replace(cmt, "");
+            }
+        }
+        //the comment in the same line
+        cmtChannel = tokens.getHiddenTokensToRight(i, LuaLexer.COMMENTS);
+        if (cmtChannel != null) {
+            Token cmt = cmtChannel.getFirst();
+            if (cmt != null) {
+                if (semi.getLine() != cmt.getLine()) {
+                    return;
+                }
+                String txt = cmt.getText().substring(2);
+                String newCmt = "//" + txt.trim() + "\n";
+                this.rewriter.insertAfter(ctx.stop, newCmt);
                 this.rewriter.replace(cmt, "");
             }
         }
