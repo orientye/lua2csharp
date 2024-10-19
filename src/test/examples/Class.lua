@@ -1,16 +1,16 @@
 t = { name = "Bob" }
 
 function t:sayHello()
-    print("Hello" .. self.name)
-    print("Second" .. t.name)
+    print("Hello " .. self.name)
+    print("Hello " .. t.name)
 end
 
-t2 = { name = "Mike" }
-function t.sayWorld(self, atable)
-    print("Hello" .. self.name)
-    print("Second" .. t.name)
-    print("Third" .. atable.name)
+s = { id = 100 }
+function t.sayWorld(self, other)
+    print("World " .. self.name)
+    print("World " .. t.name)
+    print("Id " .. other.id)
 end
 
 t:sayHello()
-t.sayWorld(t, t2)
+t.sayWorld(t, s)
