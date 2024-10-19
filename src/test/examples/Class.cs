@@ -1,4 +1,4 @@
-var t = new T { Name = "Bob" };
+T t = new T { Name = "Bob" };
 
 class T
 {
@@ -6,8 +6,8 @@ class T
 
     public void SayHello()
     {
+        Console.WriteLine($"Hi {Name}");
         Console.WriteLine($"Hello {Name}");
-        Console.WriteLine($"Second {Name}");
     }
 }
 
