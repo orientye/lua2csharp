@@ -101,7 +101,7 @@ public class UtilTable {
         return null;
     }
 
-    public static void AddField(LuaParser.VarContext varContext, String scopeName, Symbol.Type symbolType, AnnotatedTree annotatedTree) {
+    public static void TryAddField(LuaParser.VarContext varContext, String scopeName, Symbol.Type symbolType, AnnotatedTree annotatedTree) {
         LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
         if (prefixexpContext != null) {
             String fieldName = UtilTable.GetMemberVariableName(varContext, scopeName);

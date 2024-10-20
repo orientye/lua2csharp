@@ -200,13 +200,13 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 assert (szVarContextList == 1);
                 Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                 LuaParser.VarContext varContext = varContextList.getFirst();
-                UtilTable.AddField(varContext, scopeName, symbolType, this.annotatedTree);
+                UtilTable.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
             } else {
                 assert (returnCount > 1);
                 for (int idx = 0; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
-                    UtilTable.AddField(varContext, scopeName, symbolType, this.annotatedTree);
+                    UtilTable.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
                 }
             }
         }
