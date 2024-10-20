@@ -103,9 +103,9 @@ public class UtilTable {
 
     public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         cls.fields.forEach((key, value) -> {
-            sb.append("private " + Util.SymbolType2Str(value.getType()) + " " + key  + ";\n");
+            sb.append("private ").append(Util.SymbolType2Str(value.getType())).append(" ").append(key).append(";\n");
         });
         return sb.isEmpty() ? null : sb.toString();
     }
