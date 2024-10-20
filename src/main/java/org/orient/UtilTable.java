@@ -55,6 +55,16 @@ public class UtilTable {
         }
     }
 
+    public static String GetClassName(LuaParser.VarContext varContext) {
+        LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
+        TerminalNode dotTerminalNode = varContext.DOT();
+        if (dotTerminalNode != null && prefixexpContext != null) {
+            String prefix = prefixexpContext.getText();// self or ClassName
+            return prefix;
+        }
+        return null;
+    }
+
     public static String GetMemberVariableName(LuaParser.VarContext varContext, String scopeName) {
         LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
         TerminalNode dotTerminalNode = varContext.DOT();
@@ -98,6 +108,9 @@ public class UtilTable {
             assert (fieldName != null);
             Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, annotatedTree);
             String className = UtilTable.GetClassNameFromFuncName(scopeName);
+            if (className == null) {
+                className = GetClassName(varContext);
+            }
             assert (className != null);
             Class cls = annotatedTree.classes.get(className);
             assert (cls != null);
