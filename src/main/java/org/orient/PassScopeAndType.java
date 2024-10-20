@@ -157,7 +157,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     if (cls == null) {
                         cls = new Class(className);
                         this.annotatedTree.classes.put(className, cls);
-                    }
+                }
                 }
                 Scope scope = new Scope(name, curScope);
                 this.scopeStack.push(scope);

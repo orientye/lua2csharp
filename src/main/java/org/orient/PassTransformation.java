@@ -154,10 +154,9 @@ public class PassTransformation extends LuaParserBaseListener {
         List<Token> cmtChannel = tokens.getHiddenTokensToLeft(i, LuaLexer.COMMENTS);
         //the comment in the last line
         if (cmtChannel != null) {
-            for (int j = 0; j < cmtChannel.size(); j++) {
-                Token cmt = cmtChannel.get(j);
+            for (Token cmt : cmtChannel) {
                 int curLine = cmt.getLine();
-                if (cmt != null && curLine != lastCommentLine) {
+                if (curLine != lastCommentLine) {
                     String commentTxt = cmt.getText();
                     if (commentTxt.startsWith("--[[")) { // multi line comment
                         String txt = commentTxt.substring(4, commentTxt.length() - 4);
@@ -179,7 +178,7 @@ public class PassTransformation extends LuaParserBaseListener {
         if (cmtChannel != null) {
             Token cmt = cmtChannel.getFirst();
             int curLine = cmt.getLine();
-            if (cmt != null && curLine != lastCommentLine) {
+            if (curLine != lastCommentLine) {
                 if (semi.getLine() != curLine) {
                     return;
                 }
