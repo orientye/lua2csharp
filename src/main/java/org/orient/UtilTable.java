@@ -64,11 +64,15 @@ public class UtilTable {
             if (index == -1) {
                 index = scopeName.indexOf(".");
             }
-            assert (index != -1);
-            String className = scopeName.substring(0, index);
-            if (prefix.equals(className) || prefix.equals("self")) {
-                TerminalNode nameTerminalNode = varContext.NAME();
-                return nameTerminalNode.getText();
+            if (index != -1) {
+                String className = scopeName.substring(0, index);
+                if (prefix.equals(className) || prefix.equals("self")) {
+                    TerminalNode nameTerminalNode = varContext.NAME();
+                    return nameTerminalNode.getText();
+                }
+            } else{
+                TerminalNode name = varContext.NAME();
+                return name.getText();
             }
         }
         return null;
