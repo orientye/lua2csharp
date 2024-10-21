@@ -99,7 +99,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                             Symbol.Type st = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
                             if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
                                 if (funcName != null) {
-                                    st = UtilTable.GetExpContextTypeInClass(expContext, funcName, this.annotatedTree);
+                                    st = UtilClass.GetExpContextTypeInClass(expContext, funcName, this.annotatedTree);
                                 }
                             }
                             stList.add(st);
@@ -151,7 +151,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 //scope
                 Scope curScope = this.scopeStack.peek();
                 this.annotatedTree.scopes.put(funcbodyContext, curScope);
-                String className = UtilTable.GetClassNameFromFuncName(name);
+                String className = UtilClass.GetClassNameFromFuncName(name);
                 if (className != null) {
                     Class cls = this.annotatedTree.classes.get(className);
                     if (cls == null) {
@@ -200,13 +200,13 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 assert (szVarContextList == 1);
                 Symbol.Type symbolType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                 LuaParser.VarContext varContext = varContextList.getFirst();
-                UtilTable.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
+                UtilClass.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
             } else {
                 assert (returnCount > 1);
                 for (int idx = 0; idx < szVarContextList; idx++) {
                     LuaParser.VarContext varContext = varContextList.get(idx);
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, annotatedTree);
-                    UtilTable.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
+                    UtilClass.TryAddField(varContext, scopeName, symbolType, this.annotatedTree);
                 }
             }
         }
@@ -450,7 +450,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
                     if (prefixexpContext != null) {
                         String scopeName = curScope.getName();
-                        String symbolName = UtilTable.GetMemberVariableName(prefixexpContext, scopeName);
+                        String symbolName = UtilClass.GetMemberVariableName(prefixexpContext, scopeName);
                         if (symbolName != null) {
                             symbol = curScope.resolve(symbolName);
                             if (symbol != null) {

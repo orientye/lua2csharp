@@ -130,7 +130,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     } else {
                         this.rewriter.delete(expContext.start, expContext.stop);
                         //local CustomClass = class("CustomClass")
-                        String classFields = UtilTable.GetClassFields(parseTree.getText(), this.annotatedTree);
+                        String classFields = UtilClass.GetClassFields(parseTree.getText(), this.annotatedTree);
                         this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
                     }
                 } else {
@@ -304,7 +304,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 String className = null;
                 if (funcnameContext != null) {
                     String funcName = funcnameContext.getText();
-                    className = UtilTable.GetClassNameFromFuncName(funcName);
+                    className = UtilClass.GetClassNameFromFuncName(funcName);
                 }
                 if (className != null) {
                     this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public " + Util.SymbolType2Str(typeList));
@@ -314,7 +314,7 @@ public class PassTransformation extends LuaParserBaseListener {
             } else {
                 if (funcnameContext != null) {
                     String funcName = funcnameContext.getText();
-                    if (UtilTable.IsConstructorFunction(funcName)) {
+                    if (UtilClass.IsConstructorFunction(funcName)) {
                         this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public");
                     } else {
                         this.rewriter.replace(ctx.FUNCTION().getSymbol(), "void");
@@ -332,7 +332,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     String funcName = list.getLast().getText();
                     this.rewriter.delete(list.getFirst().getSymbol()); // delete className
                     this.rewriter.delete(funcnameContext.COL().getSymbol()); // delete ':'
-                    if (UtilTable.IsConstructorFunction(funcName)) { //CustomClass
+                    if (UtilClass.IsConstructorFunction(funcName)) { //CustomClass
                         this.rewriter.replace(list.getLast().getSymbol(), className);
                     }
                 }
