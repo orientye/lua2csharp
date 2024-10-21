@@ -18,18 +18,7 @@ public class UtilClass {
         return false;
     }
 
-    public static String GetClassName(String name, AnnotatedTree annotatedTree) {
-        String className = UtilClass.GetClassNameFromFuncName(name);
-        if (className != null) {
-            Class cls = annotatedTree.classes.get(className);
-            if (cls != null) {
-               return className;
-            }
-        }
-        return null;
-    }
-
-    private static String GetClassNameFromFuncName(String funcName) {
+    public static String GetClassNameFromFuncName(String funcName) {
         int index = funcName.indexOf(":");
         if (index != -1) {
             return funcName.substring(0, index);

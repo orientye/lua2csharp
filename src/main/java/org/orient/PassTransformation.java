@@ -304,7 +304,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 String className = null;
                 if (funcnameContext != null) {
                     String funcName = funcnameContext.getText();
-                    className = UtilClass.GetClassName(funcName, this.annotatedTree);
+                    className = UtilClass.GetClassNameFromFuncName(funcName);
                 }
                 if (className != null) {
                     this.rewriter.replace(ctx.FUNCTION().getSymbol(), "public " + Util.SymbolType2Str(typeList));
