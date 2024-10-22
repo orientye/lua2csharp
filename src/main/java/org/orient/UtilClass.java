@@ -18,6 +18,19 @@ public class UtilClass {
         return false;
     }
 
+    public static boolean TryAddClass(Symbol.Type symbolType, String name, AnnotatedTree annotatedTree) {
+        if (symbolType == Symbol.Type.SYMBOL_TYPE_CLASS) {
+            Class cls = annotatedTree.classes.get(name);
+            if (cls == null) {
+                cls = new Class(name);
+                annotatedTree.classes.put(name, cls);
+                System.out.println("Added Class: " + name);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static String GetClassNameFromFuncName(String funcName) {
         int index = funcName.indexOf(":");
         if (index != -1) {
