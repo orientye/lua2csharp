@@ -17,12 +17,15 @@ public class PassScopeAndType extends LuaParserBaseListener {
 
     private final Scope globalScope = new Scope("global", null);
 
+    private int passingTimes = 1;
+
     public PassScopeAndType(AnnotatedTree annotatedTree) {
         this.annotatedTree = annotatedTree;
         this.scopeStack.add(globalScope);
     }
 
     public void Reset() {
+        passingTimes++;
         this.scopeStack.clear();
         this.scopeStack.add(globalScope);
         this.annotatedTree.scopes.clear();
