@@ -38,7 +38,7 @@ public class Util {
 
     public static Symbol.Type GetExpContextTypeInTree(LuaParser.ExpContext ctx, AnnotatedTree annotatedTree) {
         Symbol.Type st = GetExpContextType(ctx);
-        if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+        if (st == Symbol.Type.SYMBOL_TYPE_UNKNOWN || st == Symbol.Type.SYMBOL_TYPE_LUA_TABLE) {
             Symbol symbol = annotatedTree.symbols.get(ctx);
             if (symbol != null) {
                 st = symbol.getType();

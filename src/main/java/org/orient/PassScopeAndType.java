@@ -397,7 +397,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 {
                     String name = ctx.getText();
                     Symbol.create(name, Symbol.Type.SYMBOL_TYPE_CLASS, ctx, this.annotatedTree);
-                    System.out.println("Unresolved table: " + ctx.getText());
                 }
             }
         }
