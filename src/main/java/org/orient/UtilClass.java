@@ -114,15 +114,16 @@ public class UtilClass {
         if (prefixexpContext != null) {
             String fieldName = UtilClass.GetMemberVariableName(varContext, scopeName);
             assert (fieldName != null);
-            Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, annotatedTree);
             String className = UtilClass.GetClassNameFromFuncName(scopeName);
             if (className == null) {
                 className = GetClassName(varContext);
             }
             assert (className != null);
             Class cls = annotatedTree.classes.get(className);
-            assert (cls != null);
-            cls.fields.put(fieldName, symbol);
+            if (cls != null) {
+                Symbol symbol = Symbol.create(fieldName, symbolType, prefixexpContext, annotatedTree);
+                cls.fields.put(fieldName, symbol);
+            }
         }
     }
 
