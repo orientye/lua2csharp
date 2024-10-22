@@ -386,8 +386,12 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void enterExp(LuaParser.ExpContext ctx) {
         Symbol.Type st = Util.GetExpContextType(ctx);
         if (st != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
-            String name = ctx.getText();
-            Symbol.create(name, st, ctx, this.annotatedTree);
+            if (st != Symbol.Type.SYMBOL_TYPE_LUA_TABLE) {
+                String name = ctx.getText();
+                Symbol.create(name, st, ctx, this.annotatedTree);
+            } else {
+                System.out.println("Unresolved table: " + ctx.getText());
+            }
         }
     }
 
