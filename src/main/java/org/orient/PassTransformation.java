@@ -126,6 +126,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
                     if (tableconstructorContext != null) {
+                        //TODO: field list
                         this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
                     } else {
                         this.rewriter.delete(expContext.start, expContext.stop);
