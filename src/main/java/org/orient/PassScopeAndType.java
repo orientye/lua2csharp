@@ -1,5 +1,6 @@
 package org.orient;
 
+import com.ibm.icu.impl.Assert;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -709,8 +710,15 @@ public class PassScopeAndType extends LuaParserBaseListener {
     public void exitField(LuaParser.FieldContext ctx) {
         //'[' exp ']' '=' exp
         //TODO:
-        
+
         //NAME '=' exp
+        TerminalNode terminalNode = ctx.NAME();
+        if (terminalNode != null) {
+            assert(ctx.exp().size() == 1);
+            LuaParser.ExpContext expContext = ctx.exp().getFirst();
+            System.out.println(terminalNode.getText());
+            System.out.println(expContext.getText());
+        }
 
         //exp
         //TODO:
