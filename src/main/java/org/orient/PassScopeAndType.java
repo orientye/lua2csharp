@@ -1,6 +1,5 @@
 package org.orient;
 
-import com.ibm.icu.impl.Assert;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -395,8 +394,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                 String name = ctx.getText();
                 Symbol.create(name, st, ctx, this.annotatedTree);
             } else {
-                if (this.passingTimes > 1)
-                {
+                if (this.passingTimes > 1) {
                     String name = ctx.getText();
                     Symbol.create(name, Symbol.Type.SYMBOL_TYPE_CLASS, ctx, this.annotatedTree);
                 }
@@ -714,10 +712,16 @@ public class PassScopeAndType extends LuaParserBaseListener {
         //NAME '=' exp
         TerminalNode terminalNode = ctx.NAME();
         if (terminalNode != null) {
-            assert(ctx.exp().size() == 1);
+            assert (ctx.exp().size() == 1);
             LuaParser.ExpContext expContext = ctx.exp().getFirst();
+            Symbol.Type ty = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
             System.out.println(terminalNode.getText());
+            System.out.println(ty);
             System.out.println(expContext.getText());
+            if (ty != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
+                ParseTree parseTree = ctx.getParent().getParent();
+                assert (parseTree instanceof LuaParser.TableconstructorContext);
+            }
         }
 
         //exp
