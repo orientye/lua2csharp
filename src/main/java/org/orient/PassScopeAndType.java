@@ -227,7 +227,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                     Symbol.Type symbolType = Util.GetExpContextTypeInList(idx, explistContext, this.annotatedTree);
                     boolean canAddClass = UtilClass.TryAddClass(symbolType, terminalNodeText, this.annotatedTree);
                     if (canAddClass) {
-                        //TODO: add some fields
+                        System.out.println("test");
                     }
                     Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, this.annotatedTree);
                     Scope curScope = this.scopeStack.peek();
