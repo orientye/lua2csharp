@@ -707,7 +707,13 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitField(LuaParser.FieldContext ctx) {
-        System.out.println("FieldContext text: " + ctx.getText());
+        //'[' exp ']' '=' exp
+        //TODO:
+        
+        //NAME '=' exp
+
+        //exp
+        //TODO:
     }
 
     /**
