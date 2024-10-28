@@ -1,6 +1,5 @@
 package org.orient;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilClass {
