@@ -140,6 +140,10 @@ public class UtilClass {
         }
     }
 
+    public static void AddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
+
+    }
+
     public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
         StringBuilder sb = new StringBuilder();
