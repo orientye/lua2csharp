@@ -1,5 +1,6 @@
 package org.orient;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilClass {
@@ -140,8 +141,13 @@ public class UtilClass {
         }
     }
 
-    public static void AddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
-
+    public static boolean AddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
+        Class cls = annotatedTree.classes.get(className);
+        if (cls != null) {
+            //TODO:
+            return true;
+        }
+        return false;
     }
 
     public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
