@@ -1,5 +1,6 @@
 package org.orient;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilClass {
@@ -143,7 +144,28 @@ public class UtilClass {
     public static boolean AddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
         if (cls != null) {
-            //TODO:
+            LuaParser.FieldlistContext fieldlistContext = tableconstructorContext.fieldlist();
+            if (fieldlistContext != null) {
+                for (int i = 0; i < fieldlistContext.field().size(); i++) {
+                    LuaParser.FieldContext fieldContext = fieldlistContext.field(i);
+                    //'[' exp ']' '=' exp
+                    //TODO:
+
+                    //NAME '=' exp
+                    TerminalNode terminalNode = fieldContext.NAME();
+                    if (terminalNode != null) {
+                        assert (fieldContext.exp().size() == 1);
+                        LuaParser.ExpContext expContext = fieldContext.exp().getFirst();
+                        Symbol.Type ty = Util.GetExpContextTypeInTree(expContext, annotatedTree);
+                        System.out.println(terminalNode.getText());
+                        System.out.println(ty);
+                        System.out.println(expContext.getText());
+                    }
+
+                    //exp
+                    //TODO:
+                }
+            }
             return true;
         }
         return false;
