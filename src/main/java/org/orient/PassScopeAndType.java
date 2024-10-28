@@ -713,26 +713,6 @@ public class PassScopeAndType extends LuaParserBaseListener {
      */
     @Override
     public void exitField(LuaParser.FieldContext ctx) {
-        //'[' exp ']' '=' exp
-        //TODO:
-
-        //NAME '=' exp
-        TerminalNode terminalNode = ctx.NAME();
-        if (terminalNode != null) {
-            assert (ctx.exp().size() == 1);
-            LuaParser.ExpContext expContext = ctx.exp().getFirst();
-            Symbol.Type ty = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);
-            System.out.println(terminalNode.getText());
-            System.out.println(ty);
-            System.out.println(expContext.getText());
-            if (ty != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {
-                ParseTree parseTree = ctx.getParent().getParent();
-                assert (parseTree instanceof LuaParser.TableconstructorContext);
-            }
-        }
-
-        //exp
-        //TODO:
     }
 
     /**
