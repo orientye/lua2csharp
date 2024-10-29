@@ -128,6 +128,8 @@ public class PassTransformation extends LuaParserBaseListener {
                     if (tableconstructorContext != null) {
                         //TODO: field list
                         this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
+                        String classFields = UtilClass.GetClassFields(parseTree.getText(), this.annotatedTree);
+                        this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
                     } else {
                         this.rewriter.delete(expContext.start, expContext.stop);
                         //local CustomClass = class("CustomClass")
@@ -215,8 +217,9 @@ public class PassTransformation extends LuaParserBaseListener {
                 if (varContext.DOT() != null && varContext.prefixexp() != null) {
                     ParseTree parentTree = varlistContext.getParent().getParent().getParent();
                     if (!(parentTree instanceof LuaParser.FuncbodyContext)){
-                        String modifierOfMemberVariable = UtilClass.GetModifierOfMemberVariable(varContext);
-                        this.rewriter.insertBefore(t, modifierOfMemberVariable + " " + Util.SymbolType2Str(symbolType) + " ");
+//                        String modifierOfMemberVariable = UtilClass.GetModifierOfMemberVariable(varContext);
+//                        this.rewriter.insertBefore(t, modifierOfMemberVariable + " " + Util.SymbolType2Str(symbolType) + " ");
+                        this.rewriter.delete(ctx.start, ctx.stop);
                     }
                 } else {
                     this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
