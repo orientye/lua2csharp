@@ -230,7 +230,7 @@ public class PassScopeAndType extends LuaParserBaseListener {
                         LuaParser.ExpContext expContext = explistContext.exp(idx);
                         LuaParser.TableconstructorContext tableconstructorContext = expContext.tableconstructor();
                         if (tableconstructorContext != null) {
-                            UtilClass.AddField(tableconstructorContext, terminalNodeText, this.annotatedTree);
+                            UtilClass.TryAddField(tableconstructorContext, terminalNodeText, this.annotatedTree);
                         }
                     }
                     Symbol symbolTerminal = Symbol.create(terminalNodeText, symbolType, terminalNode, this.annotatedTree);

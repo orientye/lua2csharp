@@ -141,7 +141,7 @@ public class UtilClass {
         }
     }
 
-    public static boolean AddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
+    public static boolean TryAddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
         if (cls != null) {
             LuaParser.FieldlistContext fieldlistContext = tableconstructorContext.fieldlist();
