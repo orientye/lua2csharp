@@ -155,11 +155,11 @@ public class UtilClass {
                     TerminalNode terminalNode = fieldContext.NAME();
                     if (terminalNode != null) {
                         assert (fieldContext.exp().size() == 1);
+                        String fieldName = terminalNode.getText();
                         LuaParser.ExpContext expContext = fieldContext.exp().getFirst();
-                        Symbol.Type ty = Util.GetExpContextTypeInTree(expContext, annotatedTree);
-                        System.out.println(terminalNode.getText());
-                        System.out.println(ty);
-                        System.out.println(expContext.getText());
+                        Symbol.Type symbolType = Util.GetExpContextTypeInTree(expContext, annotatedTree);
+                        Symbol symbol = Symbol.create(fieldName, symbolType, fieldlistContext, annotatedTree);
+                        cls.fields.put(fieldName, symbol);
                     }
 
                     //exp
