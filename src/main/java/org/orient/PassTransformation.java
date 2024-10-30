@@ -128,8 +128,28 @@ public class PassTransformation extends LuaParserBaseListener {
                     if (tableconstructorContext != null) {
                         //TODO: field list
                         this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
-                        String classFields = UtilClass.GetClassFields(parseTree.getText(), this.annotatedTree);
-                        this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
+                        //String classFields = UtilClass.GetClassFields(parseTree.getText(), this.annotatedTree);
+                        //this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
+
+                        LuaParser.FieldlistContext fieldlistContext = tableconstructorContext.fieldlist();
+                        if (fieldlistContext != null) {
+                            for (int i = 0; i < fieldlistContext.field().size(); i++) {
+                                LuaParser.FieldContext fieldContext = fieldlistContext.field(i);
+                                //'[' exp ']' '=' exp
+                                //TODO:
+
+                                //NAME '=' exp
+                                TerminalNode terminalNode = fieldContext.NAME();
+                                if (terminalNode != null) {
+                                    assert (fieldContext.exp().size() == 1);
+                                    Symbol.Type symbolType = Util.GetExpContextTypeInTree(fieldContext.exp().getFirst(), annotatedTree);
+                                    this.rewriter.insertBefore(terminalNode.getSymbol(), "private" + " " + Util.SymbolType2Str(symbolType) + " ");
+                                }
+
+                                //exp
+                                //TODO:
+                            }
+                        }
                     } else {
                         this.rewriter.delete(expContext.start, expContext.stop);
                         //local CustomClass = class("CustomClass")

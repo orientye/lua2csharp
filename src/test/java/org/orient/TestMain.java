@@ -11,14 +11,13 @@ public class TestMain {
         excludes.add("ClassTwo.lua");
         excludes.add("Table2AnonymousTypes.lua");
         excludes.add("Table2Array.lua");
-        excludes.add("Table2Class.lua");
         excludes.add("Table2Dictionary.lua");
         excludes.add("Table2ExpandObject.lua");
         excludes.add("Table2JObject.lua");
         excludes.add("Table2List.lua");
         excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/Table2Class.lua");
+        File file = new File("./src/test/examples/");
         if (file.isFile()) {
             String fileName = file.getName();
             excludes.remove(fileName);
