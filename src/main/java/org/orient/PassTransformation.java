@@ -31,7 +31,13 @@ public class PassTransformation extends LuaParserBaseListener {
         //functioncall
         LuaParser.FunctioncallContext functioncallContext = ctx.functioncall();
         if (functioncallContext != null) {
-            
+            int i = functioncallContext.stop.getTokenIndex();
+            Token nextToken = tokens.get(i+1);
+            if (nextToken != null) {
+                if (!nextToken.getText().equals(";")) {
+                    this.rewriter.insertAfter(functioncallContext.stop, ";");
+                }
+            }
         }
     }
 
