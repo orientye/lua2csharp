@@ -27,6 +27,10 @@ public class PassTransformation extends LuaParserBaseListener {
         return this.rewriter.getText();
     }
 
+    private void addSemicolon() {
+
+    }
+
     /**
      * {@inheritDoc}
      *
