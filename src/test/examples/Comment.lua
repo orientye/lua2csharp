@@ -1,8 +1,8 @@
 --first comment
-local i = 10;
+local i = 10
 --second comment
-print(i);
-print(i+1); -- third comment
+print(i)
+print(i+1) -- third comment
 print(i+2); -- fourth comment
 --[[
 multi comment line 1
