@@ -27,8 +27,12 @@ public class PassTransformation extends LuaParserBaseListener {
         return this.rewriter.getText();
     }
 
-    private void addSemicolon() {
-
+    private void addSemicolon(LuaParser.StatContext ctx) {
+        //functioncall
+        LuaParser.FunctioncallContext functioncallContext = ctx.functioncall();
+        if (functioncallContext != null) {
+            
+        }
     }
 
     /**
@@ -385,6 +389,8 @@ public class PassTransformation extends LuaParserBaseListener {
             TerminalNode end = funcbodyContext.END();
             this.rewriter.replace(end.getSymbol(), "}");
         }
+
+        addSemicolon(ctx);
     }
 
     /**
