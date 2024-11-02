@@ -14,6 +14,12 @@ public class UtilFormat {
 
     private static boolean IsNecessaryAddSemicolon(LuaParser.StatContext ctx, BufferedTokenStream tokens) {
         boolean bCheck = false;
+        //varlist '=' explist
+        LuaParser.VarlistContext varlistContext = ctx.varlist();
+        if (varlistContext != null) {
+            bCheck = true;
+        }
+
         //functioncall
         LuaParser.FunctioncallContext functioncallContext = ctx.functioncall();
         if (functioncallContext != null) {
