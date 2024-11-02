@@ -27,32 +27,6 @@ public class PassTransformation extends LuaParserBaseListener {
         return this.rewriter.getText();
     }
 
-    private void addSemicolon(LuaParser.StatContext ctx) {
-        //functioncall
-        LuaParser.FunctioncallContext functioncallContext = ctx.functioncall();
-        if (functioncallContext != null) {
-            int i = ctx.stop.getTokenIndex();
-            Token nextToken = tokens.get(i+1);
-            if (nextToken != null) {
-                if (!nextToken.getText().equals(";")) {
-                    this.rewriter.insertAfter(ctx.stop, ";");
-                }
-            }
-        }
-
-        // 'local' attnamelist ('=' explist)?
-        LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
-        if (attnamelistContext != null) {
-            int i = ctx.stop.getTokenIndex();
-            Token nextToken = tokens.get(i+1);
-            if (nextToken != null) {
-                if (!nextToken.getText().equals(";")) {
-                    this.rewriter.insertAfter(ctx.stop, ";");
-                }
-            }
-        }
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -408,7 +382,7 @@ public class PassTransformation extends LuaParserBaseListener {
             this.rewriter.replace(end.getSymbol(), "}");
         }
 
-        addSemicolon(ctx);
+        UtilFormat.TryAddSemicolon(ctx, this.tokens, this.rewriter);
     }
 
     /**
