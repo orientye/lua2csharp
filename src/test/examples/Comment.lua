@@ -1,5 +1,6 @@
 --first comment
 local i = 10
+s = "str"
 --second comment
 print(i)
 print(i+1) -- third comment

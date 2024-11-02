@@ -17,7 +17,7 @@ public class TestMain {
         excludes.add("Table2List.lua");
         excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/Comment.lua");
+        File file = new File("./src/test/examples/");
         if (file.isFile()) {
             String fileName = file.getName();
             excludes.remove(fileName);
