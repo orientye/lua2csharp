@@ -126,10 +126,7 @@ public class PassTransformation extends LuaParserBaseListener {
                     LuaParser.ExplistContext context = statContext.explist();
                     LuaParser.TableconstructorContext tableconstructorContext = context.exp().getFirst().tableconstructor();
                     if (tableconstructorContext != null) {
-                        //TODO: field list
                         this.rewriter.delete(tableconstructorContext.CCU().getSymbol());
-                        //String classFields = UtilClass.GetClassFields(parseTree.getText(), this.annotatedTree);
-                        //this.rewriter.replace(context.start, context.stop, "{\n" + classFields);
 
                         LuaParser.FieldlistContext fieldlistContext = tableconstructorContext.fieldlist();
                         if (fieldlistContext != null) {
