@@ -34,7 +34,7 @@ public class UtilFormat {
 
         if (bCheck) {
             int i = ctx.stop.getTokenIndex();
-            Token nextToken = tokens.get(i+1);
+            Token nextToken = tokens.get(i + 1);
             if (nextToken != null) {
                 if (!nextToken.getText().equals(";")) {
                     return true;
