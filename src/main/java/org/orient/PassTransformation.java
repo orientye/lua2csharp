@@ -233,7 +233,7 @@ public class PassTransformation extends LuaParserBaseListener {
                 Token t = varContext.start;
                 if (varContext.DOT() != null && varContext.prefixexp() != null) {
                     ParseTree parentTree = varlistContext.getParent().getParent().getParent();
-                    if (!(parentTree instanceof LuaParser.FuncbodyContext)){
+                    if (!(parentTree instanceof LuaParser.FuncbodyContext)) {
                         String modifierOfMemberVariable = UtilClass.GetModifierOfMemberVariable(varContext);
                         this.rewriter.insertBefore(t, modifierOfMemberVariable + " " + Util.SymbolType2Str(symbolType) + " ");
                     }
