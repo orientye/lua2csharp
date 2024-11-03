@@ -1,11 +1,10 @@
 package org.orient;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class UtilClass {
 
-    public static boolean TryAddClass(String name, AnnotatedTree annotatedTree) {
+    public static void TryAddClass(String name, AnnotatedTree annotatedTree) {
         String className = UtilClass.GetClassNameFromFuncName(name);
         if (className != null) {
             Class cls = annotatedTree.classes.get(className);
@@ -14,9 +13,7 @@ public class UtilClass {
                 annotatedTree.classes.put(className, cls);
                 System.out.println("Added Class: " + className);
             }
-            return true;
         }
-        return false;
     }
 
     public static boolean TryAddClass(Symbol.Type symbolType, String name, AnnotatedTree annotatedTree) {
@@ -81,8 +78,7 @@ public class UtilClass {
         LuaParser.PrefixexpContext prefixexpContext = varContext.prefixexp();
         TerminalNode dotTerminalNode = varContext.DOT();
         if (dotTerminalNode != null && prefixexpContext != null) {
-            String prefix = prefixexpContext.getText();// self or ClassName
-            return prefix;
+            return prefixexpContext.getText();// self or ClassName
         }
         return null;
     }
@@ -141,7 +137,7 @@ public class UtilClass {
         }
     }
 
-    public static boolean TryAddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
+    public static void TryAddField(LuaParser.TableconstructorContext tableconstructorContext, String className, AnnotatedTree annotatedTree) {
         Class cls = annotatedTree.classes.get(className);
         if (cls != null) {
             LuaParser.FieldlistContext fieldlistContext = tableconstructorContext.fieldlist();
@@ -166,9 +162,7 @@ public class UtilClass {
                     //TODO:
                 }
             }
-            return true;
         }
-        return false;
     }
 
     public static String GetClassFields(String className, AnnotatedTree annotatedTree) {
