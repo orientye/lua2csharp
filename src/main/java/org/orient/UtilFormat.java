@@ -29,7 +29,15 @@ public class UtilFormat {
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
-            bCheck = true;
+            LuaParser.ExplistContext explistContext = ctx.explist();
+            if (explistContext != null) {
+                LuaParser.TableconstructorContext tableconstructorContext = explistContext.exp().getFirst().tableconstructor();
+                if (tableconstructorContext == null) {
+                    bCheck = true;
+                }
+            } else {
+                bCheck = true;
+            }
         }
 
         if (bCheck) {

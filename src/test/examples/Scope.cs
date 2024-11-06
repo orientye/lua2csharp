@@ -7,7 +7,7 @@ int func_scope(int a, string s)
     return a + b;
 }
 
-string mm = m + "append_str"
+string mm = m + "append_str";
 
 int n = func_scope(100, "param_str");
 Console.WriteLine(n);
