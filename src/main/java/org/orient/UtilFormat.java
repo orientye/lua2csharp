@@ -29,6 +29,7 @@ public class UtilFormat {
         // 'local' attnamelist ('=' explist)?
         LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
         if (attnamelistContext != null) {
+            //TODO: for format, could be optimized
             LuaParser.ExplistContext explistContext = ctx.explist();
             if (explistContext != null) {
                 LuaParser.TableconstructorContext tableconstructorContext = explistContext.exp().getFirst().tableconstructor();

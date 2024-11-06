@@ -171,10 +171,13 @@ public class UtilClass {
         cls.fields.forEach((key, value) -> {
             sb.append("private ").append(Util.SymbolType2Str(value.getType())).append(" ").append(key).append(";\n");
         });
+
+        //TODO: for format, could be optimized
         if (!sb.isEmpty()) {
             int len = sb.length();
             sb.delete(len - 2, len);
         }
+
         return sb.isEmpty() ? null : sb.toString();
     }
 }
