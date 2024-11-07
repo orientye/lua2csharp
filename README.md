@@ -8,7 +8,8 @@ lua to csharp, use ANTLR.
 
 ## type annotation
 
-    in some cases, Use @type annotation to specify the type of the target variable.
+    in some cases, use @type annotation to specify the type of the target variable.
+    
     for example:
-    ---@type dict/dictionary/map    convert table to Dictionary
-    ---@type struct                 convert table to struct
+        ---@type dict/dictionary/map    convert table to Dictionary
+        ---@type struct                 convert table to struct
