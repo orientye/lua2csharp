@@ -1,39 +1,0 @@
-[1mdiff --git a/src/main/java/org/orient/PassScopeAndType.java b/src/main/java/org/orient/PassScopeAndType.java[m
-[1mindex d7f138c..cce0e89 100644[m
-[1m--- a/src/main/java/org/orient/PassScopeAndType.java[m
-[1m+++ b/src/main/java/org/orient/PassScopeAndType.java[m
-[36m@@ -1,6 +1,5 @@[m
- package org.orient;[m
- [m
-[31m-import com.ibm.icu.impl.Assert;[m
- import org.antlr.v4.runtime.ParserRuleContext;[m
- import org.antlr.v4.runtime.tree.ErrorNode;[m
- import org.antlr.v4.runtime.tree.ParseTree;[m
-[36m@@ -395,8 +394,7 @@[m [mpublic class PassScopeAndType extends LuaParserBaseListener {[m
-                 String name = ctx.getText();[m
-                 Symbol.create(name, st, ctx, this.annotatedTree);[m
-             } else {[m
-[31m-                if (this.passingTimes > 1)[m
-[31m-                {[m
-[32m+[m[32m                if (this.passingTimes > 1) {[m[41m[m
-                     String name = ctx.getText();[m
-                     Symbol.create(name, Symbol.Type.SYMBOL_TYPE_CLASS, ctx, this.annotatedTree);[m
-                 }[m
-[36m@@ -714,10 +712,16 @@[m [mpublic class PassScopeAndType extends LuaParserBaseListener {[m
-         //NAME '=' exp[m
-         TerminalNode terminalNode = ctx.NAME();[m
-         if (terminalNode != null) {[m
-[31m-            assert(ctx.exp().size() == 1);[m
-[32m+[m[32m            assert (ctx.exp().size() == 1);[m[41m[m
-             LuaParser.ExpContext expContext = ctx.exp().getFirst();[m
-[32m+[m[32m            Symbol.Type ty = Util.GetExpContextTypeInTree(expContext, this.annotatedTree);[m[41m[m
-             System.out.println(terminalNode.getText());[m
-[32m+[m[32m            System.out.println(ty);[m[41m[m
-             System.out.println(expContext.getText());[m
-[32m+[m[32m            if (ty != Symbol.Type.SYMBOL_TYPE_UNKNOWN) {[m[41m[m
-[32m+[m[32m                ParseTree parseTree = ctx.getParent().getParent();[m[41m[m
-[32m+[m[32m                assert (parseTree instanceof LuaParser.TableconstructorContext);[m[41m[m
-[32m+[m[32m            }[m[41m[m
-         }[m
- [m
-         //exp[m
