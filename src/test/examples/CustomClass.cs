@@ -6,7 +6,7 @@ class CustomClass
     public CustomClass()
     {
         id_ = 0;
-        name_ = "";
+        name_ = "lua2csharp";
     }
 
     public int getId()

@@ -2,7 +2,7 @@ local CustomClass = class("CustomClass")
 
 function CustomClass:ctor()
     self.id_ = 0
-    self.name_ = ""
+    self.name_ = "lua2csharp"
 end
 
 function CustomClass:getId()
