@@ -1,14 +1,14 @@
-T t = new T { Name = "Bob" };
+T t = new T { name = "Bob" };
 
 class T
 {
-    public string Name { get; set; }
+    public string name { get; set; }
 
-    public void SayHello()
+    public void sayHello()
     {
-        Console.WriteLine($"Hi {Name}");
-        Console.WriteLine($"Hello {Name}");
+        Console.WriteLine($"Hi {name}");
+        Console.WriteLine($"Hello {name}");
     }
 }
 
-t.SayHello();
+t.sayHello();
