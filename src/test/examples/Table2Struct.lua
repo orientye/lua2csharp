@@ -1,3 +1,4 @@
+---@type struct
 local ProjectDef = {}
 
 ProjectDef.ID = 1;
