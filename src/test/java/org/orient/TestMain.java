@@ -8,6 +8,7 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         HashSet<String> excludes = new HashSet<>();
         excludes.add("Class.lua");
+        excludes.add("ClassExt.lua");
         excludes.add("ClassTwo.lua");
         excludes.add("Table2AnonymousTypes.lua");
         excludes.add("Table2Array.lua");
