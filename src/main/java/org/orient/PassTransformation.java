@@ -542,6 +542,9 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void exitExp(LuaParser.ExpContext ctx) {
+        if (ctx.DD() != null) {
+            this.rewriter.replace(ctx.DD().getSymbol(), "+"); //print("Hello " .. t.name)
+        }
     }
 
     /**
