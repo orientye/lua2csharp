@@ -612,6 +612,10 @@ public class PassTransformation extends LuaParserBaseListener {
      */
     @Override
     public void exitFunctioncall(LuaParser.FunctioncallContext ctx) {
+        if (ctx.COL() != null) {
+            this.rewriter.replace(ctx.COL().getSymbol(), "."); //t:sayHello() -> t.sayHello()
+        }
+
         Token token = ctx.start;
         String funcName = token.getText();
         //TODO: generalization
