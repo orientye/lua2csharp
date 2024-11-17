@@ -11,7 +11,7 @@ public class UtilClass {
             if (cls == null) {
                 cls = new Class(className);
                 annotatedTree.classes.put(className, cls);
-                System.out.println("Added Class: " + className);
+                System.out.println("Added Class: " + cls.getName());
             }
         }
     }
@@ -22,7 +22,7 @@ public class UtilClass {
             if (cls == null) {
                 cls = new Class(name);
                 annotatedTree.classes.put(name, cls);
-                System.out.println("Added Class: " + name);
+                System.out.println("Added Class: " + cls.getName());
             }
             return true;
         }
