@@ -10,7 +10,8 @@ public class Class {
     final Map<String, Symbol> functions = new LinkedHashMap<>();
 
     public Class(String name) {
-        this.name = name;
+        assert(name != null && !name.isEmpty());
+        this.name = UtilString.CapitalizeFirstLetter(name);
     }
 
     public String getName() {
