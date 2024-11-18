@@ -240,7 +240,9 @@ public class PassTransformation extends LuaParserBaseListener {
                     }
                 } else {
                     if (symbolType == Symbol.Type.SYMBOL_TYPE_CLASS) {
-                        System.out.println("class type");
+                        Class cls = this.annotatedTree.classes.get(varContext.getText());
+                        assert(cls != null);
+                        this.rewriter.insertBefore(t, cls.getName() + " ");
                     } else {
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                     }
