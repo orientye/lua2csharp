@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.Console;
 import java.util.List;
 
 public class PassTransformation extends LuaParserBaseListener {
@@ -238,7 +239,11 @@ public class PassTransformation extends LuaParserBaseListener {
                         this.rewriter.insertBefore(t, modifierOfMemberVariable + " " + Util.SymbolType2Str(symbolType) + " ");
                     }
                 } else {
-                    this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                    if (symbolType == Symbol.Type.SYMBOL_TYPE_CLASS) {
+                        System.out.println("class type");
+                    } else {
+                        this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
+                    }
                 }
             } else {
                 assert (returnCount > 1);
