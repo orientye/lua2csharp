@@ -243,6 +243,7 @@ public class PassTransformation extends LuaParserBaseListener {
                         Class cls = this.annotatedTree.classes.get(varContext.getText());
                         assert(cls != null);
                         this.rewriter.insertBefore(t, cls.getName() + " ");
+                        this.rewriter.insertBefore(explistContext.getStart(), "new " + cls.getName() + " ");
                     } else {
                         this.rewriter.insertBefore(t, Util.SymbolType2Str(symbolType) + " ");
                     }
