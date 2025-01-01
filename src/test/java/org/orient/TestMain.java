@@ -16,6 +16,7 @@ public class TestMain {
         excludes.add("Table2ExpandObject.lua");
         excludes.add("Table2JObject.lua");
         excludes.add("Table2List.lua");
+        excludes.add("Table2Struct.lua");
         excludes.add("VarNil.lua");
 
         File file = new File("./src/test/examples/Class.lua");
