@@ -19,7 +19,7 @@ public class TestMain {
         excludes.add("Table2Struct.lua");
         excludes.add("VarNil.lua");
 
-        File file = new File("./src/test/examples/Class.lua");
+        File file = new File("./src/test/examples/");
         if (file.isFile()) {
             String fileName = file.getName();
             excludes.remove(fileName);
