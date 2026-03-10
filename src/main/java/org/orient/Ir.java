@@ -40,11 +40,17 @@ public final class Ir {
         private final String name;
         private final List<TypeDecl> types;
         private final List<Statement> topLevelStatements;
+        private final List<Method> topLevelMethods;
 
         public Module(String name, List<TypeDecl> types, List<Statement> topLevelStatements) {
+            this(name, types, topLevelStatements, List.of());
+        }
+
+        public Module(String name, List<TypeDecl> types, List<Statement> topLevelStatements, List<Method> topLevelMethods) {
             this.name = Objects.requireNonNull(name, "name");
             this.types = defensiveCopy(types);
             this.topLevelStatements = defensiveCopy(topLevelStatements);
+            this.topLevelMethods = defensiveCopy(topLevelMethods);
         }
 
         public String getName() {
@@ -57,6 +63,10 @@ public final class Ir {
 
         public List<Statement> getTopLevelStatements() {
             return topLevelStatements;
+        }
+
+        public List<Method> getTopLevelMethods() {
+            return topLevelMethods;
         }
     }
 
@@ -285,6 +295,36 @@ public final class Ir {
 
         public List<Expression> getValues() {
             return values;
+        }
+    }
+
+    public static final class ExpressionStatement implements Statement {
+        private final Expression expression;
+
+        public ExpressionStatement(Expression expression) {
+            this.expression = Objects.requireNonNull(expression, "expression");
+        }
+
+        public Expression getExpression() {
+            return expression;
+        }
+    }
+
+    public static final class TupleDeconstruction implements Statement {
+        private final List<VariableDeclaration> variables;
+        private final Call call;
+
+        public TupleDeconstruction(List<VariableDeclaration> variables, Call call) {
+            this.variables = defensiveCopy(variables);
+            this.call = Objects.requireNonNull(call, "call");
+        }
+
+        public List<VariableDeclaration> getVariables() {
+            return variables;
+        }
+
+        public Call getCall() {
+            return call;
         }
     }
 

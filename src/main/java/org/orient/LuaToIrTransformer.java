@@ -5,16 +5,24 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Lua AST + semantic information (AnnotatedTree) to IR (Ir.Module) transformer.
  *
- * 当前版本专门支持最基础的一类语句：
- *   - 顶层的 `local name = <exp>` 形式
+     * 当前版本专门支持：
+     *   - 函数定义与返回值（ReturnOne / ReturnMulti 中的 func_return）
+     *   - 顶层与函数体内的 `local name = <exp>` 形式
+     *   - 简单赋值与函数调用语句
  *   - 表达式包括：字面量、变量引用、简单二元运算（+ - * /）
- * 这已经足以覆盖 Exp.lua 示例，后续可以按需要扩展更多规则。
+     * 这已经足以覆盖 Exp.lua、ReturnOne.lua、ReturnMulti.lua 示例。
  */
 public class LuaToIrTransformer {
 
@@ -26,31 +34,184 @@ public class LuaToIrTransformer {
 
     public Ir.Module transform(ParseTree root, String moduleName) {
         List<Ir.Statement> topLevelStatements = new ArrayList<>();
+        List<Ir.Method> topLevelMethods = new ArrayList<>();
+        Map<LuaParser.FuncbodyContext, List<Ir.Statement>> bodyStatements = new HashMap<>();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new LuaParserBaseListener() {
+            private final Deque<List<Ir.Statement>> blockStack = new ArrayDeque<>();
+
+            @Override
+            public void enterFuncbody(LuaParser.FuncbodyContext ctx) {
+                blockStack.push(new ArrayList<>());
+            }
+
+            @Override
+            public void exitFuncbody(LuaParser.FuncbodyContext ctx) {
+                List<Ir.Statement> stmts = blockStack.pop();
+                bodyStatements.put(ctx, stmts);
+            }
+
             @Override
             public void exitStat(LuaParser.StatContext ctx) {
-                // 'local' attnamelist '=' explist
                 LuaParser.AttnamelistContext attnamelistContext = ctx.attnamelist();
                 LuaParser.ExplistContext explistContext = ctx.explist();
+                LuaParser.FuncbodyContext funcbodyContext = ctx.funcbody();
+                LuaParser.FunctioncallContext functioncallContext = ctx.functioncall();
+
+                List<Ir.Statement> currentStatements =
+                        blockStack.isEmpty() ? topLevelStatements : blockStack.peek();
+
+                // function definition
+                if (funcbodyContext != null) {
+                    String funcName = null;
+                    LuaParser.FuncnameContext funcnameContext = ctx.funcname();
+                    if (funcnameContext != null) {
+                        funcName = funcnameContext.getText();
+                    } else if (ctx.NAME() != null) {
+                        funcName = ctx.NAME().getText();
+                    }
+                    if (funcName != null) {
+                        List<Ir.Parameter> parameters = new ArrayList<>();
+                        LuaParser.ParlistContext parlistContext = funcbodyContext.parlist();
+                        if (parlistContext != null) {
+                            LuaParser.NamelistContext namelistContext = parlistContext.namelist();
+                            if (namelistContext != null) {
+                                for (TerminalNode tn : namelistContext.NAME()) {
+                                    Symbol sym = annotatedTree.symbols.get(tn);
+                                    Symbol.Type t = sym != null ? sym.getType() : Symbol.Type.SYMBOL_TYPE_UNKNOWN;
+                                    parameters.add(new Ir.Parameter(tn.getText(), t, sym));
+                                }
+                            }
+                        }
+                        List<Symbol.Type> retTypes = annotatedTree.funcReturns.get(funcbodyContext);
+                        if (retTypes == null) {
+                            retTypes = List.of(Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+                        }
+                        List<Ir.Statement> stmts = bodyStatements.getOrDefault(funcbodyContext, List.of());
+                        Ir.Block body = new Ir.Block(stmts, null);
+                        Ir.Method method = new Ir.Method(
+                                funcName,
+                                parameters,
+                                retTypes,
+                                true,
+                                false,
+                                body
+                        );
+                        topLevelMethods.add(method);
+                    }
+                    return;
+                }
+
+                // 'local' attnamelist '=' explist  (top-level or in function)
                 if (ctx.LOCAL() != null && attnamelistContext != null && explistContext != null) {
                     List<TerminalNode> names = attnamelistContext.NAME();
-                    if (names.size() == 1 && explistContext.exp().size() == 1) {
-                        String varName = names.getFirst().getText();
-                        Symbol.Type varType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
-                        LuaParser.ExpContext expContext = explistContext.exp().getFirst();
-                        Ir.Expression initializer = toIrExpression(expContext);
-                        Symbol symbol = annotatedTree.symbols.get(expContext);
-                        Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, varType, initializer, symbol);
-                        topLevelStatements.add(decl);
+                    List<LuaParser.ExpContext> exps = explistContext.exp();
+                    if (exps.size() == 1) {
+                        LuaParser.ExpContext expContext = exps.getFirst();
+                        Ir.Expression rhs = toIrExpression(expContext);
+
+                        // multi-variable = func_return(...);
+                        if (names.size() > 1 && rhs instanceof Ir.Call call && call.getReturnTypes().size() > 1) {
+                            List<Ir.VariableDeclaration> vars = new ArrayList<>();
+                            for (int i = 0; i < names.size(); i++) {
+                                TerminalNode tn = names.get(i);
+                                String varName = tn.getText();
+                                Symbol.Type t = Util.GetExpContextTypeInList(i, explistContext, annotatedTree);
+                                vars.add(new Ir.VariableDeclaration(varName, t, null, null));
+                            }
+                            currentStatements.add(new Ir.TupleDeconstruction(vars, call));
+                        }
+                        // single name but multi-return function: local n2 = func_return(...)
+                        else if (names.size() == 1 && rhs instanceof Ir.Call call && call.getReturnTypes().size() > 1) {
+                            TerminalNode tn = names.getFirst();
+                            String varName = tn.getText();
+                            List<Ir.VariableDeclaration> vars = new ArrayList<>();
+                            // first slot: real variable
+                            Symbol.Type firstType = call.getReturnTypes().getFirst();
+                            vars.add(new Ir.VariableDeclaration(varName, firstType, null, null));
+                            // second slot: discard placeholder "_"
+                            Symbol.Type secondType = call.getReturnTypes().size() > 1
+                                    ? call.getReturnTypes().get(1)
+                                    : firstType;
+                            vars.add(new Ir.VariableDeclaration("_", secondType, null, null));
+                            currentStatements.add(new Ir.TupleDeconstruction(vars, call));
+                        }
+                        // simple single local declaration
+                        else if (names.size() == 1) {
+                            String varName = names.getFirst().getText();
+                            Symbol.Type varType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                            Symbol symbol = annotatedTree.symbols.get(expContext);
+                            Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, varType, rhs, symbol);
+                            currentStatements.add(decl);
+                        }
+                    }
+                    return;
+                }
+
+                // simple assignment / tuple deconstruction: n = func_return(100);  n1, s1 = func_return(...);
+                LuaParser.VarlistContext varlistContext = ctx.varlist();
+                if (varlistContext != null && explistContext != null) {
+                    List<LuaParser.VarContext> vars = varlistContext.var();
+                    List<LuaParser.ExpContext> exps = explistContext.exp();
+                    if (exps.size() == 1) {
+                        LuaParser.ExpContext valueExp = exps.getFirst();
+                        Ir.Expression value = toIrExpression(valueExp);
+                        // multi-return call on RHS
+                        if (value instanceof Ir.Call call && call.getReturnTypes().size() > 1) {
+                            List<Ir.VariableDeclaration> tupleVars = new ArrayList<>();
+                            int varCount = vars.size();
+                            int slotCount = Math.max(varCount, 2); // ensure at least (x, _) pattern
+                            for (int i = 0; i < slotCount; i++) {
+                                String varName = "_";
+                                if (i < varCount) {
+                                    varName = vars.get(i).getText();
+                                }
+                                Symbol.Type t;
+                                if (i < call.getReturnTypes().size()) {
+                                    t = call.getReturnTypes().get(i);
+                                } else {
+                                    t = call.getReturnTypes().get(call.getReturnTypes().size() - 1);
+                                }
+                                tupleVars.add(new Ir.VariableDeclaration(varName, t, null, null));
+                            }
+                            currentStatements.add(new Ir.TupleDeconstruction(tupleVars, call));
+                        } else if (vars.size() == 1) {
+                            // simple single assignment
+                            LuaParser.VarContext varContext = vars.getFirst();
+                            String varName = varContext.getText();
+                            Symbol.Type t = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                            Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, t, value, null);
+                            currentStatements.add(decl);
+                        }
+                        return;
+                    }
+                }
+
+                // function call statement: print(n); or func_return(...)
+                if (functioncallContext != null) {
+                    Ir.Expression callExpr = toFunctionCallExpression(functioncallContext);
+                    currentStatements.add(new Ir.ExpressionStatement(callExpr));
+                }
+            }
+
+            @Override
+            public void exitRetstat(LuaParser.RetstatContext ctx) {
+                LuaParser.ExplistContext explistContext = ctx.explist();
+                if (explistContext != null) {
+                    List<Ir.Expression> values = new ArrayList<>();
+                    for (LuaParser.ExpContext e : explistContext.exp()) {
+                        values.add(toIrExpression(e));
+                    }
+                    if (!blockStack.isEmpty()) {
+                        blockStack.peek().add(new Ir.Return(values));
                     }
                 }
             }
         }, root);
 
         String name = moduleName != null ? moduleName : "LuaModule";
-        return new Ir.Module(name, List.of(), topLevelStatements);
+        return new Ir.Module(name, List.of(), topLevelStatements, topLevelMethods);
     }
 
     private Ir.Expression toIrExpression(LuaParser.ExpContext ctx) {
@@ -61,13 +222,21 @@ public class LuaToIrTransformer {
             return new Ir.Literal(text, type);
         }
 
-        // Simple variable reference: in the generated parser, a bare identifier
-        // is represented as an ExpContext whose single child is a NAME terminal.
-        if (ctx.getChildCount() == 1 && ctx.getChild(0) instanceof TerminalNode) {
-            String name = ctx.getText();
-            Symbol symbol = annotatedTree.symbols.get(ctx);
-            Symbol.Type type = symbol != null ? symbol.getType() : Symbol.Type.SYMBOL_TYPE_UNKNOWN;
-            return new Ir.VariableRef(name, symbol, type);
+        // prefixexp: 可能是变量引用或函数调用
+        LuaParser.PrefixexpContext prefixexpContext = ctx.prefixexp();
+        if (prefixexpContext != null) {
+            LuaParser.FunctioncallContext fcall = prefixexpContext.functioncall();
+            if (fcall != null) {
+                // func_return(...) 之类的函数调用
+                return toFunctionCallExpression(fcall);
+            }
+            // 否则，当作简单变量引用（如 n、n1、s1）
+            if (!prefixexpContext.NAME().isEmpty()) {
+                String name = prefixexpContext.getText();
+                Symbol symbol = annotatedTree.symbols.get(ctx);
+                Symbol.Type type = symbol != null ? symbol.getType() : Symbol.Type.SYMBOL_TYPE_UNKNOWN;
+                return new Ir.VariableRef(name, symbol, type);
+            }
         }
 
         // Simple binary expressions: exp op exp
@@ -100,6 +269,58 @@ public class LuaToIrTransformer {
         // Fallback: use raw text as a literal of unknown type
         Symbol.Type type = Util.GetExpContextTypeInTree(ctx, annotatedTree);
         return new Ir.Literal(ctx.getText(), type);
+    }
+
+    private Ir.Expression toFunctionCallExpression(LuaParser.FunctioncallContext ctx) {
+        List<TerminalNode> nameNodes = ctx.NAME();
+        if (nameNodes == null || nameNodes.isEmpty()) {
+            // fallback
+            return new Ir.Literal(ctx.getText(), Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+        }
+        String funcName = nameNodes.getFirst().getText();
+        LuaParser.ArgsContext argsContext = ctx.args();
+
+        List<Ir.Expression> args = new ArrayList<>();
+        if (argsContext != null && argsContext.explist() != null) {
+            for (LuaParser.ExpContext e : argsContext.explist().exp()) {
+                args.add(toIrExpression(e));
+            }
+        }
+
+        // print(x) -> Console.WriteLine(x)
+        if ("print".equals(funcName)) {
+            Ir.Expression target = new Ir.VariableRef("Console.WriteLine", null, Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+            return new Ir.Call(target, args, List.of());
+        }
+
+        // 根据函数定义推断返回类型：从 funcbody 上的 funcReturns 获取
+        List<Symbol.Type> retTypes = List.of(Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+        Symbol funcSymbol = null;
+
+        // annotatedTree.scopes: Map<ParseTree, Scope>，值里可能有重复的 Scope，这里用 Set 去重
+        Set<Scope> visitedScopes = new HashSet<>();
+        for (Scope scope : annotatedTree.scopes.values()) {
+            if (scope != null && visitedScopes.add(scope)) {
+                Symbol s = scope.resolve(funcName);
+                if (s != null) {
+                    funcSymbol = s;
+                    break;
+                }
+            }
+        }
+
+        if (funcSymbol != null) {
+            ParseTree defTree = funcSymbol.getParseTree();
+            if (defTree instanceof LuaParser.FuncbodyContext fbCtx) {
+                List<Symbol.Type> ts = annotatedTree.funcReturns.get(fbCtx);
+                if (ts != null && !ts.isEmpty()) {
+                    retTypes = ts;
+                }
+            }
+        }
+
+        Ir.Expression target = new Ir.VariableRef(funcName, funcSymbol, Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+        return new Ir.Call(target, args, retTypes);
     }
 }
 
