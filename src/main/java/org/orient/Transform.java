@@ -21,20 +21,53 @@ public class Transform {
 
         ParseTreeWalker walker = new ParseTreeWalker();
 
-        //Pass
-        PassScopeAndType PassScopeAndType = new PassScopeAndType(annotatedTree);
+        // semantic pass: scope and type
+        PassScopeAndType passScopeAndType = new PassScopeAndType(annotatedTree);
         System.out.println("\nPassScopeAndType 1st:");
-        walker.walk(PassScopeAndType, tree);
-        PassScopeAndType.Reset();
+        walker.walk(passScopeAndType, tree);
+        passScopeAndType.Reset();
         System.out.println("\nPassScopeAndType 2nd:");
-        walker.walk(PassScopeAndType, tree);
+        walker.walk(passScopeAndType, tree);
 
-        //Pass
+        // Lua AST + semantic info -> IR
+        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree);
+        Ir.Module module = luaToIr.transform(tree, "LuaModule");
+
+        // For now, keep existing token-rewriter-based transformation as the main pipeline
+        // to preserve behaviour for all existing examples. The IR-based pipeline is
+        // available via transformWithIr for targeted scenarios.
         PassTransformation passTransformation = new PassTransformation(annotatedTree, tokens);
         System.out.println("\nPassTransformation:");
         walker.walk(passTransformation, tree);
 
         return passTransformation.getResult();
+    }
+
+    /**
+     * Experimental IR-based transformation entry point.
+     * This uses the Lua AST + semantic info to build an IR module
+     * and then generates C# directly, without relying on TokenStreamRewriter.
+     */
+    public static String transformWithIr(CharStream charStream) {
+        assert (charStream != null);
+        LuaLexer lexer = new LuaLexer(charStream);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        LuaParser parser = new LuaParser(tokens);
+        ParseTree tree = parser.start_();
+
+        AnnotatedTree annotatedTree = new AnnotatedTree(tree);
+        ParseTreeWalker walker = new ParseTreeWalker();
+
+        PassScopeAndType passScopeAndType = new PassScopeAndType(annotatedTree);
+        walker.walk(passScopeAndType, tree);
+        passScopeAndType.Reset();
+        walker.walk(passScopeAndType, tree);
+
+        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree);
+        Ir.Module module = luaToIr.transform(tree, "LuaModule");
+
+        CSharpGenerator generator = new CSharpGenerator(module);
+        return generator.generate();
     }
 
     public static String transformFromFileName(String fileName) throws Exception {
