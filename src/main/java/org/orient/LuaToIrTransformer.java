@@ -1,5 +1,6 @@
 package org.orient;
 
+import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -9,7 +10,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
@@ -21,22 +21,12 @@ import java.util.Set;
 public class LuaToIrTransformer {
 
     private final AnnotatedTree annotatedTree;
-    private final List<Integer> standaloneCommentLines = new ArrayList<>();
-    private final Map<Integer, String> standaloneCommentByLine = new HashMap<>();
-    private final Map<Integer, String> trailingCommentByLine = new HashMap<>();
-    private int standaloneCommentCursor = 0;
+    private final BufferedTokenStream tokens;
+    private final Set<Integer> processedCommentTokens = new HashSet<>();
 
-    public LuaToIrTransformer(AnnotatedTree annotatedTree) {
-        this(annotatedTree, null, null);
-    }
-
-    public LuaToIrTransformer(AnnotatedTree annotatedTree, String sourceText) {
-        this(annotatedTree, null, sourceText);
-    }
-
-    public LuaToIrTransformer(AnnotatedTree annotatedTree, Object unusedTokens, String sourceText) {
+    public LuaToIrTransformer(AnnotatedTree annotatedTree, BufferedTokenStream tokens) {
         this.annotatedTree = annotatedTree;
-        preprocessComments(sourceText);
+        this.tokens = tokens;
     }
 
     public Ir.Module transform(ParseTree root, String moduleName) {
@@ -68,7 +58,7 @@ public class LuaToIrTransformer {
 
                 List<Ir.Statement> currentStatements =
                         blockStack.isEmpty() ? topLevelStatements : blockStack.peek();
-                emitStandaloneCommentsBefore(ctx.getStart().getLine(), currentStatements);
+                emitStandaloneCommentsBefore(ctx.getStart(), currentStatements);
 
                 // function definition
                 if (funcbodyContext != null) {
@@ -109,12 +99,8 @@ public class LuaToIrTransformer {
                         topLevelMethods.add(method);
                         currentStatements.add(new Ir.MethodDeclaration(method));
                     }
-                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
-                    return;
-                }
-
-                // 'local' attnamelist '=' explist  (top-level or in function)
-                if (ctx.LOCAL() != null && attnamelistContext != null && explistContext != null) {
+                } else if (ctx.LOCAL() != null && attnamelistContext != null && explistContext != null) {
+                    // 'local' attnamelist '=' explist  (top-level or in function)
                     List<TerminalNode> names = attnamelistContext.NAME();
                     List<LuaParser.ExpContext> exps = explistContext.exp();
                     if (exps.size() == 1) {
@@ -137,10 +123,8 @@ public class LuaToIrTransformer {
                             TerminalNode tn = names.getFirst();
                             String varName = tn.getText();
                             List<Ir.VariableDeclaration> vars = new ArrayList<>();
-                            // first slot: real variable
                             Symbol.Type firstType = call.getReturnTypes().getFirst();
                             vars.add(new Ir.VariableDeclaration(varName, firstType, null, null));
-                            // second slot: discard placeholder "_"
                             Symbol.Type secondType = call.getReturnTypes().size() > 1
                                     ? call.getReturnTypes().get(1)
                                     : firstType;
@@ -156,23 +140,18 @@ public class LuaToIrTransformer {
                             currentStatements.add(decl);
                         }
                     }
-                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
-                    return;
-                }
-
-                // simple assignment / tuple deconstruction: n = func_return(100);  n1, s1 = func_return(...);
-                LuaParser.VarlistContext varlistContext = ctx.varlist();
-                if (varlistContext != null && explistContext != null) {
+                } else if (ctx.varlist() != null && explistContext != null) {
+                    // simple assignment / tuple deconstruction
+                    LuaParser.VarlistContext varlistContext = ctx.varlist();
                     List<LuaParser.VarContext> vars = varlistContext.var();
                     List<LuaParser.ExpContext> exps = explistContext.exp();
                     if (exps.size() == 1) {
                         LuaParser.ExpContext valueExp = exps.getFirst();
                         Ir.Expression value = toIrExpression(valueExp);
-                        // multi-return call on RHS
                         if (value instanceof Ir.Call call && call.getReturnTypes().size() > 1) {
                             List<Ir.VariableDeclaration> tupleVars = new ArrayList<>();
                             int varCount = vars.size();
-                            int slotCount = Math.max(varCount, 2); // ensure at least (x, _) pattern
+                            int slotCount = Math.max(varCount, 2);
                             for (int i = 0; i < slotCount; i++) {
                                 String varName = "_";
                                 if (i < varCount) {
@@ -188,24 +167,20 @@ public class LuaToIrTransformer {
                             }
                             currentStatements.add(new Ir.TupleDeconstruction(tupleVars, call));
                         } else if (vars.size() == 1) {
-                            // simple single assignment
                             LuaParser.VarContext varContext = vars.getFirst();
                             String varName = varContext.getText();
                             Symbol.Type t = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                             Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, t, value, null);
                             currentStatements.add(decl);
                         }
-                        emitTrailingComment(ctx.getStop().getLine(), currentStatements);
-                        return;
                     }
-                }
-
-                // function call statement: print(n); or func_return(...)
-                if (functioncallContext != null) {
+                } else if (functioncallContext != null) {
+                    // function call statement
                     Ir.Expression callExpr = toFunctionCallExpression(functioncallContext);
                     currentStatements.add(new Ir.ExpressionStatement(callExpr));
-                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
                 }
+
+                emitTrailingComment(ctx, currentStatements);
             }
 
             @Override
@@ -356,72 +331,27 @@ public class LuaToIrTransformer {
         return "// " + luaComment;
     }
 
-    private void preprocessComments(String sourceText) {
-        if (sourceText == null || sourceText.isEmpty()) {
-            return;
-        }
-        String[] lines = sourceText.split("\\R", -1);
-        boolean inBlock = false;
-        int blockStartLine = -1;
-        List<String> blockLines = new ArrayList<>();
-
-        for (int lineNo = 1; lineNo <= lines.length; lineNo++) {
-            String line = lines[lineNo - 1];
-            String trimmed = line.trim();
-
-            if (inBlock) {
-                if (trimmed.startsWith("--]]")) {
-                    String blockText = String.join("\n", blockLines).trim();
-                    standaloneCommentByLine.put(blockStartLine, "/**\n" + blockText + "\n*/");
-                    standaloneCommentLines.add(blockStartLine);
-                    inBlock = false;
-                    blockLines.clear();
-                } else {
-                    blockLines.add(line);
-                }
-                continue;
+    private void emitStandaloneCommentsBefore(Token startToken, List<Ir.Statement> statements) {
+        if (tokens == null) return;
+        List<Token> comments = tokens.getHiddenTokensToLeft(startToken.getTokenIndex(), LuaLexer.COMMENTS);
+        if (comments == null) return;
+        for (Token cmt : comments) {
+            if (processedCommentTokens.add(cmt.getTokenIndex())) {
+                statements.add(new Ir.Comment(toCSharpComment(cmt.getText())));
             }
-
-            if (trimmed.startsWith("--[[")) {
-                inBlock = true;
-                blockStartLine = lineNo;
-                continue;
-            }
-            if (trimmed.startsWith("--")) {
-                standaloneCommentByLine.put(lineNo, toCSharpComment(trimmed));
-                standaloneCommentLines.add(lineNo);
-                continue;
-            }
-            int idx = line.indexOf("--");
-            if (idx > 0) {
-                String before = line.substring(0, idx);
-                if (!before.trim().isEmpty()) {
-                    String trailingLua = line.substring(idx).trim();
-                    trailingCommentByLine.put(lineNo, toCSharpComment(trailingLua));
-                }
-            }
-        }
-        Collections.sort(standaloneCommentLines);
-    }
-
-    private void emitStandaloneCommentsBefore(int line, List<Ir.Statement> statements) {
-        while (standaloneCommentCursor < standaloneCommentLines.size()) {
-            int commentLine = standaloneCommentLines.get(standaloneCommentCursor);
-            if (commentLine >= line) {
-                break;
-            }
-            String cmt = standaloneCommentByLine.get(commentLine);
-            if (cmt != null) {
-                statements.add(new Ir.Comment(cmt));
-            }
-            standaloneCommentCursor++;
         }
     }
 
-    private void emitTrailingComment(int line, List<Ir.Statement> statements) {
-        String cmt = trailingCommentByLine.get(line);
-        if (cmt != null) {
-            statements.add(new Ir.Comment(cmt));
+    private void emitTrailingComment(LuaParser.StatContext ctx, List<Ir.Statement> statements) {
+        if (tokens == null) return;
+        int stopLine = ctx.getStop().getLine();
+        List<Token> comments = tokens.getHiddenTokensToRight(ctx.getStop().getTokenIndex(), LuaLexer.COMMENTS);
+        if (comments == null) return;
+        for (Token cmt : comments) {
+            if (cmt.getLine() != stopLine) break;
+            if (processedCommentTokens.add(cmt.getTokenIndex())) {
+                statements.add(new Ir.Comment(toCSharpComment(cmt.getText())));
+            }
         }
     }
 }

@@ -43,7 +43,6 @@ public class Transform {
      */
     public static String transformWithIr(CharStream charStream) {
         assert (charStream != null);
-        String sourceText = charStream.toString();
         LuaLexer lexer = new LuaLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);
@@ -57,7 +56,7 @@ public class Transform {
         passScopeAndType.Reset();
         walker.walk(passScopeAndType, tree);
 
-        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree, sourceText);
+        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree, tokens);
         Ir.Module module = luaToIr.transform(tree, "LuaModule");
 
         CSharpGenerator generator = new CSharpGenerator(module);
