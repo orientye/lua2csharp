@@ -1,9 +1,9 @@
 int? n = null;
 
-int FuncSum(int a, int b)
+int func_sum(int a, int b)
 {
     return a + b;
 }
 
-n = FuncSum(1, 2);
+n = func_sum(1, 2);
 Console.WriteLine(n);

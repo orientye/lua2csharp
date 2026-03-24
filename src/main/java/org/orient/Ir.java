@@ -240,7 +240,7 @@ public final class Ir {
 
     public static final class VariableDeclaration implements Statement {
         private final String name;
-        private final Symbol.Type type;
+        private Symbol.Type type;
         private final Expression initializer;
         private final Symbol symbol; // backing semantic symbol, if available
 
@@ -257,6 +257,10 @@ public final class Ir {
 
         public Symbol.Type getType() {
             return type;
+        }
+
+        public void setType(Symbol.Type type) {
+            this.type = Objects.requireNonNull(type, "type");
         }
 
         public Expression getInitializer() {

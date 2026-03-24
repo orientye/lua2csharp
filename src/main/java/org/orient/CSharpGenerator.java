@@ -28,6 +28,11 @@ public class CSharpGenerator {
             } else if (statement instanceof Ir.TupleDeconstruction tuple) {
                 appendTupleDeconstruction(sb, tuple);
                 sb.append(System.lineSeparator());
+            } else if (statement instanceof Ir.Assignment assign) {
+                appendExpression(sb, assign.getLeft());
+                sb.append(" = ");
+                appendExpression(sb, assign.getRight());
+                sb.append(';').append(System.lineSeparator());
             } else if (statement instanceof Ir.ExpressionStatement exprStmt) {
                 appendExpression(sb, exprStmt.getExpression());
                 sb.append(';').append(System.lineSeparator());
@@ -38,8 +43,11 @@ public class CSharpGenerator {
 
     private void appendVariableDeclaration(StringBuilder sb, Ir.VariableDeclaration decl) {
         String typeName = Util.SymbolType2Str(decl.getType());
-        sb.append(typeName)
-                .append(' ')
+        sb.append(typeName);
+        if (decl.getInitializer() instanceof Ir.Literal lit && "null".equals(lit.getValue())) {
+            sb.append('?');
+        }
+        sb.append(' ')
                 .append(decl.getName())
                 .append(" = ");
         appendExpression(sb, decl.getInitializer());

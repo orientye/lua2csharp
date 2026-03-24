@@ -37,15 +37,27 @@ public class LuaToIrTransformer {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new LuaParserBaseListener() {
             private final Deque<List<Ir.Statement>> blockStack = new ArrayDeque<>();
+            private final Deque<Set<String>> declaredLocalsStack = new ArrayDeque<>();
+            private final Map<String, Ir.VariableDeclaration> nilDeclarations = new HashMap<>();
+            { declaredLocalsStack.push(new HashSet<>()); }
+
+            private boolean isDeclaredLocal(String name) {
+                for (Set<String> scope : declaredLocalsStack) {
+                    if (scope.contains(name)) return true;
+                }
+                return false;
+            }
 
             @Override
             public void enterFuncbody(LuaParser.FuncbodyContext ctx) {
                 blockStack.push(new ArrayList<>());
+                declaredLocalsStack.push(new HashSet<>());
             }
 
             @Override
             public void exitFuncbody(LuaParser.FuncbodyContext ctx) {
                 List<Ir.Statement> stmts = blockStack.pop();
+                declaredLocalsStack.pop();
                 bodyStatements.put(ctx, stmts);
             }
 
@@ -134,9 +146,13 @@ public class LuaToIrTransformer {
                         // simple single local declaration
                         else if (names.size() == 1) {
                             String varName = names.getFirst().getText();
+                            declaredLocalsStack.peek().add(varName);
                             Symbol.Type varType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                             Symbol symbol = annotatedTree.symbols.get(expContext);
                             Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, varType, rhs, symbol);
+                            if (varType == Symbol.Type.SYMBOL_TYPE_LUA_NIL) {
+                                nilDeclarations.put(varName, decl);
+                            }
                             currentStatements.add(decl);
                         }
                     }
@@ -169,9 +185,21 @@ public class LuaToIrTransformer {
                         } else if (vars.size() == 1) {
                             LuaParser.VarContext varContext = vars.getFirst();
                             String varName = varContext.getText();
-                            Symbol.Type t = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
-                            Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, t, value, null);
-                            currentStatements.add(decl);
+                            if (isDeclaredLocal(varName)) {
+                                Ir.VariableDeclaration nilDecl = nilDeclarations.get(varName);
+                                if (nilDecl != null) {
+                                    Symbol.Type rhsType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                                    if (rhsType != Symbol.Type.SYMBOL_TYPE_UNKNOWN && rhsType != Symbol.Type.SYMBOL_TYPE_LUA_NIL) {
+                                        nilDecl.setType(rhsType);
+                                    }
+                                }
+                                Ir.Expression target = new Ir.VariableRef(varName, null, Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+                                currentStatements.add(new Ir.Assignment(target, value));
+                            } else {
+                                Symbol.Type t = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                                Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, t, value, null);
+                                currentStatements.add(decl);
+                            }
                         }
                     }
                 } else if (functioncallContext != null) {
@@ -203,6 +231,11 @@ public class LuaToIrTransformer {
     }
 
     private Ir.Expression toIrExpression(LuaParser.ExpContext ctx) {
+        // nil
+        if (ctx.NIL() != null) {
+            return new Ir.Literal("null", Symbol.Type.SYMBOL_TYPE_LUA_NIL);
+        }
+
         // Literal numbers, booleans, strings
         if (ctx.number() != null || ctx.string() != null || ctx.TRUE() != null || ctx.FALSE() != null) {
             String text = ctx.getText();
