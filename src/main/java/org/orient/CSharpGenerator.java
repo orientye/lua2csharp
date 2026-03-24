@@ -109,7 +109,9 @@ public class CSharpGenerator {
 
     private void appendMethod(StringBuilder sb, Ir.Method method) {
         // return type
-        if (method.getReturnTypes().size() == 1) {
+        if (method.getReturnTypes().isEmpty()) {
+            sb.append("void");
+        } else if (method.getReturnTypes().size() == 1) {
             sb.append(Util.SymbolType2Str(method.getReturnTypes().getFirst()));
         } else {
             sb.append('(');

@@ -84,7 +84,7 @@ public class LuaToIrTransformer {
                         }
                         List<Symbol.Type> retTypes = annotatedTree.funcReturns.get(funcbodyContext);
                         if (retTypes == null) {
-                            retTypes = List.of(Symbol.Type.SYMBOL_TYPE_UNKNOWN);
+                            retTypes = List.of();
                         }
                         List<Ir.Statement> stmts = bodyStatements.getOrDefault(funcbodyContext, List.of());
                         Ir.Block body = new Ir.Block(stmts, null);
