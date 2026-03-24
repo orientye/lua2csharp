@@ -16,15 +16,13 @@ public class CSharpGenerator {
 
     public String generate() {
         StringBuilder sb = new StringBuilder();
-        // top-level methods
-        for (Ir.Method method : module.getTopLevelMethods()) {
-            appendMethod(sb, method);
-            sb.append(System.lineSeparator());
-        }
-
-        // top-level statements
         for (Ir.Statement statement : module.getTopLevelStatements()) {
-            if (statement instanceof Ir.VariableDeclaration decl) {
+            if (statement instanceof Ir.Comment comment) {
+                sb.append(comment.getText()).append(System.lineSeparator());
+            } else if (statement instanceof Ir.MethodDeclaration methodDecl) {
+                appendMethod(sb, methodDecl.getMethod());
+                sb.append(System.lineSeparator());
+            } else if (statement instanceof Ir.VariableDeclaration decl) {
                 appendVariableDeclaration(sb, decl);
                 sb.append(System.lineSeparator());
             } else if (statement instanceof Ir.TupleDeconstruction tuple) {
@@ -137,7 +135,9 @@ public class CSharpGenerator {
           .append('{').append(System.lineSeparator());
 
         for (Ir.Statement stmt : method.getBody().getStatements()) {
-            if (stmt instanceof Ir.VariableDeclaration decl) {
+            if (stmt instanceof Ir.Comment comment) {
+                sb.append(comment.getText()).append(System.lineSeparator());
+            } else if (stmt instanceof Ir.VariableDeclaration decl) {
                 appendVariableDeclaration(sb, decl);
                 sb.append(System.lineSeparator());
             } else if (stmt instanceof Ir.Return ret) {

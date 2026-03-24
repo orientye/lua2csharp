@@ -310,6 +310,30 @@ public final class Ir {
         }
     }
 
+    public static final class Comment implements Statement {
+        private final String text;
+
+        public Comment(String text) {
+            this.text = Objects.requireNonNull(text, "text");
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
+    public static final class MethodDeclaration implements Statement {
+        private final Method method;
+
+        public MethodDeclaration(Method method) {
+            this.method = Objects.requireNonNull(method, "method");
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+    }
+
     public static final class TupleDeconstruction implements Statement {
         private final List<VariableDeclaration> variables;
         private final Call call;

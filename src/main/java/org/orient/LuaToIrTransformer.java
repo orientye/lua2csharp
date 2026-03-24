@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
@@ -16,20 +17,26 @@ import java.util.Set;
 
 /**
  * Lua AST + semantic information (AnnotatedTree) to IR (Ir.Module) transformer.
- *
-     * 当前版本专门支持：
-     *   - 函数定义与返回值（ReturnOne / ReturnMulti 中的 func_return）
-     *   - 顶层与函数体内的 `local name = <exp>` 形式
-     *   - 简单赋值与函数调用语句
- *   - 表达式包括：字面量、变量引用、简单二元运算（+ - * /）
-     * 这已经足以覆盖 Exp.lua、ReturnOne.lua、ReturnMulti.lua 示例。
  */
 public class LuaToIrTransformer {
 
     private final AnnotatedTree annotatedTree;
+    private final List<Integer> standaloneCommentLines = new ArrayList<>();
+    private final Map<Integer, String> standaloneCommentByLine = new HashMap<>();
+    private final Map<Integer, String> trailingCommentByLine = new HashMap<>();
+    private int standaloneCommentCursor = 0;
 
     public LuaToIrTransformer(AnnotatedTree annotatedTree) {
+        this(annotatedTree, null, null);
+    }
+
+    public LuaToIrTransformer(AnnotatedTree annotatedTree, String sourceText) {
+        this(annotatedTree, null, sourceText);
+    }
+
+    public LuaToIrTransformer(AnnotatedTree annotatedTree, Object unusedTokens, String sourceText) {
         this.annotatedTree = annotatedTree;
+        preprocessComments(sourceText);
     }
 
     public Ir.Module transform(ParseTree root, String moduleName) {
@@ -61,6 +68,7 @@ public class LuaToIrTransformer {
 
                 List<Ir.Statement> currentStatements =
                         blockStack.isEmpty() ? topLevelStatements : blockStack.peek();
+                emitStandaloneCommentsBefore(ctx.getStart().getLine(), currentStatements);
 
                 // function definition
                 if (funcbodyContext != null) {
@@ -99,7 +107,9 @@ public class LuaToIrTransformer {
                                 body
                         );
                         topLevelMethods.add(method);
+                        currentStatements.add(new Ir.MethodDeclaration(method));
                     }
+                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
                     return;
                 }
 
@@ -146,6 +156,7 @@ public class LuaToIrTransformer {
                             currentStatements.add(decl);
                         }
                     }
+                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
                     return;
                 }
 
@@ -184,6 +195,7 @@ public class LuaToIrTransformer {
                             Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, t, value, null);
                             currentStatements.add(decl);
                         }
+                        emitTrailingComment(ctx.getStop().getLine(), currentStatements);
                         return;
                     }
                 }
@@ -192,6 +204,7 @@ public class LuaToIrTransformer {
                 if (functioncallContext != null) {
                     Ir.Expression callExpr = toFunctionCallExpression(functioncallContext);
                     currentStatements.add(new Ir.ExpressionStatement(callExpr));
+                    emitTrailingComment(ctx.getStop().getLine(), currentStatements);
                 }
             }
 
@@ -321,6 +334,95 @@ public class LuaToIrTransformer {
 
         Ir.Expression target = new Ir.VariableRef(funcName, funcSymbol, Symbol.Type.SYMBOL_TYPE_UNKNOWN);
         return new Ir.Call(target, args, retTypes);
+    }
+
+    private String toCSharpComment(String luaComment) {
+        if (luaComment == null || luaComment.isEmpty()) {
+            return "//";
+        }
+        if (luaComment.startsWith("--[[")) {
+            String inner;
+            if (luaComment.length() >= 8) {
+                inner = luaComment.substring(4, luaComment.length() - 4).trim();
+            } else {
+                inner = "";
+            }
+            return "/**\n" + inner + "\n*/";
+        }
+        if (luaComment.startsWith("--")) {
+            String txt = luaComment.substring(2).trim();
+            return "// " + txt;
+        }
+        return "// " + luaComment;
+    }
+
+    private void preprocessComments(String sourceText) {
+        if (sourceText == null || sourceText.isEmpty()) {
+            return;
+        }
+        String[] lines = sourceText.split("\\R", -1);
+        boolean inBlock = false;
+        int blockStartLine = -1;
+        List<String> blockLines = new ArrayList<>();
+
+        for (int lineNo = 1; lineNo <= lines.length; lineNo++) {
+            String line = lines[lineNo - 1];
+            String trimmed = line.trim();
+
+            if (inBlock) {
+                if (trimmed.startsWith("--]]")) {
+                    String blockText = String.join("\n", blockLines).trim();
+                    standaloneCommentByLine.put(blockStartLine, "/**\n" + blockText + "\n*/");
+                    standaloneCommentLines.add(blockStartLine);
+                    inBlock = false;
+                    blockLines.clear();
+                } else {
+                    blockLines.add(line);
+                }
+                continue;
+            }
+
+            if (trimmed.startsWith("--[[")) {
+                inBlock = true;
+                blockStartLine = lineNo;
+                continue;
+            }
+            if (trimmed.startsWith("--")) {
+                standaloneCommentByLine.put(lineNo, toCSharpComment(trimmed));
+                standaloneCommentLines.add(lineNo);
+                continue;
+            }
+            int idx = line.indexOf("--");
+            if (idx > 0) {
+                String before = line.substring(0, idx);
+                if (!before.trim().isEmpty()) {
+                    String trailingLua = line.substring(idx).trim();
+                    trailingCommentByLine.put(lineNo, toCSharpComment(trailingLua));
+                }
+            }
+        }
+        Collections.sort(standaloneCommentLines);
+    }
+
+    private void emitStandaloneCommentsBefore(int line, List<Ir.Statement> statements) {
+        while (standaloneCommentCursor < standaloneCommentLines.size()) {
+            int commentLine = standaloneCommentLines.get(standaloneCommentCursor);
+            if (commentLine >= line) {
+                break;
+            }
+            String cmt = standaloneCommentByLine.get(commentLine);
+            if (cmt != null) {
+                statements.add(new Ir.Comment(cmt));
+            }
+            standaloneCommentCursor++;
+        }
+    }
+
+    private void emitTrailingComment(int line, List<Ir.Statement> statements) {
+        String cmt = trailingCommentByLine.get(line);
+        if (cmt != null) {
+            statements.add(new Ir.Comment(cmt));
+        }
     }
 }
 

@@ -1,9 +1,8 @@
 package org.orient;
 
-public class IrExpDemoMain {
+public class IrScopeDemoMain {
 
     public static void main(String[] args) throws Exception {
-        IrDemoSupport.runExample("Exp");
+        IrDemoSupport.runExample("Scope");
     }
 }
-

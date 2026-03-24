@@ -8,7 +8,6 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.io.Console;
 import java.util.List;
 
 public class PassTransformation extends LuaParserBaseListener {

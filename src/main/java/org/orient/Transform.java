@@ -29,13 +29,6 @@ public class Transform {
         System.out.println("\nPassScopeAndType 2nd:");
         walker.walk(passScopeAndType, tree);
 
-        // Lua AST + semantic info -> IR
-        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree);
-        Ir.Module module = luaToIr.transform(tree, "LuaModule");
-
-        // For now, keep existing token-rewriter-based transformation as the main pipeline
-        // to preserve behaviour for all existing examples. The IR-based pipeline is
-        // available via transformWithIr for targeted scenarios.
         PassTransformation passTransformation = new PassTransformation(annotatedTree, tokens);
         System.out.println("\nPassTransformation:");
         walker.walk(passTransformation, tree);
@@ -50,6 +43,7 @@ public class Transform {
      */
     public static String transformWithIr(CharStream charStream) {
         assert (charStream != null);
+        String sourceText = charStream.toString();
         LuaLexer lexer = new LuaLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);
@@ -63,7 +57,7 @@ public class Transform {
         passScopeAndType.Reset();
         walker.walk(passScopeAndType, tree);
 
-        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree);
+        LuaToIrTransformer luaToIr = new LuaToIrTransformer(annotatedTree, sourceText);
         Ir.Module module = luaToIr.transform(tree, "LuaModule");
 
         CSharpGenerator generator = new CSharpGenerator(module);
