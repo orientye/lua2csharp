@@ -533,18 +533,28 @@ public final class Ir {
     public static final class TableField implements Node {
         private final String name; // may be null for pure list-style fields
         private final Expression value;
+        private final Symbol.Type type;
 
-        public TableField(String name, Expression value) {
+        public TableField(String name, Expression value, Symbol.Type type) {
             this.name = name;
             this.value = Objects.requireNonNull(value, "value");
+            this.type = type != null ? type : Symbol.Type.SYMBOL_TYPE_UNKNOWN;
         }
 
         public String getName() {
             return name;
         }
 
+        public String getKey() {
+            return name;
+        }
+
         public Expression getValue() {
             return value;
+        }
+
+        public Symbol.Type getType() {
+            return type;
         }
     }
 

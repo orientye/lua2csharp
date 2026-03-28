@@ -75,11 +75,14 @@ public class CSharpGenerator {
     private void appendClassDecl(StringBuilder sb, Ir.ClassDecl cls) {
         sb.append("class ").append(cls.getName()).append(System.lineSeparator());
         sb.append('{').append(System.lineSeparator());
-        // minimal: fields only (extend later)
         for (Ir.Member m : cls.getMembers()) {
             if (m instanceof Ir.Field f) {
                 sb.append("    ");
-                if (f.isPublic()) sb.append("public ");
+                if (f.isPublic()) {
+                    sb.append("public ");
+                } else {
+                    sb.append("private ");
+                }
                 if (f.isConst()) sb.append("const ");
                 sb.append(Util.SymbolType2Str(f.getType())).append(' ').append(f.getName());
                 if (f.getInitializer() != null) {

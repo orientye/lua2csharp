@@ -34,7 +34,8 @@ public class LuaToIrTransformer {
         List<Ir.Method> topLevelMethods = new ArrayList<>();
         List<Ir.TypeDecl> types = new ArrayList<>();
         Map<LuaParser.FuncbodyContext, List<Ir.Statement>> bodyStatements = new HashMap<>();
-        Map<String, List<Ir.Member>> pendingStructMembersByName = new HashMap<>();
+        Map<String, List<Ir.Member>> pendingTypeMembers = new HashMap<>();
+        Map<String, String> pendingTypeKind = new HashMap<>();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new LuaParserBaseListener() {
@@ -162,8 +163,22 @@ public class LuaToIrTransformer {
                             if ("struct".equals(typeHint) && rhs instanceof Ir.TableInit tableInit
                                     && tableInit.getFields().isEmpty()
                                     && blockStack.isEmpty()) {
-                                pendingStructMembersByName.put(varName, new ArrayList<>());
-                                // do not emit variable declaration statement
+                                pendingTypeMembers.put(varName, new ArrayList<>());
+                                pendingTypeKind.put(varName, "struct");
+                                emitTrailingComment(ctx, currentStatements);
+                                return;
+                            }
+                            // no-annotation class inference: local X = { key = val, ... }
+                            if (typeHint == null && rhs instanceof Ir.TableInit tableInit
+                                    && !tableInit.getFields().isEmpty()
+                                    && tableInit.getKind() == Ir.TableInit.Kind.OBJECT
+                                    && blockStack.isEmpty()) {
+                                List<Ir.Member> members = new ArrayList<>();
+                                for (Ir.TableField tf : tableInit.getFields()) {
+                                    members.add(new Ir.Field(tf.getKey(), tf.getType(), false, false, tf.getValue()));
+                                }
+                                pendingTypeMembers.put(varName, members);
+                                pendingTypeKind.put(varName, "class");
                                 emitTrailingComment(ctx, currentStatements);
                                 return;
                             }
@@ -208,10 +223,10 @@ public class LuaToIrTransformer {
                             if (varContext.DOT() != null && varContext.prefixexp() != null) {
                                 String prefix = varContext.prefixexp().getText();
                                 TerminalNode memberNameNode = varContext.NAME();
-                                if (memberNameNode != null && pendingStructMembersByName.containsKey(prefix)) {
+                                if (memberNameNode != null && pendingTypeMembers.containsKey(prefix)) {
                                     String memberName = memberNameNode.getText();
                                     Symbol.Type memberType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
-                                    pendingStructMembersByName.get(prefix)
+                                    pendingTypeMembers.get(prefix)
                                             .add(new Ir.Field(memberName, memberType, true, true, value));
                                     emitTrailingComment(ctx, currentStatements);
                                     return;
@@ -247,8 +262,16 @@ public class LuaToIrTransformer {
             public void exitRetstat(LuaParser.RetstatContext ctx) {
                 LuaParser.ExplistContext explistContext = ctx.explist();
                 if (explistContext != null) {
+                    List<LuaParser.ExpContext> exps = explistContext.exp();
+                    // suppress top-level `return X` when X is a pending type (class/struct pattern)
+                    if (blockStack.isEmpty() && exps.size() == 1) {
+                        String retName = exps.getFirst().getText();
+                        if (pendingTypeMembers.containsKey(retName)) {
+                            return;
+                        }
+                    }
                     List<Ir.Expression> values = new ArrayList<>();
-                    for (LuaParser.ExpContext e : explistContext.exp()) {
+                    for (LuaParser.ExpContext e : exps) {
                         values.add(toIrExpression(e));
                     }
                     if (!blockStack.isEmpty()) {
@@ -258,9 +281,14 @@ public class LuaToIrTransformer {
             }
         }, root);
 
-        // materialize pending struct declarations (Table2Struct pattern)
-        for (Map.Entry<String, List<Ir.Member>> e : pendingStructMembersByName.entrySet()) {
-            types.add(new Ir.StructDecl(e.getKey(), e.getValue()));
+        // materialize pending type declarations (struct / class)
+        for (Map.Entry<String, List<Ir.Member>> e : pendingTypeMembers.entrySet()) {
+            String kind = pendingTypeKind.getOrDefault(e.getKey(), "struct");
+            if ("class".equals(kind)) {
+                types.add(new Ir.ClassDecl(e.getKey(), e.getValue()));
+            } else {
+                types.add(new Ir.StructDecl(e.getKey(), e.getValue()));
+            }
         }
 
         String name = moduleName != null ? moduleName : "LuaModule";
@@ -275,9 +303,36 @@ public class LuaToIrTransformer {
 
         // table constructor
         if (ctx.tableconstructor() != null) {
-            // minimal support (Table2Struct): treat {} as empty object/table
-            // TODO: parse fields and infer Kind (LIST/OBJECT/DICTIONARY)
-            return new Ir.TableInit(Ir.TableInit.Kind.OBJECT, List.of(), Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
+            LuaParser.TableconstructorContext tblCtx = ctx.tableconstructor();
+            LuaParser.FieldlistContext fieldlistCtx = tblCtx.fieldlist();
+            if (fieldlistCtx == null || fieldlistCtx.field().isEmpty()) {
+                return new Ir.TableInit(Ir.TableInit.Kind.OBJECT, List.of(), Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
+            }
+            List<Ir.TableField> fields = new ArrayList<>();
+            Ir.TableInit.Kind kind = Ir.TableInit.Kind.LIST;
+            for (LuaParser.FieldContext fctx : fieldlistCtx.field()) {
+                if (fctx.NAME() != null && fctx.exp().size() == 1) {
+                    // NAME '=' exp  →  OBJECT
+                    String key = fctx.NAME().getText();
+                    Ir.Expression val = toIrExpression(fctx.exp().getFirst());
+                    Symbol.Type ftype = Util.GetExpContextTypeInTree(fctx.exp().getFirst(), annotatedTree);
+                    fields.add(new Ir.TableField(key, val, ftype));
+                    kind = Ir.TableInit.Kind.OBJECT;
+                } else if (fctx.exp().size() == 2) {
+                    // '[' exp ']' '=' exp  →  DICTIONARY
+                    String key = fctx.exp().get(0).getText();
+                    Ir.Expression val = toIrExpression(fctx.exp().get(1));
+                    Symbol.Type ftype = Util.GetExpContextTypeInTree(fctx.exp().get(1), annotatedTree);
+                    fields.add(new Ir.TableField(key, val, ftype));
+                    kind = Ir.TableInit.Kind.DICTIONARY;
+                } else if (fctx.exp().size() == 1) {
+                    // exp  →  LIST
+                    Ir.Expression val = toIrExpression(fctx.exp().getFirst());
+                    Symbol.Type ftype = Util.GetExpContextTypeInTree(fctx.exp().getFirst(), annotatedTree);
+                    fields.add(new Ir.TableField(null, val, ftype));
+                }
+            }
+            return new Ir.TableInit(kind, fields, Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
         }
 
         // Literal numbers, booleans, strings
