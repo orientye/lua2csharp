@@ -16,6 +16,10 @@ public class CSharpGenerator {
 
     public String generate() {
         StringBuilder sb = new StringBuilder();
+        for (Ir.TypeDecl type : module.getTypes()) {
+            appendTypeDecl(sb, type);
+            sb.append(System.lineSeparator());
+        }
         for (Ir.Statement statement : module.getTopLevelStatements()) {
             if (statement instanceof Ir.Comment comment) {
                 sb.append(comment.getText()).append(System.lineSeparator());
@@ -39,6 +43,53 @@ public class CSharpGenerator {
             }
         }
         return sb.toString();
+    }
+
+    private void appendTypeDecl(StringBuilder sb, Ir.TypeDecl type) {
+        if (type instanceof Ir.StructDecl st) {
+            appendStructDecl(sb, st);
+        } else if (type instanceof Ir.ClassDecl cls) {
+            appendClassDecl(sb, cls);
+        }
+    }
+
+    private void appendStructDecl(StringBuilder sb, Ir.StructDecl st) {
+        sb.append("struct ").append(st.getName()).append(System.lineSeparator());
+        sb.append('{').append(System.lineSeparator());
+        for (Ir.Member m : st.getMembers()) {
+            if (m instanceof Ir.Field f) {
+                sb.append("    ");
+                if (f.isPublic()) sb.append("public ");
+                if (f.isConst()) sb.append("const ");
+                sb.append(Util.SymbolType2Str(f.getType())).append(' ').append(f.getName());
+                if (f.getInitializer() != null) {
+                    sb.append(" = ");
+                    appendExpression(sb, f.getInitializer());
+                }
+                sb.append(';').append(System.lineSeparator());
+            }
+        }
+        sb.append('}').append(System.lineSeparator());
+    }
+
+    private void appendClassDecl(StringBuilder sb, Ir.ClassDecl cls) {
+        sb.append("class ").append(cls.getName()).append(System.lineSeparator());
+        sb.append('{').append(System.lineSeparator());
+        // minimal: fields only (extend later)
+        for (Ir.Member m : cls.getMembers()) {
+            if (m instanceof Ir.Field f) {
+                sb.append("    ");
+                if (f.isPublic()) sb.append("public ");
+                if (f.isConst()) sb.append("const ");
+                sb.append(Util.SymbolType2Str(f.getType())).append(' ').append(f.getName());
+                if (f.getInitializer() != null) {
+                    sb.append(" = ");
+                    appendExpression(sb, f.getInitializer());
+                }
+                sb.append(';').append(System.lineSeparator());
+            }
+        }
+        sb.append('}').append(System.lineSeparator());
     }
 
     private void appendVariableDeclaration(StringBuilder sb, Ir.VariableDeclaration decl) {

@@ -122,11 +122,15 @@ public final class Ir {
         private final String name;
         private final Symbol.Type type;
         private final boolean isPublic;
+        private final boolean isConst;
+        private final Expression initializer;
 
-        public Field(String name, Symbol.Type type, boolean isPublic) {
+        public Field(String name, Symbol.Type type, boolean isPublic, boolean isConst, Expression initializer) {
             this.name = Objects.requireNonNull(name, "name");
             this.type = Objects.requireNonNull(type, "type");
             this.isPublic = isPublic;
+            this.isConst = isConst;
+            this.initializer = initializer;
         }
 
         @Override
@@ -140,6 +144,14 @@ public final class Ir {
 
         public boolean isPublic() {
             return isPublic;
+        }
+
+        public boolean isConst() {
+            return isConst;
+        }
+
+        public Expression getInitializer() {
+            return initializer;
         }
     }
 

@@ -32,7 +32,9 @@ public class LuaToIrTransformer {
     public Ir.Module transform(ParseTree root, String moduleName) {
         List<Ir.Statement> topLevelStatements = new ArrayList<>();
         List<Ir.Method> topLevelMethods = new ArrayList<>();
+        List<Ir.TypeDecl> types = new ArrayList<>();
         Map<LuaParser.FuncbodyContext, List<Ir.Statement>> bodyStatements = new HashMap<>();
+        Map<String, List<Ir.Member>> pendingStructMembersByName = new HashMap<>();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new LuaParserBaseListener() {
@@ -71,6 +73,12 @@ public class LuaToIrTransformer {
                 List<Ir.Statement> currentStatements =
                         blockStack.isEmpty() ? topLevelStatements : blockStack.peek();
                 emitStandaloneCommentsBefore(ctx.getStart(), currentStatements);
+
+                // ignore empty ';' statement
+                if (ctx.getChildCount() == 1 && ";".equals(ctx.getChild(0).getText())) {
+                    emitTrailingComment(ctx, currentStatements);
+                    return;
+                }
 
                 // function definition
                 if (funcbodyContext != null) {
@@ -118,6 +126,7 @@ public class LuaToIrTransformer {
                     if (exps.size() == 1) {
                         LuaParser.ExpContext expContext = exps.getFirst();
                         Ir.Expression rhs = toIrExpression(expContext);
+                        String typeHint = tryGetLeadingTypeHint(ctx.getStart());
 
                         // multi-variable = func_return(...);
                         if (names.size() > 1 && rhs instanceof Ir.Call call && call.getReturnTypes().size() > 1) {
@@ -149,6 +158,16 @@ public class LuaToIrTransformer {
                             declaredLocalsStack.peek().add(varName);
                             Symbol.Type varType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
                             Symbol symbol = annotatedTree.symbols.get(expContext);
+                            // struct pattern: ---@type struct ... + local X = {}
+                            if ("struct".equals(typeHint) && rhs instanceof Ir.TableInit tableInit
+                                    && tableInit.getFields().isEmpty()
+                                    && blockStack.isEmpty()) {
+                                pendingStructMembersByName.put(varName, new ArrayList<>());
+                                // do not emit variable declaration statement
+                                emitTrailingComment(ctx, currentStatements);
+                                return;
+                            }
+
                             Ir.VariableDeclaration decl = new Ir.VariableDeclaration(varName, varType, rhs, symbol);
                             if (varType == Symbol.Type.SYMBOL_TYPE_LUA_NIL) {
                                 nilDeclarations.put(varName, decl);
@@ -185,6 +204,19 @@ public class LuaToIrTransformer {
                         } else if (vars.size() == 1) {
                             LuaParser.VarContext varContext = vars.getFirst();
                             String varName = varContext.getText();
+                            // struct member assignment: ProjectDef.ID = 1
+                            if (varContext.DOT() != null && varContext.prefixexp() != null) {
+                                String prefix = varContext.prefixexp().getText();
+                                TerminalNode memberNameNode = varContext.NAME();
+                                if (memberNameNode != null && pendingStructMembersByName.containsKey(prefix)) {
+                                    String memberName = memberNameNode.getText();
+                                    Symbol.Type memberType = Util.GetExpContextTypeInList(0, explistContext, annotatedTree);
+                                    pendingStructMembersByName.get(prefix)
+                                            .add(new Ir.Field(memberName, memberType, true, true, value));
+                                    emitTrailingComment(ctx, currentStatements);
+                                    return;
+                                }
+                            }
                             if (isDeclaredLocal(varName)) {
                                 Ir.VariableDeclaration nilDecl = nilDeclarations.get(varName);
                                 if (nilDecl != null) {
@@ -226,14 +258,26 @@ public class LuaToIrTransformer {
             }
         }, root);
 
+        // materialize pending struct declarations (Table2Struct pattern)
+        for (Map.Entry<String, List<Ir.Member>> e : pendingStructMembersByName.entrySet()) {
+            types.add(new Ir.StructDecl(e.getKey(), e.getValue()));
+        }
+
         String name = moduleName != null ? moduleName : "LuaModule";
-        return new Ir.Module(name, List.of(), topLevelStatements, topLevelMethods);
+        return new Ir.Module(name, types, topLevelStatements, topLevelMethods);
     }
 
     private Ir.Expression toIrExpression(LuaParser.ExpContext ctx) {
         // nil
         if (ctx.NIL() != null) {
             return new Ir.Literal("null", Symbol.Type.SYMBOL_TYPE_LUA_NIL);
+        }
+
+        // table constructor
+        if (ctx.tableconstructor() != null) {
+            // minimal support (Table2Struct): treat {} as empty object/table
+            // TODO: parse fields and infer Kind (LIST/OBJECT/DICTIONARY)
+            return new Ir.TableInit(Ir.TableInit.Kind.OBJECT, List.of(), Symbol.Type.SYMBOL_TYPE_LUA_TABLE);
         }
 
         // Literal numbers, booleans, strings
@@ -369,6 +413,12 @@ public class LuaToIrTransformer {
         List<Token> comments = tokens.getHiddenTokensToLeft(startToken.getTokenIndex(), LuaLexer.COMMENTS);
         if (comments == null) return;
         for (Token cmt : comments) {
+            String raw = cmt.getText() != null ? cmt.getText().trim() : "";
+            if (raw.startsWith("---@")) {
+                // treat EmmyLua annotations as metadata, not output comments
+                processedCommentTokens.add(cmt.getTokenIndex());
+                continue;
+            }
             if (processedCommentTokens.add(cmt.getTokenIndex())) {
                 statements.add(new Ir.Comment(toCSharpComment(cmt.getText())));
             }
@@ -382,10 +432,33 @@ public class LuaToIrTransformer {
         if (comments == null) return;
         for (Token cmt : comments) {
             if (cmt.getLine() != stopLine) break;
+            String raw = cmt.getText() != null ? cmt.getText().trim() : "";
+            if (raw.startsWith("---@")) {
+                processedCommentTokens.add(cmt.getTokenIndex());
+                continue;
+            }
             if (processedCommentTokens.add(cmt.getTokenIndex())) {
                 statements.add(new Ir.Comment(toCSharpComment(cmt.getText())));
             }
         }
+    }
+
+    private String tryGetLeadingTypeHint(Token startToken) {
+        if (tokens == null) return null;
+        List<Token> comments = tokens.getHiddenTokensToLeft(startToken.getTokenIndex(), LuaLexer.COMMENTS);
+        if (comments == null || comments.isEmpty()) return null;
+        for (int i = comments.size() - 1; i >= 0; i--) {
+            String txt = comments.get(i).getText();
+            if (txt == null) continue;
+            String t = txt.trim();
+            if (t.startsWith("---@type")) {
+                // e.g. ---@type struct Person
+                if (t.contains("struct")) return "struct";
+                if (t.contains("class")) return "class";
+                return null;
+            }
+        }
+        return null;
     }
 }
 
